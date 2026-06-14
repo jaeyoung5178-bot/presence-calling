@@ -215,7 +215,21 @@
     .link-grid,.sched{grid-template-columns:1fr 1fr}
     section{padding:42px 0}
   }
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:5000;pointer-events:none}
+  /* ===== USER SWITCH BAR (bottom) ===== */
+  #app{padding-bottom:84px}
+  .userbar{position:fixed;bottom:0;left:0;right:0;z-index:1500;display:flex;justify-content:center;padding:14px 12px;pointer-events:none}
+  .userbar-inner{pointer-events:auto;display:flex;gap:6px;background:rgba(21,23,28,.92);backdrop-filter:saturate(160%) blur(14px);border:1px solid var(--ink-3);border-radius:999px;padding:6px;box-shadow:var(--shadow-lg)}
+  .utab{display:flex;align-items:center;gap:8px;border:none;background:transparent;color:#C6CBD4;font-family:var(--sans);font-weight:700;font-size:14px;padding:11px 20px;border-radius:999px;cursor:pointer;transition:.18s;white-space:nowrap;letter-spacing:-.01em}
+  .utab .role{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;background:rgba(255,255,255,.1);color:#9AA0AC;padding:3px 7px;border-radius:6px}
+  .utab:not(.active):hover{color:#fff;background:rgba(255,255,255,.07)}
+  .utab.active{background:var(--green);color:#fff;box-shadow:0 4px 14px -4px rgba(79,156,48,.6)}
+  .utab.active .role{background:rgba(255,255,255,.22);color:#fff}
+  @media(max-width:600px){
+    .utab{padding:10px 15px;font-size:13px}
+    .userbar{padding:10px}
+  }
+
+  .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:5000;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -249,7 +263,7 @@
   <nav class="nav">
     <a href="#top" class="brand">
       <span class="mk"><svg viewBox="0 0 100 100"><path d="M18 74 L40 30 L52 54 L62 36 L82 74 Z" fill="#fff"/></svg></span>
-      <span>Presence<small>CALLING HUB</small></span>
+      <span>Presence<small id="brandSub">CALLING HUB</small></span>
     </a>
     <div class="navlinks" id="navlinks">
       <a href="#goal">부킹목표</a>
@@ -273,7 +287,7 @@
     <path d="M-50,420 Q300,300 560,360 T1040,330 T1500,380"/>
   </svg>
   <div class="hero-inner">
-    <div class="eyebrow on-dark">PRESENCE · PEACEMAKER · 인재 발굴</div>
+    <div class="eyebrow on-dark" id="heroEyebrow">PRESENCE · PEACEMAKER · 인재 발굴</div>
     <h1>오늘, 좋은 사람을<br>찾으러 갑니다<span class="dot">.</span></h1>
     <p class="sub">콜링 한 번에 필요한 모든 것 — 부킹 목표, 스크립트, 면접자 기록, 안내문, 그리고 바로 열어볼 시트까지 한 곳에.</p>
   </div>
@@ -509,11 +523,34 @@
   </div>
 </footer>
 
+<!-- ============ 하단 사용자 전환 탭 ============ -->
+<div class="userbar" role="tablist" aria-label="사용자 전환">
+  <div class="userbar-inner" id="userTabs"></div>
+</div>
+
 </div><!-- /#app -->
 
 <div class="toast" id="toast">복사되었습니다</div>
 
 <script>
+/* =================== 사용자 목록 (하단 탭으로 전환) ===================
+   ▶ 팀원을 추가하려면 이 배열에 줄을 하나 더 넣으면 됩니다.
+     id   : 저장공간 구분용 영문 ID (사람마다 반드시 다르게!)
+     name : 화면에 표시될 이름
+     role : 직책 (탭 칩에 표시) */
+const USERS=[
+  {id:'jaeyoung', name:'임재영', role:'AOP'},
+  {id:'chaeyoung',name:'윤채영', role:'TL'},
+];
+const AKEY='presence_active_user';
+let currentUser = (function(){
+  const saved=(()=>{ try{ return localStorage.getItem(AKEY); }catch(e){ return null; } })();
+  return USERS.some(u=>u.id===saved) ? saved : USERS[0].id;
+})();
+function curUser(){ return USERS.find(u=>u.id===currentUser)||USERS[0]; }
+function recKey(){ return 'presence_records_'+currentUser; }
+function goalKey(){ return 'presence_goal_'+currentUser; }
+
 /* =================== PASSWORD GATE =================== */
 const PASS='8250';
 const gate=document.getElementById('gate'), app=document.getElementById('app');
@@ -553,7 +590,35 @@ function copyText(txt,cb){
 let appReady=false;
 function initApp(){
   if(appReady) return; appReady=true;
-  buildScript(); buildRecords(); restoreGoal(); bindCopyButtons(); buildConfirm(); bindNav();
+  buildScript(); bindCopyButtons(); buildConfirm(); bindNav(); buildUserBar();
+  loadUser();          // 활성 사용자 데이터 적용
+}
+
+/* ---- 사용자 전환 ---- */
+function buildUserBar(){
+  const bar=document.getElementById('userTabs');
+  bar.innerHTML=USERS.map(u=>`
+    <button class="utab${u.id===currentUser?' active':''}" data-uid="${u.id}">
+      ${u.name}<span class="role">${u.role}</span>
+    </button>`).join('');
+  bar.querySelectorAll('.utab').forEach(b=>{
+    b.addEventListener('click',()=>{
+      if(b.dataset.uid===currentUser) return;
+      currentUser=b.dataset.uid;
+      try{ localStorage.setItem(AKEY,currentUser); }catch(e){}
+      bar.querySelectorAll('.utab').forEach(x=>x.classList.toggle('active',x.dataset.uid===currentUser));
+      loadUser();
+      const u=curUser(); showToast(u.name+' '+u.role+' 공간으로 전환');
+    });
+  });
+}
+function loadUser(){
+  const u=curUser();
+  const bs=document.getElementById('brandSub'); if(bs)bs.textContent='CALLING · '+u.name;
+  const he=document.getElementById('heroEyebrow'); if(he)he.textContent=u.name+' '+u.role+' · PRESENCE CALLING HUB';
+  records=loadRecords();   // 현재 사용자 기록 불러오기
+  buildRecords();
+  loadGoal();              // 현재 사용자 목표 불러오기
   recalc();
 }
 
@@ -601,16 +666,16 @@ function buildScript(){
 }
 
 /* =================== RECORDS =================== */
-const ROWS=10, RKEY='presence_records_v1';
+const ROWS=10;
 const COLS=['name','age','tel','dt','rc','status','memo'];
 function emptyRow(){ return {name:'',age:'',tel:'',dt:'',rc:'',status:'',memo:''}; }
-let records=loadRecords();
+let records=Array.from({length:ROWS},emptyRow);
 function loadRecords(){
-  const raw=store.get(RKEY);
+  const raw=store.get(recKey());
   if(raw){ try{ const a=JSON.parse(raw); if(Array.isArray(a)&&a.length===ROWS) return a; }catch(e){} }
   return Array.from({length:ROWS},emptyRow);
 }
-function saveRecords(){ store.set(RKEY,JSON.stringify(records)); }
+function saveRecords(){ store.set(recKey(),JSON.stringify(records)); }
 
 function buildRecords(){
   const body=document.getElementById('recBody');
@@ -665,11 +730,11 @@ function copyRecordsOut(){
 }
 
 /* =================== GOAL + RECALC =================== */
-const GKEY='presence_goal_v1';
 const goalInput=document.getElementById('goalInput');
-function restoreGoal(){
-  const g=store.get(GKEY); if(g!==null&&g!=='') goalInput.value=g;
-  goalInput.addEventListener('input',()=>{ store.set(GKEY,goalInput.value); recalc(); });
+goalInput.addEventListener('input',()=>{ store.set(goalKey(),goalInput.value); recalc(); });
+function loadGoal(){
+  const g=store.get(goalKey());
+  goalInput.value = (g!==null&&g!=='') ? g : 10;
 }
 function recalc(){
   let book=0,rej=0,abs=0,fill=0;
