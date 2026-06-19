@@ -153,9 +153,16 @@
   .cc-meta span b{color:var(--text);font-weight:700}
   .cc-memo{margin-top:10px;font-size:14px;color:#3a3a3a;background:var(--paper);border-radius:9px;padding:10px 12px;border:1px solid var(--line-2);line-height:1.5}
   .cc-actions{display:flex;gap:8px;margin-top:13px}
-  .cc-actions button{flex:1;border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:11px;font-size:14.5px;font-weight:700;cursor:pointer;color:var(--text);transition:.12s}
+  .cc-actions button{flex:1;border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;color:var(--text);transition:.12s}
   .cc-actions .edit:active{background:var(--green-soft)}
   .cc-actions .del{color:var(--red)}.cc-actions .del:active{background:var(--red-soft)}
+  .cc-actions .sheet{color:var(--green-deep)}.cc-actions .sheet:active{background:var(--green-soft)}
+  .sheet-copy-btn{width:100%;background:var(--card);border:1px dashed #c9c2b0;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:var(--text);cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:7px;transition:.12s}
+  .sheet-copy-btn:active{background:var(--paper);transform:scale(.99)}
+  .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:24px 0 12px}
+  .row-between .sec-t.sm{margin:0}
+  .mini-copy{background:var(--green-soft);border:1px solid #cfe3bf;color:var(--green-deep);border-radius:9px;padding:8px 13px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .mini-copy:active{transform:scale(.96)}
   .empty{text-align:center;color:var(--muted-2);font-size:14px;padding:34px 0;line-height:1.6}
 
   /* ===== INFO ===== */
@@ -272,7 +279,7 @@
     <div class="sec-t">종합 현황</div>
     <div class="signboard" id="sb-home"></div>
     <div class="rstat-grid" id="rstats"></div>
-    <div class="sec-t sm">전체 면접자 <span id="ccount-home" style="font-family:var(--mono);color:var(--green-deep)"></span></div>
+    <div class="row-between"><div class="sec-t sm">전체 면접자 <span id="ccount-home" style="font-family:var(--mono);color:var(--green-deep)"></span></div><button class="mini-copy" onclick="copySheetAll()">📋 전체 시트 복사</button></div>
     <div class="clist" id="clist-home"></div>
   </div>
 
@@ -301,6 +308,7 @@
       <div class="goal-cap" id="goalCap-jaeyoung">이번 주 부킹 <b>0</b> / 목표 <b>10</b></div>
     </div>
     <button class="add-btn-full jaeyoung" onclick="openAdd('jaeyoung')"><span class="plus">＋</span> 면접자 추가</button>
+    <button class="sheet-copy-btn" onclick="copySheetList('jaeyoung')">📋 인터뷰로그 시트용으로 전체 복사</button>
     <div class="clist" id="clist-jaeyoung"></div>
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
     <div class="card card-pad">
@@ -338,6 +346,7 @@
       <div class="goal-cap" id="goalCap-chaeyoung">이번 주 부킹 <b>0</b> / 목표 <b>10</b></div>
     </div>
     <button class="add-btn-full chaeyoung" onclick="openAdd('chaeyoung')"><span class="plus">＋</span> 면접자 추가</button>
+    <button class="sheet-copy-btn" onclick="copySheetList('chaeyoung')">📋 인터뷰로그 시트용으로 전체 복사</button>
     <div class="clist" id="clist-chaeyoung"></div>
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
     <div class="card card-pad">
@@ -395,6 +404,10 @@
     <div class="modal-body">
       <div class="rec-tag" id="mRecTag"></div>
       <div class="row2">
+        <div class="fld"><label>유입경로</label><select id="mPlatform"><option>알바몬</option><option>당근마켓</option><option>기타</option></select></div>
+        <div class="fld"><label>콜 유형</label><div class="seg" id="mInout"></div></div>
+      </div>
+      <div class="row2">
         <div class="fld"><label>이름</label><input id="mName" placeholder="이름"></div>
         <div class="fld"><label>나이</label><input id="mAge" inputmode="numeric" placeholder="나이"></div>
       </div>
@@ -449,7 +462,7 @@ function defGoals(){ return {jaeyoung:10,chaeyoung:10}; }
 function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals()}; }
 let DATA=defData();
 let editingId=null;
-let mForm={recruiter:'jaeyoung',gender:'남',status:'부킹'};
+let mForm={recruiter:'jaeyoung',gender:'남',status:'부킹',platform:'알바몬',inout:'IN'};
 
 const LS={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
 function saveLocal(){ LS.set(LS_KEY,JSON.stringify(DATA)); }
@@ -523,6 +536,7 @@ function buildStatics(){
   document.querySelectorAll('#schedBox input').forEach(inp=>inp.addEventListener('input',()=>{ DATA.schedule[inp.dataset.day]=inp.value; writeKey('schedule'); document.getElementById('schedHint').textContent='저장됨 ✓'; }));
   document.getElementById('albaPw').addEventListener('input',e=>{ DATA.albaPw=e.target.value; writeKey('albaPw'); });
   document.getElementById('mGender').innerHTML=['남','여'].map(g=>`<button data-g="${g}" onclick="pickGender('${g}')">${g}</button>`).join('');
+  document.getElementById('mInout').innerHTML=['IN','OUT'].map(v=>`<button data-io="${v}" onclick="pickInout('${v}')">${v}</button>`).join('');
   document.getElementById('mStatus').innerHTML=STATUSES.map(s=>`<button data-s="${s}" onclick="pickStatus('${s}')">${s}</button>`).join('');
   // 안내문 입력
   document.querySelectorAll('.cf-in').forEach(inp=>inp.addEventListener('input',()=>{
@@ -642,7 +656,7 @@ function renderCards(containerId,list,showRecBadge){
         <span class="cc-status" style="background:${sm.bg};color:${sm.c}">${c.status}</span></div>
       <div class="cc-meta">${meta.join('')}</div>
       ${c.memo?`<div class="cc-memo">📝 ${esc(c.memo)}</div>`:''}
-      <div class="cc-actions"><button class="edit" onclick="openEdit('${c.id}')">✏️ 수정</button><button class="del" onclick="delCandidate('${c.id}')">🗑 삭제</button></div>
+      <div class="cc-actions"><button class="sheet" onclick="copySheetRow('${c.id}')">📋 시트</button><button class="edit" onclick="openEdit('${c.id}')">✏️ 수정</button><button class="del" onclick="delCandidate('${c.id}')">🗑 삭제</button></div>
     </div>`;
   }).join('');
 }
@@ -676,9 +690,10 @@ function renderConfText(who){
 /* ════════ 모달 ════════ */
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function pickGender(g){ mForm.gender=g; segOn('mGender','g',g); }
+function pickInout(v){ mForm.inout=v; segOn('mInout','io',v); }
 function pickStatus(s){ mForm.status=s; segOn('mStatus','s',s); }
 function segOn(box,attr,val){ document.querySelectorAll('#'+box+' button').forEach(b=>b.classList.toggle('on',b.getAttribute('data-'+attr)===val)); }
-window.pickGender=pickGender; window.pickStatus=pickStatus;
+window.pickGender=pickGender; window.pickInout=pickInout; window.pickStatus=pickStatus;
 const MASCOT={
   jaeyoung:'<svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#4F9C30"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><line x1="20" y1="7.4" x2="20" y2="2.4" stroke="#15171C" stroke-width="1.2" stroke-linecap="round"/><path d="M20 2.6 L25.2 3.9 L20 5.2 Z" fill="#C0492F"/></svg>',
   chaeyoung:'<svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#2F6FB0"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M20 1.5l1.1 2.4 2.6.3-1.9 1.8.5 2.6-2.3-1.3-2.3 1.3.5-2.6-1.9-1.8 2.6-.3z" fill="#F2C14E"/></svg>'
@@ -686,21 +701,23 @@ const MASCOT={
 function setRecTag(id){ const r=recMeta(id); const t=document.getElementById('mRecTag'); t.className='rec-tag '+id; t.innerHTML=MASCOT[id]+' 담당 — '+r.name+' '+r.role; }
 function openAdd(recId){
   editingId=null; document.getElementById('modalTitle').textContent=recMeta(recId).name+' · 면접자 추가';
-  mForm={recruiter:recId,gender:'남',status:'부킹'};
+  mForm={recruiter:recId,gender:'남',status:'부킹',platform:'알바몬',inout:'IN'};
   ['mName','mAge','mTel','mIntDate','mIntTime','mMemo'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('mBookDate').value=todayStr();
-  setRecTag(recId); segOn('mGender','g','남'); segOn('mStatus','s','부킹');
+  document.getElementById('mPlatform').value='알바몬';
+  setRecTag(recId); segOn('mGender','g','남'); segOn('mInout','io','IN'); segOn('mStatus','s','부킹');
   document.getElementById('modal').classList.add('on');
 }
 window.openAdd=openAdd;
 function openEdit(id){
   const c=DATA.candidates[id]; if(!c)return; editingId=id;
   document.getElementById('modalTitle').textContent=recMeta(c.recruiter).name+' · 면접자 수정';
-  mForm={recruiter:c.recruiter,gender:c.gender||'남',status:c.status||'부킹'};
+  mForm={recruiter:c.recruiter,gender:c.gender||'남',status:c.status||'부킹',platform:c.platform||'알바몬',inout:c.inout||'IN'};
   document.getElementById('mName').value=c.name||''; document.getElementById('mAge').value=c.age||'';
   document.getElementById('mTel').value=c.tel||''; document.getElementById('mBookDate').value=c.bookDate||todayStr();
   document.getElementById('mIntDate').value=c.intDate||''; document.getElementById('mIntTime').value=c.intTime||''; document.getElementById('mMemo').value=c.memo||'';
-  setRecTag(c.recruiter); segOn('mGender','g',mForm.gender); segOn('mStatus','s',mForm.status);
+  document.getElementById('mPlatform').value=c.platform||'알바몬';
+  setRecTag(c.recruiter); segOn('mGender','g',mForm.gender); segOn('mInout','io',mForm.inout); segOn('mStatus','s',mForm.status);
   document.getElementById('modal').classList.add('on');
 }
 window.openEdit=openEdit;
@@ -711,6 +728,7 @@ function saveCandidate(){
   const id=editingId||('c_'+Date.now()+'_'+Math.random().toString(36).slice(2,6));
   const c={ id,recruiter:mForm.recruiter,name,
     age:document.getElementById('mAge').value.trim(), gender:mForm.gender,
+    platform:document.getElementById('mPlatform').value, inout:mForm.inout,
     tel:document.getElementById('mTel').value.trim(),
     bookDate:document.getElementById('mBookDate').value,
     intDate:document.getElementById('mIntDate').value,
@@ -729,6 +747,34 @@ function delCandidate(id){
   renderHome(); renderPerson(rec); toast('삭제됐습니다');
 }
 window.delCandidate=delCandidate;
+
+/* ════════ 인터뷰로그 시트용 행 생성 (A~N 탭 구분) ════════
+   A 유입경로 · B 부킹일 · C 면접일 · D(O) · E 시간 · F(NM) · G(IN/OUT)
+   · H 이름 · I 나이 · J 성별 · K 연락처 · L 담당 · M(PR) · N 특이사항 */
+function sheetRow(c){
+  const D=(c.status==='쇼업'||c.status==='스타트')?'O':'';
+  return [
+    c.platform||'알바몬',
+    fmtD(c.bookDate),
+    fmtD(c.intDate),
+    D,
+    c.intTime||'',
+    'NM',
+    c.inout||'IN',
+    c.name||'',
+    c.age||'',
+    c.gender||'',
+    c.tel||'',
+    recMeta(c.recruiter).name,
+    'PR',
+    c.memo||''
+  ].join('\t');
+}
+function sheetBlock(list){ return list.slice().sort((a,b)=>(a._t||0)-(b._t||0)).map(sheetRow).join('\n'); }
+function copySheetRow(id){ const c=DATA.candidates[id]; if(!c)return; copyText(sheetRow(c)); }
+function copySheetList(id){ const t=sheetBlock(listFor(id)); if(!t){toast('복사할 면접자가 없습니다');return;} copyText(t); }
+function copySheetAll(){ const t=sheetBlock(candList()); if(!t){toast('복사할 면접자가 없습니다');return;} copyText(t); }
+window.copySheetRow=copySheetRow; window.copySheetList=copySheetList; window.copySheetAll=copySheetAll;
 
 /* ════════ 가이드 ════════ */
 const TIPS=[
