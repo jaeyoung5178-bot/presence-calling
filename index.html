@@ -102,6 +102,28 @@
   .sb-cell .l{font-size:10.5px;color:#9AA0AC;margin-top:4px;font-weight:600}
   .sb-cell.book .n{color:#fff}.sb-cell.show .n{color:#7FD45A}.sb-cell.start .n{color:#E0A24C}.sb-cell.drop .n{color:#E08070}
 
+  /* ===== 주간 부킹목표 위젯 ===== */
+  .goal-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow);padding:18px 18px 20px;margin-bottom:14px;text-align:center}
+  .goal-eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .goal-set{display:flex;align-items:center;justify-content:center;gap:20px;margin:13px 0 4px}
+  .gbtn{width:46px;height:46px;border-radius:50%;border:none;font-size:26px;font-weight:700;cursor:pointer;transition:.12s;line-height:1;display:grid;place-items:center}
+  .gbtn:active{transform:scale(.88)}
+  .gbtn.jaeyoung{background:var(--green-soft);color:var(--green-deep)} .gbtn.chaeyoung{background:var(--blue-soft);color:var(--blue)}
+  .goal-num{min-width:70px}
+  .goal-num b{font-size:36px;font-weight:800;font-family:var(--mono);letter-spacing:-.02em}
+  .goal-num small{font-size:14px;color:var(--muted);margin-left:3px}
+  .goal-ring-wrap{position:relative;width:150px;height:150px;margin:10px auto 4px}
+  .goal-ring{width:150px;height:150px;transform:rotate(-90deg)}
+  .goal-ring .ring-bg{fill:none;stroke:var(--line);stroke-width:12}
+  .goal-ring .ring-fg{fill:none;stroke-width:12;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:326.73;transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)}
+  .goal-ring .ring-fg.jaeyoung{stroke:url(#gradJ)} .goal-ring .ring-fg.chaeyoung{stroke:url(#gradC)}
+  .goal-pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .goal-pct .p{font-size:34px;font-weight:800;font-family:var(--mono);letter-spacing:-.02em}
+  .goal-pct .p small{font-size:16px;color:var(--muted)}
+  .goal-pct .done{font-size:18px;margin-top:-2px}
+  .goal-cap{font-size:13.5px;color:var(--muted);margin-top:6px}
+  .goal-cap b{color:var(--text);font-weight:700;font-family:var(--mono)}
+
   .rstat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
   .rstat{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:15px;box-shadow:var(--shadow);cursor:pointer;transition:.15s}
   .rstat:active{transform:scale(.98)}
@@ -261,6 +283,23 @@
       <div class="ph-name">임재영 <span>AOP</span></div>
       <div class="ph-sub">내 탭 — 여기서 추가하면 종합에 자동 반영됩니다</div></div>
     <div class="signboard sm" id="sb-jaeyoung"></div>
+    <div class="goal-card">
+      <div class="goal-eb">🎯 이번 주 부킹 목표</div>
+      <div class="goal-set">
+        <button class="gbtn jaeyoung" onclick="adjustGoal('jaeyoung',-1)">−</button>
+        <div class="goal-num"><b id="goalNum-jaeyoung">10</b><small>건</small></div>
+        <button class="gbtn jaeyoung" onclick="adjustGoal('jaeyoung',1)">＋</button>
+      </div>
+      <div class="goal-ring-wrap">
+        <svg class="goal-ring" viewBox="0 0 120 120">
+          <defs><linearGradient id="gradJ" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4F9C30"/><stop offset="1" stop-color="#7FD45A"/></linearGradient></defs>
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fg jaeyoung" id="ring-jaeyoung" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="goal-pct"><span class="p" id="goalPct-jaeyoung">0<small>%</small></span><span class="done" id="goalDone-jaeyoung"></span></div>
+      </div>
+      <div class="goal-cap" id="goalCap-jaeyoung">이번 주 부킹 <b>0</b> / 목표 <b>10</b></div>
+    </div>
     <button class="add-btn-full jaeyoung" onclick="openAdd('jaeyoung')"><span class="plus">＋</span> 면접자 추가</button>
     <div class="clist" id="clist-jaeyoung"></div>
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
@@ -281,6 +320,23 @@
       <div class="ph-name">윤채영 <span>TL</span></div>
       <div class="ph-sub">내 탭 — 여기서 추가하면 종합에 자동 반영됩니다</div></div>
     <div class="signboard sm" id="sb-chaeyoung"></div>
+    <div class="goal-card">
+      <div class="goal-eb">🎯 이번 주 부킹 목표</div>
+      <div class="goal-set">
+        <button class="gbtn chaeyoung" onclick="adjustGoal('chaeyoung',-1)">−</button>
+        <div class="goal-num"><b id="goalNum-chaeyoung">10</b><small>건</small></div>
+        <button class="gbtn chaeyoung" onclick="adjustGoal('chaeyoung',1)">＋</button>
+      </div>
+      <div class="goal-ring-wrap">
+        <svg class="goal-ring" viewBox="0 0 120 120">
+          <defs><linearGradient id="gradC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F6FB0"/><stop offset="1" stop-color="#5AA0DA"/></linearGradient></defs>
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fg chaeyoung" id="ring-chaeyoung" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="goal-pct"><span class="p" id="goalPct-chaeyoung">0<small>%</small></span><span class="done" id="goalDone-chaeyoung"></span></div>
+      </div>
+      <div class="goal-cap" id="goalCap-chaeyoung">이번 주 부킹 <b>0</b> / 목표 <b>10</b></div>
+    </div>
     <button class="add-btn-full chaeyoung" onclick="openAdd('chaeyoung')"><span class="plus">＋</span> 면접자 추가</button>
     <div class="clist" id="clist-chaeyoung"></div>
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
@@ -389,7 +445,8 @@ function syncEnabled(){ return !!(dbUrl() && typeof firebase!=='undefined'); }
 /* ════════ 데이터 ════════ */
 function defSchedule(){ return {mon:'오후 6시',tue:'오전 11시',wed:'오전 11시',thu:'',fri:'오후 3시',sat:'',sun:''}; }
 function defConfirm(){ return {jaeyoung:{name:'',date:'6월 16일 (화)',time:'오전 11시'},chaeyoung:{name:'',date:'6월 16일 (화)',time:'오전 11시'}}; }
-function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm()}; }
+function defGoals(){ return {jaeyoung:10,chaeyoung:10}; }
+function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals()}; }
 let DATA=defData();
 let editingId=null;
 let mForm={recruiter:'jaeyoung',gender:'남',status:'부킹'};
@@ -406,6 +463,7 @@ function mergeData(v){
   const c=defConfirm();
   if(v.confirm){ ['jaeyoung','chaeyoung'].forEach(k=>{ c[k]=Object.assign(c[k],v.confirm[k]||{}); }); }
   DATA.confirm=c;
+  DATA.goals=Object.assign(defGoals(),v.goals||{});
 }
 function candList(){ return Object.keys(DATA.candidates).map(k=>DATA.candidates[k]).sort((a,b)=>(b._t||0)-(a._t||0)); }
 function listFor(id){ return candList().filter(c=>c.recruiter===id); }
@@ -415,6 +473,7 @@ function writeCandidate(c){ DATA.candidates[c.id]=c; saveLocal(); if(SYNC_ON&&fb
 function deleteCandidateData(id){ delete DATA.candidates[id]; saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('candidates/'+id).remove();}catch(e){}} }
 function writeKey(key){ saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child(key).set(DATA[key]);}catch(e){}} }
 function writeConfirm(who){ saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('confirm/'+who).set(DATA.confirm[who]);}catch(e){}} }
+function writeGoal(who){ saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('goals/'+who).set(DATA.goals[who]);}catch(e){}} }
 
 /* ════════ PIN ════════ */
 let pinBuf='';
@@ -527,8 +586,42 @@ function renderHome(){
 function renderPerson(id){
   const list=listFor(id), s=statsFor(list);
   const el=document.getElementById('sb-'+id); el.innerHTML=signboardHTML(s,RECRUITERS.find(r=>r.id===id).name); fillSignboard(el,s);
+  renderGoal(id);
   renderCards('clist-'+id,list,false);
   renderConfText(id);
+}
+
+/* ── 주간 부킹목표 ── */
+function weekRange(){
+  const d=new Date(); const off=(d.getDay()+6)%7; // 월=0
+  const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()-off,0,0,0,0);
+  const sun=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+6,23,59,59,999);
+  return [mon.getTime(),sun.getTime()];
+}
+function inThisWeek(s){ if(!s)return false; const t=new Date(s+'T12:00:00').getTime(); if(isNaN(t))return false; const [a,b]=weekRange(); return t>=a&&t<=b; }
+function weeklyBooked(id){ return listFor(id).filter(c=>['부킹','쇼업','스타트','노쇼'].includes(c.status)&&inThisWeek(c.bookDate)).length; }
+const RING_C=326.73;
+function countTo(el,target){
+  if(!el)return; const cur=parseFloat((el.textContent||'0').replace(/[^0-9.]/g,''))||0;
+  const dur=700; let t0=null; const ease=x=>1-Math.pow(1-x,3);
+  function step(ts){ if(t0===null)t0=ts; const p=Math.min(1,(ts-t0)/dur), v=cur+(target-cur)*ease(p);
+    el.innerHTML=Math.round(v)+'<small>%</small>'; if(p<1)requestAnimationFrame(step); else el.innerHTML=Math.round(target)+'<small>%</small>'; }
+  requestAnimationFrame(step);
+}
+function adjustGoal(who,delta){
+  DATA.goals[who]=Math.max(0,(parseInt(DATA.goals[who])||0)+delta);
+  writeGoal(who); renderGoal(who);
+}
+window.adjustGoal=adjustGoal;
+function renderGoal(who){
+  const goal=parseInt(DATA.goals[who])||0;
+  const booked=weeklyBooked(who);
+  const pct=goal>0?booked/goal*100:0;
+  const num=document.getElementById('goalNum-'+who); if(num)num.textContent=goal;
+  const cap=document.getElementById('goalCap-'+who); if(cap)cap.innerHTML='이번 주 부킹 <b>'+booked+'</b> / 목표 <b>'+goal+'</b>';
+  const ring=document.getElementById('ring-'+who); if(ring)ring.style.strokeDashoffset=RING_C*(1-Math.min(100,pct)/100);
+  countTo(document.getElementById('goalPct-'+who),pct);
+  const done=document.getElementById('goalDone-'+who); if(done)done.textContent=(goal>0&&booked>=goal)?'🎉 달성!':'';
 }
 
 /* ════════ 카드 렌더 ════════ */
