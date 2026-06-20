@@ -116,7 +116,6 @@
   .goal-ring{width:150px;height:150px;transform:rotate(-90deg)}
   .goal-ring .ring-bg{fill:none;stroke:var(--line);stroke-width:12}
   .goal-ring .ring-fg{fill:none;stroke-width:12;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:326.73;transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)}
-  .goal-ring .ring-fg.jaeyoung{stroke:url(#gradJ)} .goal-ring .ring-fg.chaeyoung{stroke:url(#gradC)}
   .goal-pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
   .goal-pct .p{font-size:34px;font-weight:800;font-family:var(--mono);letter-spacing:-.02em}
   .goal-pct .p small{font-size:16px;color:var(--muted)}
@@ -221,15 +220,14 @@
 
   /* ===== BOTTOM NAV ===== */
   .bnav{position:fixed;bottom:0;left:0;right:0;z-index:600;max-width:var(--maxw);margin:0 auto;display:flex;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-  .nav-btn{flex:1;border:none;background:none;padding:9px 0 calc(9px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--muted-2);transition:.12s}
-  .nav-btn .ni{font-size:19px;line-height:1;height:27px;display:flex;align-items:center;justify-content:center}
-  .nav-btn .ni svg{width:28px;height:28px;display:block;transition:transform .15s}
-  .nav-btn.on .ni svg{transform:translateY(-1px) scale(1.08)}
+  .nav-btn{flex:1;min-width:0;border:none;background:none;padding:8px 0 calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--muted-2);transition:.12s}
+  .nav-btn .ni{font-size:17px;line-height:1;height:25px;display:flex;align-items:center;justify-content:center}
+  .nav-btn .ni svg{width:25px;height:25px;display:block;transition:transform .15s}
+  .nav-btn.on .ni svg{transform:translateY(-1px) scale(1.1)}
+  .nav-btn .nl{font-size:9.5px;font-weight:700;white-space:nowrap}
+  .nav-btn.on{color:var(--green-deep)}
   .ph-mascot{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:60px;height:60px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.18))}
   .rec-tag svg{width:18px;height:18px;vertical-align:-4px;margin-right:2px}
-  .nav-btn .nl{font-size:10.5px;font-weight:700}
-  .nav-btn.on{color:var(--green-deep)}
-  .nav-btn#nav-chaeyoung.on{color:var(--blue)}
 
   /* ===== MODAL ===== */
   #modal{position:fixed;inset:0;z-index:1000;background:rgba(20,22,28,.55);display:none;align-items:flex-end;justify-content:center}
@@ -283,81 +281,7 @@
     <div class="clist" id="clist-home"></div>
   </div>
 
-  <!-- ===== 임재영 ===== -->
-  <div class="view" id="v-jaeyoung">
-    <div class="person-hd jaeyoung"><div class="glow"></div>
-      <span class="ph-mascot"><svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#3C7A22"/><path d="M20 7c1.1 0 1.8.6 2.3 1.5l3 5.4c-1.7 1-3.8.8-5.3-.3-1.2-.8-2.8-.8-4 0l3.7-6.6C18.2 7.6 18.9 7 20 7Z" fill="#EAF6E2"/><circle cx="13.7" cy="26.4" r="1.8" fill="#F4A09A"/><circle cx="26.3" cy="26.4" r="1.8" fill="#F4A09A"/><circle cx="15.6" cy="24" r="2.1" fill="#fff"/><circle cx="24.4" cy="24" r="2.1" fill="#fff"/><circle cx="15.8" cy="24.2" r="1.05" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1.05" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><line x1="20" y1="7.4" x2="20" y2="2.2" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="M20 2.4 L25.6 3.9 L20 5.4 Z" fill="#C0492F"/></svg></span>
-      <div class="ph-name">임재영 <span>AOP</span></div>
-      <div class="ph-sub">내 탭 — 여기서 추가하면 종합에 자동 반영됩니다</div></div>
-    <div class="signboard sm" id="sb-jaeyoung"></div>
-    <div class="goal-card">
-      <div class="goal-eb">🎯 이번 주 부킹 목표</div>
-      <div class="goal-set">
-        <button class="gbtn jaeyoung" onclick="adjustGoal('jaeyoung',-1)">−</button>
-        <div class="goal-num"><b id="goalNum-jaeyoung">10</b><small>건</small></div>
-        <button class="gbtn jaeyoung" onclick="adjustGoal('jaeyoung',1)">＋</button>
-      </div>
-      <div class="goal-ring-wrap">
-        <svg class="goal-ring" viewBox="0 0 120 120">
-          <defs><linearGradient id="gradJ" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4F9C30"/><stop offset="1" stop-color="#7FD45A"/></linearGradient></defs>
-          <circle class="ring-bg" cx="60" cy="60" r="52"/>
-          <circle class="ring-fg jaeyoung" id="ring-jaeyoung" cx="60" cy="60" r="52"/>
-        </svg>
-        <div class="goal-pct"><span class="p" id="goalPct-jaeyoung">0<small>%</small></span><span class="done" id="goalDone-jaeyoung"></span></div>
-      </div>
-      <div class="goal-cap" id="goalCap-jaeyoung">이번 주 부킹 <b>0</b> / 목표 <b>10</b></div>
-    </div>
-    <button class="add-btn-full jaeyoung" onclick="openAdd('jaeyoung')"><span class="plus">＋</span> 면접자 추가</button>
-    <button class="sheet-copy-btn" onclick="copySheetList('jaeyoung')">📋 인터뷰로그 시트용으로 전체 복사</button>
-    <div class="clist" id="clist-jaeyoung"></div>
-    <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
-    <div class="card card-pad">
-      <div class="fld"><label>이름</label><input class="cf-in" data-who="jaeyoung" data-f="name" placeholder="홍길동"></div>
-      <div class="row2">
-        <div class="fld"><label>면접 일자</label><input class="cf-in" data-who="jaeyoung" data-f="date" placeholder="6월 16일 (화)"></div>
-        <div class="fld"><label>면접 시간</label><input class="cf-in" data-who="jaeyoung" data-f="time" placeholder="오전 11시"></div>
-      </div>
-    </div>
-    <div class="conf-out"><div class="bar"><span>임재영 · 발송용 안내문</span><button class="copybtn" data-copyconf="jaeyoung">복사</button></div><pre id="conf-jaeyoung"></pre></div>
-  </div>
-
-  <!-- ===== 윤채영 ===== -->
-  <div class="view" id="v-chaeyoung">
-    <div class="person-hd chaeyoung"><div class="glow"></div>
-      <span class="ph-mascot"><svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#235A8C"/><path d="M20 7c1.1 0 1.8.6 2.3 1.5l3 5.4c-1.7 1-3.8.8-5.3-.3-1.2-.8-2.8-.8-4 0l3.7-6.6C18.2 7.6 18.9 7 20 7Z" fill="#E6F0FA"/><circle cx="13.7" cy="26.4" r="1.8" fill="#F4A09A"/><circle cx="26.3" cy="26.4" r="1.8" fill="#F4A09A"/><circle cx="15.6" cy="24" r="2.1" fill="#fff"/><circle cx="24.4" cy="24" r="2.1" fill="#fff"/><circle cx="15.8" cy="24.2" r="1.05" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1.05" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M20 1.3l1.2 2.5 2.7.3-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.3z" fill="#F2C14E"/></svg></span>
-      <div class="ph-name">윤채영 <span>TL</span></div>
-      <div class="ph-sub">내 탭 — 여기서 추가하면 종합에 자동 반영됩니다</div></div>
-    <div class="signboard sm" id="sb-chaeyoung"></div>
-    <div class="goal-card">
-      <div class="goal-eb">🎯 이번 주 부킹 목표</div>
-      <div class="goal-set">
-        <button class="gbtn chaeyoung" onclick="adjustGoal('chaeyoung',-1)">−</button>
-        <div class="goal-num"><b id="goalNum-chaeyoung">10</b><small>건</small></div>
-        <button class="gbtn chaeyoung" onclick="adjustGoal('chaeyoung',1)">＋</button>
-      </div>
-      <div class="goal-ring-wrap">
-        <svg class="goal-ring" viewBox="0 0 120 120">
-          <defs><linearGradient id="gradC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F6FB0"/><stop offset="1" stop-color="#5AA0DA"/></linearGradient></defs>
-          <circle class="ring-bg" cx="60" cy="60" r="52"/>
-          <circle class="ring-fg chaeyoung" id="ring-chaeyoung" cx="60" cy="60" r="52"/>
-        </svg>
-        <div class="goal-pct"><span class="p" id="goalPct-chaeyoung">0<small>%</small></span><span class="done" id="goalDone-chaeyoung"></span></div>
-      </div>
-      <div class="goal-cap" id="goalCap-chaeyoung">이번 주 부킹 <b>0</b> / 목표 <b>10</b></div>
-    </div>
-    <button class="add-btn-full chaeyoung" onclick="openAdd('chaeyoung')"><span class="plus">＋</span> 면접자 추가</button>
-    <button class="sheet-copy-btn" onclick="copySheetList('chaeyoung')">📋 인터뷰로그 시트용으로 전체 복사</button>
-    <div class="clist" id="clist-chaeyoung"></div>
-    <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
-    <div class="card card-pad">
-      <div class="fld"><label>이름</label><input class="cf-in" data-who="chaeyoung" data-f="name" placeholder="홍길동"></div>
-      <div class="row2">
-        <div class="fld"><label>면접 일자</label><input class="cf-in" data-who="chaeyoung" data-f="date" placeholder="6월 16일 (화)"></div>
-        <div class="fld"><label>면접 시간</label><input class="cf-in" data-who="chaeyoung" data-f="time" placeholder="오전 11시"></div>
-      </div>
-    </div>
-    <div class="conf-out"><div class="bar"><span>윤채영 · 발송용 안내문</span><button class="copybtn" data-copyconf="chaeyoung">복사</button></div><pre id="conf-chaeyoung"></pre></div>
-  </div>
+  <div id="personViews"></div>
 
   <!-- ===== 정보 ===== -->
   <div class="view" id="v-info">
@@ -388,13 +312,7 @@
     </div>
   </div>
 
-  <nav class="bnav">
-    <button class="nav-btn on" id="nav-home" onclick="go('home')"><span class="ni">📊</span><span class="nl">종합</span></button>
-    <button class="nav-btn" id="nav-jaeyoung" onclick="go('jaeyoung')"><span class="ni"><svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#4F9C30"/><path d="M20 7c1.1 0 1.8.6 2.3 1.5l3 5.4c-1.7 1-3.8.8-5.3-.3-1.2-.8-2.8-.8-4 0l3.7-6.6C18.2 7.6 18.9 7 20 7Z" fill="#EAF6E2"/><circle cx="13.7" cy="26.4" r="1.7" fill="#F4A09A" opacity=".7"/><circle cx="26.3" cy="26.4" r="1.7" fill="#F4A09A" opacity=".7"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><line x1="20" y1="7.4" x2="20" y2="2.4" stroke="#15171C" stroke-width="1.2" stroke-linecap="round"/><path d="M20 2.6 L25.2 3.9 L20 5.2 Z" fill="#C0492F"/></svg></span><span class="nl">임재영</span></button>
-    <button class="nav-btn" id="nav-chaeyoung" onclick="go('chaeyoung')"><span class="ni"><svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#2F6FB0"/><path d="M20 7c1.1 0 1.8.6 2.3 1.5l3 5.4c-1.7 1-3.8.8-5.3-.3-1.2-.8-2.8-.8-4 0l3.7-6.6C18.2 7.6 18.9 7 20 7Z" fill="#E6F0FA"/><circle cx="13.7" cy="26.4" r="1.7" fill="#F4A09A" opacity=".7"/><circle cx="26.3" cy="26.4" r="1.7" fill="#F4A09A" opacity=".7"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M20 1.5l1.1 2.4 2.6.3-1.9 1.8.5 2.6-2.3-1.3-2.3 1.3.5-2.6-1.9-1.8 2.6-.3z" fill="#F2C14E"/></svg></span><span class="nl">윤채영</span></button>
-    <button class="nav-btn" id="nav-info" onclick="go('info')"><span class="ni">🔗</span><span class="nl">정보</span></button>
-    <button class="nav-btn" id="nav-guide" onclick="go('guide')"><span class="ni">📞</span><span class="nl">가이드</span></button>
-  </nav>
+  <nav class="bnav" id="bnav"></nav>
 </div>
 
 <!-- ============ MODAL ============ -->
@@ -432,7 +350,12 @@
 <script>
 /* ════════ 설정 ════════ */
 const PIN='8250';
-const RECRUITERS=[{id:'jaeyoung',name:'임재영',role:'AOP'},{id:'chaeyoung',name:'윤채영',role:'TL'}];
+const RECRUITERS=[
+  {id:'jaeyoung', name:'임재영', role:'AOP', code:'PR', c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0', top:'flag'},
+  {id:'chaeyoung',name:'윤채영', role:'TL',  code:'PR', c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6', top:'star'},
+  {id:'hyechang', name:'유혜창', role:'',    code:'OR', c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2', top:'sun'},
+  {id:'youngjin', name:'영진',   role:'',    code:'PR', c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA', top:'spark'},
+];
 const STATUSES=['부킹','쇼업','스타트','노쇼','거절'];
 const STATUS_META={'부킹':{c:'#3C7A22',bg:'#E9F2E0'},'쇼업':{c:'#2F6FB0',bg:'#E4EDF6'},'스타트':{c:'#9a5a1c',bg:'#FBEFE2'},'노쇼':{c:'#C0492F',bg:'#FBEAE6'},'거절':{c:'#6C7079',bg:'#EFEDE6'}};
 const DAYS=[['mon','월'],['tue','화'],['wed','수'],['thu','목'],['fri','금'],['sat','토'],['sun','일']];
@@ -457,8 +380,8 @@ function syncEnabled(){ return !!(dbUrl() && typeof firebase!=='undefined'); }
 
 /* ════════ 데이터 ════════ */
 function defSchedule(){ return {mon:'오후 6시',tue:'오전 11시',wed:'오전 11시',thu:'',fri:'오후 3시',sat:'',sun:''}; }
-function defConfirm(){ return {jaeyoung:{name:'',date:'6월 16일 (화)',time:'오전 11시'},chaeyoung:{name:'',date:'6월 16일 (화)',time:'오전 11시'}}; }
-function defGoals(){ return {jaeyoung:10,chaeyoung:10}; }
+function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',date:'6월 16일 (화)',time:'오전 11시'}); return o; }
+function defGoals(){ const o={}; RECRUITERS.forEach(r=>o[r.id]=10); return o; }
 function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals()}; }
 let DATA=defData();
 let editingId=null;
@@ -474,7 +397,7 @@ function mergeData(v){
   DATA.albaPw=(v.albaPw!=null)?v.albaPw:DATA.albaPw;
   DATA.schedule=Object.assign(defSchedule(),v.schedule||{});
   const c=defConfirm();
-  if(v.confirm){ ['jaeyoung','chaeyoung'].forEach(k=>{ c[k]=Object.assign(c[k],v.confirm[k]||{}); }); }
+  if(v.confirm){ RECRUITERS.forEach(r=>{ c[r.id]=Object.assign(c[r.id],v.confirm[r.id]||{}); }); }
   DATA.confirm=c;
   DATA.goals=Object.assign(defGoals(),v.goals||{});
 }
@@ -521,16 +444,17 @@ function go(name){
   document.getElementById('nav-'+name).classList.add('on');
   window.scrollTo(0,0);
   if(name==='home') renderHome();
-  else if(name==='jaeyoung'||name==='chaeyoung') renderPerson(name);
+  else if(RECRUITERS.some(r=>r.id===name)) renderPerson(name);
 }
 window.go=go;
 
 /* ════════ BOOT ════════ */
 let booted=false;
 function boot(){ if(booted)return; booted=true; loadLocal(); buildStatics(); initSync(); renderAll(); }
-function renderAll(){ renderHome(); renderPerson('jaeyoung'); renderPerson('chaeyoung'); renderInfo(); renderConfirmInputs(); renderSyncBox(); }
+function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); renderInfo(); renderConfirmInputs(); renderSyncBox(); }
 
 function buildStatics(){
+  buildNav(); buildPersonViews();   // 동적 탭/페이지 먼저 생성
   document.getElementById('links').innerHTML=LINKS.map(l=>`<div class="link-row"><span class="ic" style="background:${l.bg};color:${l.fg}">${l.ic}</span><div class="tx"><b>${l.t}</b><small>${l.s}</small></div><button class="open" onclick="window.open('${l.u}','_blank')">열기</button></div>`).join('');
   document.getElementById('schedBox').innerHTML=DAYS.map(([k,ko])=>`<div class="sched-row"><div class="d">${ko}<small>${k.toUpperCase()}</small></div><input data-day="${k}" placeholder="예) 오전 11시 / 미운영시 비워두기"></div>`).join('')+'<div class="save-hint" id="schedHint"></div>';
   document.querySelectorAll('#schedBox input').forEach(inp=>inp.addEventListener('input',()=>{ DATA.schedule[inp.dataset.day]=inp.value; writeKey('schedule'); document.getElementById('schedHint').textContent='저장됨 ✓'; }));
@@ -545,6 +469,67 @@ function buildStatics(){
   }));
   document.querySelectorAll('[data-copyconf]').forEach(b=>b.addEventListener('click',()=>copyText(document.getElementById('conf-'+b.dataset.copyconf).textContent)));
   buildGuide();
+}
+
+/* ════════ 산 마스코트 생성기 ════════ */
+function mascotSVG(r,big){
+  const body=big?r.deep:r.c1;
+  let top='';
+  if(r.top==='flag') top='<line x1="20" y1="7.4" x2="20" y2="'+(big?'2.2':'2.4')+'" stroke="'+(big?'#fff':'#15171C')+'" stroke-width="1.3" stroke-linecap="round"/><path d="M20 '+(big?'2.4':'2.6')+' L25.4 3.9 L20 5.3 Z" fill="#C0492F"/>';
+  else if(r.top==='star') top='<path d="M20 1.3l1.2 2.5 2.7.3-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.3z" fill="#F2C14E"/>';
+  else if(r.top==='sun') top='<circle cx="20" cy="3.6" r="2.7" fill="#F2B441"/>';
+  else top='<path d="M20 .9l1 2.4 2.4 1-2.4 1L20 7.6l-1-2.3-2.4-1 2.4-1z" fill="#B79AEA"/>';
+  return '<svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="'+body+'"/><path d="M20 7c1.1 0 1.8.6 2.3 1.5l3 5.4c-1.7 1-3.8.8-5.3-.3-1.2-.8-2.8-.8-4 0l3.7-6.6C18.2 7.6 18.9 7 20 7Z" fill="'+r.soft+'"/><circle cx="13.7" cy="26.4" r="1.7" fill="#F4A09A" opacity=".75"/><circle cx="26.3" cy="26.4" r="1.7" fill="#F4A09A" opacity=".75"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/>'+top+'</svg>';
+}
+
+/* ════════ 하단 네비 동적 생성 ════════ */
+function buildNav(){
+  let h='<button class="nav-btn on" id="nav-home" onclick="go(\'home\')"><span class="ni">📊</span><span class="nl">종합</span></button>';
+  RECRUITERS.forEach(r=>{ h+='<button class="nav-btn" id="nav-'+r.id+'" onclick="go(\''+r.id+'\')"><span class="ni">'+mascotSVG(r,false)+'</span><span class="nl">'+r.name+'</span></button>'; });
+  h+='<button class="nav-btn" id="nav-info" onclick="go(\'info\')"><span class="ni">🔗</span><span class="nl">정보</span></button>'+
+     '<button class="nav-btn" id="nav-guide" onclick="go(\'guide\')"><span class="ni">📞</span><span class="nl">가이드</span></button>';
+  document.getElementById('bnav').innerHTML=h;
+}
+
+/* ════════ 개인 페이지 동적 생성 ════════ */
+function buildPersonViews(){
+  document.getElementById('personViews').innerHTML=RECRUITERS.map(r=>`
+  <div class="view" id="v-${r.id}">
+    <div class="person-hd" style="background:linear-gradient(135deg,${r.deep},${r.c1})"><div class="glow"></div>
+      <span class="ph-mascot">${mascotSVG(r,true)}</span>
+      <div class="ph-name">${r.name}${r.role?` <span>${r.role}</span>`:''}</div>
+      <div class="ph-sub">내 탭 — 여기서 추가하면 종합에 자동 반영됩니다</div></div>
+    <div class="signboard sm" id="sb-${r.id}"></div>
+    <div class="goal-card">
+      <div class="goal-eb">🎯 이번 주 부킹 목표</div>
+      <div class="goal-set">
+        <button class="gbtn" style="background:${r.soft};color:${r.deep}" onclick="adjustGoal('${r.id}',-1)">−</button>
+        <div class="goal-num"><b id="goalNum-${r.id}">10</b><small>건</small></div>
+        <button class="gbtn" style="background:${r.soft};color:${r.deep}" onclick="adjustGoal('${r.id}',1)">＋</button>
+      </div>
+      <div class="goal-ring-wrap">
+        <svg class="goal-ring" viewBox="0 0 120 120">
+          <defs><linearGradient id="grad-${r.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${r.c1}"/><stop offset="1" stop-color="${r.c2}"/></linearGradient></defs>
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fg" style="stroke:url(#grad-${r.id})" id="ring-${r.id}" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="goal-pct"><span class="p" id="goalPct-${r.id}">0<small>%</small></span><span class="done" id="goalDone-${r.id}"></span></div>
+      </div>
+      <div class="goal-cap" id="goalCap-${r.id}">이번 주 부킹 <b>0</b> / 목표 <b>10</b></div>
+    </div>
+    <button class="add-btn-full" style="background:${r.c1}" onclick="openAdd('${r.id}')"><span class="plus">＋</span> 면접자 추가</button>
+    <button class="sheet-copy-btn" onclick="copySheetList('${r.id}')">📋 인터뷰로그 시트용으로 전체 복사</button>
+    <div class="clist" id="clist-${r.id}"></div>
+    <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
+    <div class="card card-pad">
+      <div class="fld"><label>이름</label><input class="cf-in" data-who="${r.id}" data-f="name" placeholder="홍길동"></div>
+      <div class="row2">
+        <div class="fld"><label>면접 일자</label><input class="cf-in" data-who="${r.id}" data-f="date" placeholder="6월 16일 (화)"></div>
+        <div class="fld"><label>면접 시간</label><input class="cf-in" data-who="${r.id}" data-f="time" placeholder="오전 11시"></div>
+      </div>
+    </div>
+    <div class="conf-out"><div class="bar"><span>${r.name} · 발송용 안내문</span><button class="copybtn" data-copyconf="${r.id}">복사</button></div><pre id="conf-${r.id}"></pre></div>
+  </div>`).join('');
 }
 
 /* ════════ 통계 ════════ */
@@ -652,7 +637,7 @@ function renderCards(containerId,list,showRecBadge){
     if(c.intDate||c.intTime) meta.push(`<span>면접 <b>${fmtD(c.intDate)} ${esc(c.intTime||'')}</b></span>`);
     return `<div class="cc">
       <div class="cc-top"><span class="cc-name">${esc(c.name||'(이름 없음)')}</span>
-        ${showRecBadge?`<span class="cc-rec ${c.recruiter}">${recMeta(c.recruiter).name}</span>`:''}
+        ${showRecBadge?`<span class="cc-rec" style="background:${recMeta(c.recruiter).soft};color:${recMeta(c.recruiter).deep}">${recMeta(c.recruiter).name}</span>`:''}
         <span class="cc-status" style="background:${sm.bg};color:${sm.c}">${c.status}</span></div>
       <div class="cc-meta">${meta.join('')}</div>
       ${c.memo?`<div class="cc-memo">📝 ${esc(c.memo)}</div>`:''}
@@ -670,7 +655,7 @@ function renderInfo(){
 }
 function renderConfirmInputs(){
   document.querySelectorAll('.cf-in').forEach(inp=>setVal(inp,DATA.confirm[inp.dataset.who][inp.dataset.f]));
-  renderConfText('jaeyoung'); renderConfText('chaeyoung');
+  RECRUITERS.forEach(r=>renderConfText(r.id));
 }
 function renderConfText(who){
   const c=DATA.confirm[who];
@@ -694,11 +679,7 @@ function pickInout(v){ mForm.inout=v; segOn('mInout','io',v); }
 function pickStatus(s){ mForm.status=s; segOn('mStatus','s',s); }
 function segOn(box,attr,val){ document.querySelectorAll('#'+box+' button').forEach(b=>b.classList.toggle('on',b.getAttribute('data-'+attr)===val)); }
 window.pickGender=pickGender; window.pickInout=pickInout; window.pickStatus=pickStatus;
-const MASCOT={
-  jaeyoung:'<svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#4F9C30"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><line x1="20" y1="7.4" x2="20" y2="2.4" stroke="#15171C" stroke-width="1.2" stroke-linecap="round"/><path d="M20 2.6 L25.2 3.9 L20 5.2 Z" fill="#C0492F"/></svg>',
-  chaeyoung:'<svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="#2F6FB0"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M20 1.5l1.1 2.4 2.6.3-1.9 1.8.5 2.6-2.3-1.3-2.3 1.3.5-2.6-1.9-1.8 2.6-.3z" fill="#F2C14E"/></svg>'
-};
-function setRecTag(id){ const r=recMeta(id); const t=document.getElementById('mRecTag'); t.className='rec-tag '+id; t.innerHTML=MASCOT[id]+' 담당 — '+r.name+' '+r.role; }
+function setRecTag(id){ const r=recMeta(id); const t=document.getElementById('mRecTag'); t.className='rec-tag'; t.style.background=r.soft; t.style.color=r.deep; t.innerHTML=mascotSVG(r,false)+' 담당 — '+r.name+(r.role?' '+r.role:''); }
 function openAdd(recId){
   editingId=null; document.getElementById('modalTitle').textContent=recMeta(recId).name+' · 면접자 추가';
   mForm={recruiter:recId,gender:'남',status:'부킹',platform:'알바몬',inout:'IN'};
@@ -766,7 +747,7 @@ function sheetRow(c){
     c.gender||'',
     c.tel||'',
     recMeta(c.recruiter).name,
-    'PR',
+    recMeta(c.recruiter).code||'PR',
     c.memo||''
   ].join('\t');
 }
