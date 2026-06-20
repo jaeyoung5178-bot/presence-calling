@@ -280,9 +280,11 @@
     <div class="row-between"><div class="sec-t sm">전체 면접자 <span id="ccount-home" style="font-family:var(--mono);color:var(--green-deep)"></span></div><button class="mini-copy" onclick="copySheetAll()">📋 전체 시트 복사</button></div>
     <div class="clist" id="clist-home"></div>
 
-    <div class="row-between"><div class="sec-t sm">📄 인터뷰로그 시트 <span id="sheetCount" style="font-family:var(--mono);color:var(--blue)"></span></div><button class="mini-copy" style="background:var(--blue-soft);border-color:#cfe0f0;color:var(--blue)" onclick="fetchSheet(true)">↻ 새로고침</button></div>
-    <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 10px">임재영 · 유혜창 · 윤채영 · 시트에서 실시간 (읽기 전용)</div>
-    <div class="clist" id="sheetLog"></div>
+    <div class="row-between" onclick="toggleSheet()" style="cursor:pointer"><div class="sec-t sm">📄 인터뷰로그 시트 <span id="sheetCount" style="font-family:var(--mono);color:var(--blue)"></span> <span id="sheetCaret" style="color:var(--muted-2);font-size:13px">▸</span></div><button class="mini-copy" style="background:var(--blue-soft);border-color:#cfe0f0;color:var(--blue)" onclick="event.stopPropagation();fetchSheet(true)">↻ 새로고침</button></div>
+    <div id="sheetWrap" style="display:none">
+      <div style="font-size:11.5px;color:var(--muted);margin:2px 0 10px">임재영 · 유혜창 · 윤채영 · 시트에서 실시간 (읽기 전용)</div>
+      <div class="clist" id="sheetLog"></div>
+    </div>
   </div>
 
   <div id="personViews"></div>
@@ -418,6 +420,17 @@ function mergeData(v){
 function candList(){ return Object.keys(DATA.candidates).map(k=>DATA.candidates[k]).sort((a,b)=>(b._t||0)-(a._t||0)); }
 function listFor(id){ return candList().filter(c=>c.recruiter===id); }
 
+/* 앱 입력분 + 인터뷰로그(시트) 합산 — 이름+전화로 중복 제거 */
+function nameToId(name){ const r=RECRUITERS.find(x=>x.name===String(name||'').trim()); return r?r.id:''; }
+function sheetToCand(c){ return {id:'sheet:'+(c.name||'')+'|'+(c.tel||''), recruiter:nameToId(c.rec), name:c.name, age:c.age, gender:c.gender, tel:c.tel, bookDate:c.book, intDate:c.intd, intTime:c.time, status:c.status||'부킹', memo:c.memo, _sheet:true}; }
+function combinedCands(){
+  const seen={}, out=[];
+  candList().forEach(c=>{ seen[(c.name||'')+'|'+(c.tel||'')]=1; out.push(c); });
+  (typeof sheetRows!=='undefined'?sheetRows:[]).forEach(sc=>{ const k=(sc.name||'')+'|'+(sc.tel||''); if(!seen[k]){ seen[k]=1; out.push(sheetToCand(sc)); } });
+  return out;
+}
+function combinedFor(id){ return combinedCands().filter(c=>c.recruiter===id); }
+
 /* ── 저장 (Firebase 자식별 쓰기 → 동시 입력 충돌 방지) ── */
 function writeCandidate(c){ DATA.candidates[c.id]=c; saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('candidates/'+c.id).set(c);}catch(e){}} }
 function deleteCandidateData(id){ delete DATA.candidates[id]; saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('candidates/'+id).remove();}catch(e){}} }
@@ -515,6 +528,19 @@ function saveSheetUrl(){
   startSheetPolling();
 }
 window.saveSheetUrl=saveSheetUrl;
+let sheetOpen=false;
+function toggleSheet(){ sheetOpen=!sheetOpen; document.getElementById('sheetWrap').style.display=sheetOpen?'block':'none'; document.getElementById('sheetCaret').textContent=sheetOpen?'▾':'▸'; }
+window.toggleSheet=toggleSheet;
+
+/* 면접자 추가 시 인터뷰로그 시트에도 기록 (Apps Script doPost) */
+function pushToSheet(c){
+  const url=(DATA.sheetUrl||'').trim(); if(!url) return;
+  const payload={ action:'add', rec:recMeta(c.recruiter).name, plat:c.platform||'', book:c.bookDate||'', intd:c.intDate||'', time:c.intTime||'', io:c.inout||'', name:c.name||'', age:c.age||'', gender:c.gender||'', tel:c.tel||'', code:recMeta(c.recruiter).code||'', memo:c.memo||'' };
+  try{
+    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'})
+      .then(()=>setTimeout(()=>fetchSheet(false),1500)).catch(()=>{});
+  }catch(e){}
+}
 
 function buildStatics(){
   buildNav(); buildPersonViews();   // 동적 탭/페이지 먼저 생성
@@ -629,10 +655,10 @@ function fillSignboard(el,s){
 
 /* ════════ 종합 ════════ */
 function renderHome(){
-  const all=candList(), s=statsFor(all);
-  const el=document.getElementById('sb-home'); el.innerHTML=signboardHTML(s,'전체'); fillSignboard(el,s);
+  const all=combinedCands(), s=statsFor(all);
+  const el=document.getElementById('sb-home'); el.innerHTML=signboardHTML(s,'전체 (앱+시트)'); fillSignboard(el,s);
   document.getElementById('rstats').innerHTML=RECRUITERS.map(r=>{
-    const st=statsFor(listFor(r.id));
+    const st=statsFor(combinedFor(r.id));
     return `<div class="rstat" onclick="go('${r.id}')">
       <div class="rn">${r.name}<span class="role">${r.role}</span></div>
       <div class="row"><span>부킹</span><b>${st.booked}</b></div>
@@ -640,16 +666,17 @@ function renderHome(){
       <div class="rate">쇼업률 ${st.showRate.toFixed(0)}%</div>
       <div class="go">탭하면 개인 페이지로 →</div></div>`;
   }).join('');
-  document.getElementById('ccount-home').textContent='· '+all.length+'명';
-  renderCards('clist-home',all,true);
+  const inApp=candList();
+  document.getElementById('ccount-home').textContent='· '+inApp.length+'명';
+  renderCards('clist-home',inApp,true);
 }
 
 /* ════════ 개인 페이지 ════════ */
 function renderPerson(id){
-  const list=listFor(id), s=statsFor(list);
+  const s=statsFor(combinedFor(id));
   const el=document.getElementById('sb-'+id); el.innerHTML=signboardHTML(s,RECRUITERS.find(r=>r.id===id).name); fillSignboard(el,s);
   renderGoal(id);
-  renderCards('clist-'+id,list,false);
+  renderCards('clist-'+id,listFor(id),false);
   renderConfText(id);
 }
 
@@ -661,7 +688,7 @@ function weekRange(){
   return [mon.getTime(),sun.getTime()];
 }
 function inThisWeek(s){ if(!s)return false; const t=new Date(s+'T12:00:00').getTime(); if(isNaN(t))return false; const [a,b]=weekRange(); return t>=a&&t<=b; }
-function weeklyBooked(id){ return listFor(id).filter(c=>['부킹','쇼업','스타트','노쇼'].includes(c.status)&&inThisWeek(c.bookDate)).length; }
+function weeklyBooked(id){ return combinedFor(id).filter(c=>['부킹','쇼업','스타트','노쇼'].includes(c.status)&&inThisWeek(c.bookDate)).length; }
 const RING_C=326.73;
 function countTo(el,target){
   if(!el)return; const cur=parseFloat((el.textContent||'0').replace(/[^0-9.]/g,''))||0;
@@ -780,9 +807,11 @@ function saveCandidate(){
     intTime:document.getElementById('mIntTime').value.trim(),
     status:mForm.status, memo:document.getElementById('mMemo').value.trim(),
     _t:(editingId&&DATA.candidates[editingId]&&DATA.candidates[editingId]._t)||Date.now() };
+  const isNew=!editingId;
   writeCandidate(c); closeModal();
+  if(isNew) pushToSheet(c);
   renderHome(); renderPerson(c.recruiter);
-  toast(editingId?'수정됐습니다':'추가됐습니다');
+  toast(editingId?'수정됐습니다':(DATA.sheetUrl?'추가됨 · 시트에도 기록 중':'추가됐습니다'));
 }
 window.saveCandidate=saveCandidate;
 function delCandidate(id){
