@@ -422,11 +422,15 @@ function listFor(id){ return candList().filter(c=>c.recruiter===id); }
 
 /* 앱 입력분 + 인터뷰로그(시트) 합산 — 이름+전화로 중복 제거 */
 function nameToId(name){ const r=RECRUITERS.find(x=>x.name===String(name||'').trim()); return r?r.id:''; }
-function sheetToCand(c){ return {id:'sheet:'+(c.name||'')+'|'+(c.tel||''), recruiter:nameToId(c.rec), name:c.name, age:c.age, gender:c.gender, tel:c.tel, bookDate:c.book, intDate:c.intd, intTime:c.time, status:c.status||'부킹', memo:c.memo, _sheet:true}; }
+function sheetToCand(c){ return {id:c.id||('sheet:'+(c.name||'')+'|'+(c.tel||'')), recruiter:nameToId(c.rec), name:c.name, age:c.age, gender:c.gender, tel:c.tel, bookDate:c.book, intDate:c.intd, intTime:c.time, status:c.status||'부킹', memo:c.memo, _sheet:true}; }
 function combinedCands(){
-  const seen={}, out=[];
-  candList().forEach(c=>{ seen[(c.name||'')+'|'+(c.tel||'')]=1; out.push(c); });
-  (typeof sheetRows!=='undefined'?sheetRows:[]).forEach(sc=>{ const k=(sc.name||'')+'|'+(sc.tel||''); if(!seen[k]){ seen[k]=1; out.push(sheetToCand(sc)); } });
+  const seenId={}, seenKey={}, out=[];
+  candList().forEach(c=>{ seenId[c.id]=1; seenKey[(c.name||'')+'|'+(c.tel||'')]=1; out.push(c); });
+  (typeof sheetRows!=='undefined'?sheetRows:[]).forEach(sc=>{
+    if(sc.id && seenId[sc.id]) return;
+    const k=(sc.name||'')+'|'+(sc.tel||''); if(seenKey[k]) return;
+    seenKey[k]=1; out.push(sheetToCand(sc));
+  });
   return out;
 }
 function combinedFor(id){ return combinedCands().filter(c=>c.recruiter===id); }
@@ -492,7 +496,7 @@ function fetchSheet(manual){
 window.fetchSheet=fetchSheet;
 function ensureSheetPolling(){
   const has=!!(DATA.sheetUrl||'').trim();
-  if(has && !sheetTimer){ fetchSheet(); sheetTimer=setInterval(()=>fetchSheet(false),60000); }
+  if(has && !sheetTimer){ fetchSheet(); sheetTimer=setInterval(()=>fetchSheet(false),30000); }
   else if(!has && sheetTimer){ clearInterval(sheetTimer); sheetTimer=null; sheetRows=[]; }
 }
 function startSheetPolling(){ if(sheetTimer){clearInterval(sheetTimer);sheetTimer=null;} ensureSheetPolling(); if((DATA.sheetUrl||'').trim()) fetchSheet(true); }
@@ -502,19 +506,21 @@ function renderSheetLog(){
   const st=document.getElementById('sheetStatus');
   if(st){ st.textContent = !url?'⚪ 미연동' : sheetState==='loading'?'⏳ 불러오는 중…' : sheetState==='err'?'⚠️ 불러오기 실패 (배포·권한 확인)' : '🟢 연동됨 · '+sheetRows.length+'건 · '+timeAgo(sheetUpdated); }
   const row=document.getElementById('sheetStatusRow'); if(row) row.classList.toggle('on', sheetState==='ok'&&!!url);
-  const cnt=document.getElementById('sheetCount'); if(cnt) cnt.textContent= url?('· '+sheetRows.length+'건'):'';
+  const appIds={}; candList().forEach(c=>appIds[c.id]=1);
+  const showRows=sheetRows.filter(c=>!(c.id&&appIds[c.id]));
+  const cnt=document.getElementById('sheetCount'); if(cnt) cnt.textContent= url?('· '+showRows.length+'건'):'';
   const box=document.getElementById('sheetLog'); if(!box) return;
   if(!url){ box.innerHTML='<div class="empty">인터뷰로그가 아직 연동되지 않았습니다.<br>[정보] 탭에서 연동하세요.</div>'; return; }
   if(sheetState==='err'){ box.innerHTML='<div class="empty">시트를 불러오지 못했습니다.<br>Apps Script 배포 상태와 접근 권한(Anyone)을 확인하세요.</div>'; return; }
   if(sheetState==='loading'&&!sheetRows.length){ box.innerHTML='<div class="empty">불러오는 중…</div>'; return; }
-  if(!sheetRows.length){ box.innerHTML='<div class="empty">해당 담당자(임재영·유혜창·윤채영)의 시트 데이터가 없습니다.</div>'; return; }
-  box.innerHTML=sheetRows.slice().reverse().map(c=>{
+  if(!showRows.length){ box.innerHTML='<div class="empty">표시할 시트 데이터가 없습니다. (앱에서 추가한 면접자는 각 탭 목록에 표시됩니다)</div>'; return; }
+  box.innerHTML=showRows.slice().reverse().map(c=>{
     const meta=[];
     if(c.gender)meta.push(`<span><b>${esc(c.gender)}</b></span>`);
     if(c.age)meta.push(`<span><b>${esc(c.age)}</b></span>`);
     if(c.tel)meta.push(`<span>📞 <b>${esc(c.tel)}</b></span>`);
-    if(c.book)meta.push(`<span>부킹 <b>${esc(c.book)}</b></span>`);
-    if(c.intd||c.time)meta.push(`<span>면접 <b>${esc(c.intd)} ${esc(c.time||'')}</b></span>`);
+    if(c.book)meta.push(`<span>부킹 <b>${esc(fmtD(c.book))}</b></span>`);
+    if(c.intd||c.time)meta.push(`<span>면접 <b>${esc(fmtD(c.intd))} ${esc(c.time||'')}</b></span>`);
     const rm=RECRUITERS.find(r=>r.name===c.rec)||{soft:'#EFEDE6',deep:'#6C7079'};
     return `<div class="cc"><div class="cc-top"><span class="cc-name">${esc(c.name||'(이름 없음)')}</span><span class="cc-rec" style="background:${rm.soft};color:${rm.deep}">${esc(c.rec)}</span><span class="cc-status" style="background:var(--blue-soft);color:var(--blue)">시트</span></div><div class="cc-meta">${meta.join('')}</div>${c.memo?`<div class="cc-memo">📝 ${esc(c.memo)}</div>`:''}</div>`;
   }).join('');
@@ -532,10 +538,11 @@ let sheetOpen=false;
 function toggleSheet(){ sheetOpen=!sheetOpen; document.getElementById('sheetWrap').style.display=sheetOpen?'block':'none'; document.getElementById('sheetCaret').textContent=sheetOpen?'▾':'▸'; }
 window.toggleSheet=toggleSheet;
 
-/* 면접자 추가 시 인터뷰로그 시트에도 기록 (Apps Script doPost) */
-function pushToSheet(c){
+/* 면접자 추가/수정/삭제를 인터뷰로그 시트에도 반영 (Apps Script doPost) */
+function sheetPush(action,c){
   const url=(DATA.sheetUrl||'').trim(); if(!url) return;
-  const payload={ action:'add', rec:recMeta(c.recruiter).name, plat:c.platform||'', book:c.bookDate||'', intd:c.intDate||'', time:c.intTime||'', io:c.inout||'', name:c.name||'', age:c.age||'', gender:c.gender||'', tel:c.tel||'', code:recMeta(c.recruiter).code||'', memo:c.memo||'' };
+  const r=recMeta(c.recruiter)||{};
+  const payload={ action:action, id:c.id, rec:r.name||'', plat:c.platform||'', book:c.bookDate||'', intd:c.intDate||'', time:c.intTime||'', io:c.inout||'', name:c.name||'', age:c.age||'', gender:c.gender||'', tel:c.tel||'', code:r.code||'', memo:c.memo||'' };
   try{
     fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'})
       .then(()=>setTimeout(()=>fetchSheet(false),1500)).catch(()=>{});
@@ -809,15 +816,15 @@ function saveCandidate(){
     _t:(editingId&&DATA.candidates[editingId]&&DATA.candidates[editingId]._t)||Date.now() };
   const isNew=!editingId;
   writeCandidate(c); closeModal();
-  if(isNew) pushToSheet(c);
+  if(isNew||DATA.sheetUrl) sheetPush(isNew?'add':'update', c);
   renderHome(); renderPerson(c.recruiter);
   toast(editingId?'수정됐습니다':(DATA.sheetUrl?'추가됨 · 시트에도 기록 중':'추가됐습니다'));
 }
 window.saveCandidate=saveCandidate;
 function delCandidate(id){
   const c=DATA.candidates[id]; if(!c)return;
-  if(!confirm((c.name||'이 면접자')+' 정보를 삭제할까요?'))return;
-  const rec=c.recruiter; deleteCandidateData(id);
+  if(!confirm((c.name||'이 면접자')+' 정보를 삭제할까요?\n(연동 시 인터뷰로그 시트의 해당 행도 삭제됩니다)'))return;
+  const rec=c.recruiter; sheetPush('delete', c); deleteCandidateData(id);
   renderHome(); renderPerson(rec); toast('삭제됐습니다');
 }
 window.delCandidate=delCandidate;
