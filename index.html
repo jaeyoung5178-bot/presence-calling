@@ -172,11 +172,15 @@
   .link-row .tx b{font-size:15px;font-weight:700;display:block}
   .link-row .tx small{font-size:12px;color:var(--muted)}
   .link-row .open{background:var(--ink);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;flex:none}
-  .fld{margin-bottom:13px}.fld:last-child{margin-bottom:0}
-  .fld label{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
-  .fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 13px;background:var(--paper);outline:none;transition:.15s;font-size:16px;color:var(--text)}
-  .fld input:focus,.fld select:focus,.fld textarea:focus{background:#fff;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  .fld{margin-bottom:14px}.fld:last-child{margin-bottom:0}
+  .fld label{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:7px}
+  .fld input,.fld select,.fld textarea{width:100%;border:1.5px solid var(--line);border-radius:13px;padding:13px 14px;background:#fff;outline:none;transition:.15s;font-size:16px;color:var(--text);font-family:inherit}
+  .fld input::placeholder,.fld textarea::placeholder{color:#b6b1a4}
+  .fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
   .fld input:disabled{color:var(--muted);background:#F0EEE6}
+  .fld.hero input{font-size:21px;font-weight:800;letter-spacing:-.02em;padding:15px 16px;border-radius:15px}
+  .fld.sub label{display:flex;align-items:center}
+  .fld.sub label span{font-family:var(--sans);text-transform:none;letter-spacing:0;font-size:10px;color:var(--muted-2);font-weight:600;margin-left:6px;background:var(--card);padding:2px 7px;border-radius:99px}
   .pw-note{font-size:12px;color:var(--clay);margin-top:6px}
   .sched-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
   .sched-row .d{width:46px;flex:none;font-weight:700;font-size:15px}
@@ -216,7 +220,10 @@
   .conf-out .bar{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--ink-3)}
   .conf-out .bar span{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:#7FD45A;text-transform:uppercase}
   .conf-out pre{color:#E8EAEE;font-size:13.5px;line-height:1.7;padding:15px;white-space:pre-wrap;margin:0;font-family:var(--sans)}
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px}
+  .row2>.fld{min-width:0}
+  .fld input,.fld select,.fld textarea{min-width:0;max-width:100%}
+  .fld input[type=date]{-webkit-appearance:none;appearance:none;padding-left:12px;padding-right:10px}
 
   /* ===== BOTTOM NAV ===== */
   .bnav{position:fixed;bottom:0;left:0;right:0;z-index:600;max-width:var(--maxw);margin:0 auto;display:flex;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
@@ -230,22 +237,28 @@
   .rec-tag svg{width:18px;height:18px;vertical-align:-4px;margin-right:2px}
 
   /* ===== MODAL ===== */
-  #modal{position:fixed;inset:0;z-index:1000;background:rgba(20,22,28,.55);display:none;align-items:flex-end;justify-content:center}
+  #modal{position:fixed;inset:0;z-index:1000;background:rgba(20,22,28,.5);display:none;align-items:flex-end;justify-content:center}
   #modal.on{display:flex;animation:fade .2s}
-  .modal-card{background:var(--paper);width:100%;max-width:var(--maxw);border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto;animation:slideup .28s cubic-bezier(.22,1,.36,1)}
+  .modal-card{position:relative;background:var(--paper);width:100%;max-width:var(--maxw);border-radius:26px 26px 0 0;max-height:94vh;display:flex;flex-direction:column;animation:slideup .3s cubic-bezier(.22,1,.36,1);box-shadow:0 -12px 44px rgba(0,0,0,.22)}
   @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
-  .modal-head{position:sticky;top:0;background:var(--paper);display:flex;align-items:center;justify-content:space-between;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
-  .modal-head b{font-size:18px;font-weight:800}
-  .modal-head .x{background:none;border:none;font-size:26px;color:var(--muted);cursor:pointer;line-height:1}
-  .modal-body{padding:18px}
-  .rec-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:6px 13px;border-radius:999px;margin-bottom:14px}
-  .rec-tag.jaeyoung{background:var(--green-soft);color:var(--green-deep)} .rec-tag.chaeyoung{background:var(--blue-soft);color:var(--blue)}
+  .modal-card::before{content:'';width:40px;height:4px;border-radius:99px;background:#d9d3c4;margin:10px auto 0;flex-shrink:0}
+  .modal-head{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:12px 20px 10px}
+  .modal-head b{font-size:19px;font-weight:800;letter-spacing:-.02em}
+  .modal-head .x{width:34px;height:34px;border-radius:50%;background:var(--card);border:none;font-size:21px;color:var(--muted);cursor:pointer;display:grid;place-items:center;line-height:1}
+  .modal-head .x:active{transform:scale(.92)}
+  .modal-body{flex:1;overflow-y:auto;padding:6px 20px 18px;-webkit-overflow-scrolling:touch}
+  .modal-foot{flex-shrink:0;display:flex;gap:10px;padding:13px 20px calc(15px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--paper)}
+  .modal-foot .save{flex:1;background:var(--green);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 6px 16px rgba(79,156,48,.28);transition:.12s}
+  .modal-foot .save:active{transform:scale(.98)}
+  .modal-foot .cancel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;font-size:16px;font-weight:600;cursor:pointer;color:var(--muted)}
+  .rec-tag{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;padding:7px 14px;border-radius:999px;margin:2px 0 16px}
+  .rec-tag svg{width:19px;height:19px;vertical-align:middle}
+  .grp-t{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);margin:18px 0 9px;display:flex;align-items:center;gap:8px}
+  .grp-t::after{content:'';flex:1;height:1px;background:var(--line)}
   .seg{display:flex;gap:7px;flex-wrap:wrap}
-  .seg button{flex:1;min-width:60px;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:12px;font-size:15px;font-weight:600;cursor:pointer;color:var(--muted);transition:.12s}
+  .seg button{flex:1;min-width:54px;border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:13px 6px;font-size:15px;font-weight:600;cursor:pointer;color:var(--muted);transition:.12s}
   .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .save-row{display:flex;gap:9px;margin-top:8px}
-  .save-row .save{flex:1;background:var(--green);color:#fff;border:none;border-radius:11px;padding:15px;font-size:16px;font-weight:800;cursor:pointer}
-  .save-row .cancel{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:15px 20px;font-size:16px;font-weight:600;cursor:pointer;color:var(--muted)}
+  .seg button:active{transform:scale(.95)}
 
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:5000;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -336,27 +349,29 @@
     <div class="modal-head"><b id="modalTitle">면접자 추가</b><button class="x" onclick="closeModal()">×</button></div>
     <div class="modal-body">
       <div class="rec-tag" id="mRecTag"></div>
+      <div class="fld hero"><input id="mName" placeholder="이름" autocomplete="off"></div>
+      <div class="fld"><input id="mTel" inputmode="numeric" placeholder="연락처 — 숫자만 입력하면 자동 010-0000-0000"></div>
+      <div class="row2">
+        <div class="fld"><label>나이</label><input id="mAge" inputmode="numeric" placeholder="예: 21"></div>
+        <div class="fld"><label>성별</label><div class="seg" id="mGender"></div></div>
+      </div>
+
+      <div class="grp-t">면접 일정</div>
+      <div class="row2">
+        <div class="fld"><label>면접일</label><input id="mIntDate" type="date"></div>
+        <div class="fld"><label>시간</label><input id="mIntTime" inputmode="numeric" maxlength="5" placeholder="1100 → 11:00"></div>
+      </div>
+      <div class="fld"><label>상태</label><div class="seg" id="mStatus"></div></div>
+
+      <div class="grp-t">유입 · 메모</div>
       <div class="row2">
         <div class="fld"><label>유입경로</label><select id="mPlatform"><option>알바몬</option><option>당근마켓</option><option>기타</option></select></div>
         <div class="fld"><label>콜 유형</label><div class="seg" id="mInout"></div></div>
       </div>
-      <div class="row2">
-        <div class="fld"><label>이름</label><input id="mName" placeholder="이름"></div>
-        <div class="fld"><label>나이</label><input id="mAge" inputmode="numeric" placeholder="나이"></div>
-      </div>
-      <div class="row2">
-        <div class="fld"><label>성별</label><div class="seg" id="mGender"></div></div>
-        <div class="fld"><label>연락처</label><input id="mTel" inputmode="tel" placeholder="010-0000-0000"></div>
-      </div>
-      <div class="fld"><label>부킹 날짜 (오늘 자동)</label><input id="mBookDate" type="date"></div>
-      <div class="row2">
-        <div class="fld"><label>면접일</label><input id="mIntDate" type="date"></div>
-        <div class="fld"><label>면접 시간</label><input id="mIntTime" type="time" step="300"></div>
-      </div>
-      <div class="fld"><label>상태</label><div class="seg" id="mStatus"></div></div>
-      <div class="fld"><label>메모 · 특이사항</label><textarea id="mMemo" rows="2" placeholder="예) MBTI ENFP, 쇼핑몰 경력 / 주말만 희망"></textarea></div>
-      <div class="save-row"><button class="cancel" onclick="closeModal()">취소</button><button class="save" onclick="saveCandidate()">저장</button></div>
+      <div class="fld"><label>메모 · 특이사항</label><textarea id="mMemo" rows="2" placeholder="예) 쇼핑몰 경력 / 주말만 희망"></textarea></div>
+      <div class="fld sub"><label>부킹 날짜 <span>오늘 자동</span></label><input id="mBookDate" type="date"></div>
     </div>
+    <div class="modal-foot"><button class="cancel" onclick="closeModal()">취소</button><button class="save" onclick="saveCandidate()">저장하기</button></div>
   </div>
 </div>
 
@@ -366,10 +381,10 @@
 /* ════════ 설정 ════════ */
 const PIN='8250';
 const RECRUITERS=[
-  {id:'jaeyoung', name:'임재영', role:'AOP', code:'PR', c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0', top:'flag'},
-  {id:'chaeyoung',name:'윤채영', role:'TL',  code:'PR', c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6', top:'star'},
-  {id:'hyechang', name:'유혜창', role:'리쿠르터', code:'OR', c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2', top:'sun'},
-  {id:'youngjin', name:'유영진',   role:'',    code:'PR', c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA', top:'spark'},
+  {id:'jaeyoung', name:'임재영', role:'AOP', code:'PR', team:'Presence', c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0', top:'flag'},
+  {id:'chaeyoung',name:'윤채영', role:'TL',  code:'PR', team:'피스메이커', c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6', top:'star'},
+  {id:'hyechang', name:'유혜창', role:'리쿠르터', code:'OR', team:'피스메이커', c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2', top:'sun'},
+  {id:'youngjin', name:'유영진',   role:'',    code:'PR', team:'피스메이커', c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA', top:'spark'},
 ];
 const STATUSES=['부킹','쇼업','스타트','노쇼','거절'];
 const STATUS_META={'부킹':{c:'#3C7A22',bg:'#E9F2E0'},'쇼업':{c:'#2F6FB0',bg:'#E4EDF6'},'스타트':{c:'#9a5a1c',bg:'#FBEFE2'},'노쇼':{c:'#C0492F',bg:'#FBEAE6'},'거절':{c:'#6C7079',bg:'#EFEDE6'}};
@@ -395,7 +410,7 @@ function syncEnabled(){ return !!(dbUrl() && typeof firebase!=='undefined'); }
 
 /* ════════ 데이터 ════════ */
 function defSchedule(){ return {mon:'오후 6시',tue:'오전 11시',wed:'오전 11시',thu:'',fri:'오후 3시',sat:'',sun:''}; }
-function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',date:'6월 16일 (화)',time:'오전 11시'}); return o; }
+function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',date:'6월 16일 (화)',time:'11:00',channel:'알바몬'}); return o; }
 function defGoals(){ const o={}; RECRUITERS.forEach(r=>o[r.id]=10); return o; }
 function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals(),sheetUrl:''}; }
 let DATA=defData();
@@ -571,12 +586,19 @@ function buildStatics(){
   document.getElementById('schedBox').innerHTML=DAYS.map(([k,ko])=>`<div class="sched-row"><div class="d">${ko}<small>${k.toUpperCase()}</small></div><input data-day="${k}" placeholder="예) 오전 11시 / 미운영시 비워두기"></div>`).join('')+'<div class="save-hint" id="schedHint"></div>';
   document.querySelectorAll('#schedBox input').forEach(inp=>inp.addEventListener('input',()=>{ DATA.schedule[inp.dataset.day]=inp.value; writeKey('schedule'); document.getElementById('schedHint').textContent='저장됨 ✓'; }));
   document.getElementById('albaPw').addEventListener('input',e=>{ DATA.albaPw=e.target.value; writeKey('albaPw'); });
+  (function(){
+    const tel=document.getElementById('mTel');
+    if(tel) tel.addEventListener('input',()=>{ const p=tel.selectionStart, atEnd=(p===tel.value.length); tel.value=liveTel(tel.value); if(!atEnd){} });
+    const tm=document.getElementById('mIntTime');
+    if(tm) tm.addEventListener('input',()=>{ tm.value=fmtTime(tm.value); });
+  })();
   document.getElementById('mGender').innerHTML=['남','여'].map(g=>`<button data-g="${g}" onclick="pickGender('${g}')">${g}</button>`).join('');
   document.getElementById('mInout').innerHTML=['IN','OUT'].map(v=>`<button data-io="${v}" onclick="pickInout('${v}')">${v}</button>`).join('');
   document.getElementById('mStatus').innerHTML=STATUSES.map(s=>`<button data-s="${s}" onclick="pickStatus('${s}')">${s}</button>`).join('');
   // 안내문 입력
   document.querySelectorAll('.cf-in').forEach(inp=>inp.addEventListener('input',()=>{
     const who=inp.dataset.who, f=inp.dataset.f;
+    if(f==='time') inp.value=fmtTime(inp.value);
     DATA.confirm[who][f]=inp.value; writeConfirm(who); renderConfText(who);
   }));
   document.querySelectorAll('[data-copyconf]').forEach(b=>b.addEventListener('click',()=>copyText(document.getElementById('conf-'+b.dataset.copyconf).textContent)));
@@ -634,10 +656,11 @@ function buildPersonViews(){
     <div class="clist" id="clist-${r.id}"></div>
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
     <div class="card card-pad">
+      <div class="fld"><label>유입경로</label><div class="seg" id="cfch-${r.id}"><button data-ch="알바몬" onclick="pickConfChannel('${r.id}','알바몬')">알바몬</button><button data-ch="당근·SNS" onclick="pickConfChannel('${r.id}','당근·SNS')">당근·SNS PR</button></div></div>
       <div class="fld"><label>이름</label><input class="cf-in" data-who="${r.id}" data-f="name" placeholder="홍길동"></div>
       <div class="row2">
         <div class="fld"><label>면접 일자</label><input class="cf-in" data-who="${r.id}" data-f="date" placeholder="6월 16일 (화)"></div>
-        <div class="fld"><label>면접 시간</label><input class="cf-in" data-who="${r.id}" data-f="time" placeholder="오전 11시"></div>
+        <div class="fld"><label>면접 시간</label><input class="cf-in" data-who="${r.id}" data-f="time" inputmode="numeric" maxlength="5" placeholder="1100 → 11:00"></div>
       </div>
     </div>
     <div class="conf-out"><div class="bar"><span>${r.name} · 발송용 안내문</span><button class="copybtn" data-copyconf="${r.id}">복사</button></div><pre id="conf-${r.id}"></pre></div>
@@ -769,15 +792,18 @@ function renderInfo(){
 }
 function renderConfirmInputs(){
   document.querySelectorAll('.cf-in').forEach(inp=>setVal(inp,DATA.confirm[inp.dataset.who][inp.dataset.f]));
-  RECRUITERS.forEach(r=>renderConfText(r.id));
+  RECRUITERS.forEach(r=>{ segOn('cfch-'+r.id,'ch',DATA.confirm[r.id].channel||'알바몬'); renderConfText(r.id); });
 }
+function pickConfChannel(who,ch){ DATA.confirm[who].channel=ch; writeConfirm(who); segOn('cfch-'+who,'ch',ch); renderConfText(who); }
+window.pickConfChannel=pickConfChannel;
 function renderConfText(who){
   const c=DATA.confirm[who];
-  const name=(c.name||'').trim()||'OOO', date=(c.date||'').trim()||'O월 O일 (O)', time=(c.time||'').trim()||'OO시';
+  const name=(c.name||'').trim()||'OOO', date=(c.date||'').trim()||'O월 O일 (O)', time=(c.time||'').trim()||'OO:OO';
+  const sender=(c.channel==='알바몬'||!c.channel) ? '피스메이커' : (recMeta(who).team||'피스메이커');
   const el=document.getElementById('conf-'+who); if(!el)return;
   el.textContent=
 `${name}님 안녕하세요:)
-피스메이커 면접일정 안내드립니다.
+${sender} 면접일정 안내드립니다.
 - 시간 : ${date} ${time}
 - 주소 : 인천 부평구 경인로 954-1 경인스타빌딩 3층 (부평동 645-16번지)
 [부평역 1번출구에서 도보 2-3분거리]
@@ -827,7 +853,7 @@ function saveCandidate(){
     tel:fmtTel(document.getElementById('mTel').value.trim()),
     bookDate:document.getElementById('mBookDate').value,
     intDate:document.getElementById('mIntDate').value,
-    intTime:document.getElementById('mIntTime').value.trim(),
+    intTime:fmtTime(document.getElementById('mIntTime').value),
     status:mForm.status, memo:document.getElementById('mMemo').value.trim(),
     _t:(editingId&&DATA.candidates[editingId]&&DATA.candidates[editingId]._t)||Date.now() };
   const isNew=!editingId;
@@ -950,6 +976,8 @@ function fmtTel(t){
   return String(t||'').trim();
 }
 function fmtAge(a){ const s=String(a||'').trim(); return /^\d+$/.test(s)? s+'세' : s; }
+function fmtTime(t){ const d=String(t||'').replace(/[^0-9]/g,'').slice(0,4); if(!d)return String(t||'').trim(); return d.length<=2?d:(d.slice(0,2)+':'+d.slice(2)); }
+function liveTel(v){ const d=digitsTel(v).slice(0,11); return d.length<=3?d:(d.length<=7?(d.slice(0,3)+'-'+d.slice(3)):(d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7))); }
 let toastT;
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),1600); }
 function copyText(txt){
