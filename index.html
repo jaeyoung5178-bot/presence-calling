@@ -351,7 +351,7 @@
       <div class="fld"><label>부킹 날짜 (오늘 자동)</label><input id="mBookDate" type="date"></div>
       <div class="row2">
         <div class="fld"><label>면접일</label><input id="mIntDate" type="date"></div>
-        <div class="fld"><label>면접 시간</label><input id="mIntTime" placeholder="오전 11시"></div>
+        <div class="fld"><label>면접 시간</label><input id="mIntTime" type="time" step="300"></div>
       </div>
       <div class="fld"><label>상태</label><div class="seg" id="mStatus"></div></div>
       <div class="fld"><label>메모 · 특이사항</label><textarea id="mMemo" rows="2" placeholder="예) MBTI ENFP, 쇼핑몰 경력 / 주말만 희망"></textarea></div>
@@ -485,9 +485,12 @@ function boot(){ if(booted)return; booted=true; loadLocal(); buildStatics(); ini
 function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); renderInfo(); renderConfirmInputs(); renderSyncBox(); renderSheetLog(); ensureSheetPolling(); }
 
 /* ════════ 인터뷰로그 시트(Apps Script) 실시간 연동 ════════ */
+// ↓ 여기에 /exec 주소를 넣어두면 누가 열든 자동 연동됩니다 (저장 버튼 불필요)
+const SHEET_API='https://script.google.com/macros/s/AKfycbwzWWfKb7BROexiO6fs19HRiRGEIWa4eOBf1NCMvnR-ZvvMY2PbNThAwz1z3Jn3nXzedQ/exec';
+function effSheetUrl(){ return (DATA.sheetUrl||'').trim() || SHEET_API; }
 let sheetRows=[], sheetUpdated=0, sheetTimer=null, sheetState='idle';
 function fetchSheet(manual){
-  const url=(DATA.sheetUrl||'').trim();
+  const url=effSheetUrl();
   if(!url){ sheetRows=[]; sheetState='idle'; renderSheetLog(); return; }
   sheetState='loading'; if(manual) renderSheetLog();
   fetch(url).then(r=>r.json()).then(d=>{ sheetRows=(d&&d.rows)?d.rows:[]; sheetUpdated=Date.now(); sheetState='ok'; renderSheetLog(); })
@@ -495,14 +498,14 @@ function fetchSheet(manual){
 }
 window.fetchSheet=fetchSheet;
 function ensureSheetPolling(){
-  const has=!!(DATA.sheetUrl||'').trim();
+  const has=!!effSheetUrl();
   if(has && !sheetTimer){ fetchSheet(); sheetTimer=setInterval(()=>fetchSheet(false),30000); }
   else if(!has && sheetTimer){ clearInterval(sheetTimer); sheetTimer=null; sheetRows=[]; }
 }
-function startSheetPolling(){ if(sheetTimer){clearInterval(sheetTimer);sheetTimer=null;} ensureSheetPolling(); if((DATA.sheetUrl||'').trim()) fetchSheet(true); }
+function startSheetPolling(){ if(sheetTimer){clearInterval(sheetTimer);sheetTimer=null;} ensureSheetPolling(); if(effSheetUrl()) fetchSheet(true); }
 function timeAgo(ms){ if(!ms)return''; const s=Math.floor((Date.now()-ms)/1000); if(s<60)return'방금'; const m=Math.floor(s/60); if(m<60)return m+'분 전'; return Math.floor(m/60)+'시간 전'; }
 function renderSheetLog(){
-  const url=(DATA.sheetUrl||'').trim();
+  const url=effSheetUrl();
   const st=document.getElementById('sheetStatus');
   if(st){ st.textContent = !url?'⚪ 미연동' : sheetState==='loading'?'⏳ 불러오는 중…' : sheetState==='err'?'⚠️ 불러오기 실패 (배포·권한 확인)' : '🟢 연동됨 · '+sheetRows.length+'건 · '+timeAgo(sheetUpdated); }
   const row=document.getElementById('sheetStatusRow'); if(row) row.classList.toggle('on', sheetState==='ok'&&!!url);
@@ -540,9 +543,9 @@ window.toggleSheet=toggleSheet;
 
 /* 면접자 추가/수정/삭제를 인터뷰로그 시트에도 반영 (Apps Script doPost) */
 function sheetPush(action,c){
-  const url=(DATA.sheetUrl||'').trim(); if(!url) return;
+  const url=effSheetUrl(); if(!url) return;
   const r=recMeta(c.recruiter)||{};
-  const payload={ action:action, id:c.id, rec:r.name||'', plat:c.platform||'', book:c.bookDate||'', intd:c.intDate||'', time:c.intTime||'', io:c.inout||'', name:c.name||'', age:c.age||'', gender:c.gender||'', tel:c.tel||'', code:r.code||'', memo:c.memo||'' };
+  const payload={ action:action, id:c.id, rec:r.name||'', plat:c.platform||'', book:fmtD(c.bookDate)||'', intd:fmtD(c.intDate)||'', time:c.intTime||'', io:c.inout||'', name:c.name||'', age:c.age||'', gender:c.gender||'', tel:c.tel||'', code:r.code||'', memo:c.memo||'' };
   try{
     fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'})
       .then(()=>setTimeout(()=>fetchSheet(false),1500)).catch(()=>{});
@@ -816,9 +819,9 @@ function saveCandidate(){
     _t:(editingId&&DATA.candidates[editingId]&&DATA.candidates[editingId]._t)||Date.now() };
   const isNew=!editingId;
   writeCandidate(c); closeModal();
-  if(isNew||DATA.sheetUrl) sheetPush(isNew?'add':'update', c);
+  if(effSheetUrl()) sheetPush(isNew?'add':'update', c);
   renderHome(); renderPerson(c.recruiter);
-  toast(editingId?'수정됐습니다':(DATA.sheetUrl?'추가됨 · 시트에도 기록 중':'추가됐습니다'));
+  toast(editingId?'수정됐습니다':(effSheetUrl()?'추가됨 · 시트에도 기록 중':'추가됐습니다'));
 }
 window.saveCandidate=saveCandidate;
 function delCandidate(id){
