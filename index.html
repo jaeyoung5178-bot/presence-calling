@@ -279,6 +279,10 @@
     <div class="rstat-grid" id="rstats"></div>
     <div class="row-between"><div class="sec-t sm">전체 면접자 <span id="ccount-home" style="font-family:var(--mono);color:var(--green-deep)"></span></div><button class="mini-copy" onclick="copySheetAll()">📋 전체 시트 복사</button></div>
     <div class="clist" id="clist-home"></div>
+
+    <div class="row-between"><div class="sec-t sm">📄 인터뷰로그 시트 <span id="sheetCount" style="font-family:var(--mono);color:var(--blue)"></span></div><button class="mini-copy" style="background:var(--blue-soft);border-color:#cfe0f0;color:var(--blue)" onclick="fetchSheet(true)">↻ 새로고침</button></div>
+    <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 10px">임재영 · 유혜창 · 윤채영 · 시트에서 실시간 (읽기 전용)</div>
+    <div class="clist" id="sheetLog"></div>
   </div>
 
   <div id="personViews"></div>
@@ -298,6 +302,15 @@
     <div class="card card-pad" id="schedBox"></div>
     <div class="sec-t sm">🔗 실시간 팀 연결</div>
     <div class="sync-box" id="syncBox"></div>
+
+    <div class="sec-t sm">📄 인터뷰로그 시트 연동</div>
+    <div class="sync-box">
+      <div class="st" id="sheetStatusRow"><span class="dot"></span><span id="sheetStatus">⚪ 미연동</span></div>
+      <p>Apps Script 웹앱 주소(/exec)를 넣으면 인터뷰로그의 임재영·유혜창·윤채영 데이터가 종합 탭에 실시간 표시됩니다. (받으신 안내의 스크립트 배포 후 주소 붙여넣기)</p>
+      <input id="sheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+      <button class="sbtn" onclick="saveSheetUrl()">저장 / 연동</button>
+      <div class="smsg" id="sheetMsgEl"></div>
+    </div>
   </div>
 
   <!-- ===== 가이드 ===== -->
@@ -353,7 +366,7 @@ const PIN='8250';
 const RECRUITERS=[
   {id:'jaeyoung', name:'임재영', role:'AOP', code:'PR', c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0', top:'flag'},
   {id:'chaeyoung',name:'윤채영', role:'TL',  code:'PR', c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6', top:'star'},
-  {id:'hyechang', name:'유혜창', role:'',    code:'OR', c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2', top:'sun'},
+  {id:'hyechang', name:'유혜창', role:'리쿠르터', code:'OR', c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2', top:'sun'},
   {id:'youngjin', name:'유영진',   role:'',    code:'PR', c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA', top:'spark'},
 ];
 const STATUSES=['부킹','쇼업','스타트','노쇼','거절'];
@@ -382,7 +395,7 @@ function syncEnabled(){ return !!(dbUrl() && typeof firebase!=='undefined'); }
 function defSchedule(){ return {mon:'오후 6시',tue:'오전 11시',wed:'오전 11시',thu:'',fri:'오후 3시',sat:'',sun:''}; }
 function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',date:'6월 16일 (화)',time:'오전 11시'}); return o; }
 function defGoals(){ const o={}; RECRUITERS.forEach(r=>o[r.id]=10); return o; }
-function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals()}; }
+function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals(),sheetUrl:''}; }
 let DATA=defData();
 let editingId=null;
 let mForm={recruiter:'jaeyoung',gender:'남',status:'부킹',platform:'알바몬',inout:'IN'};
@@ -400,6 +413,7 @@ function mergeData(v){
   if(v.confirm){ RECRUITERS.forEach(r=>{ c[r.id]=Object.assign(c[r.id],v.confirm[r.id]||{}); }); }
   DATA.confirm=c;
   DATA.goals=Object.assign(defGoals(),v.goals||{});
+  DATA.sheetUrl=v.sheetUrl||'';
 }
 function candList(){ return Object.keys(DATA.candidates).map(k=>DATA.candidates[k]).sort((a,b)=>(b._t||0)-(a._t||0)); }
 function listFor(id){ return candList().filter(c=>c.recruiter===id); }
@@ -451,7 +465,56 @@ window.go=go;
 /* ════════ BOOT ════════ */
 let booted=false;
 function boot(){ if(booted)return; booted=true; loadLocal(); buildStatics(); initSync(); renderAll(); }
-function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); renderInfo(); renderConfirmInputs(); renderSyncBox(); }
+function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); renderInfo(); renderConfirmInputs(); renderSyncBox(); renderSheetLog(); ensureSheetPolling(); }
+
+/* ════════ 인터뷰로그 시트(Apps Script) 실시간 연동 ════════ */
+let sheetRows=[], sheetUpdated=0, sheetTimer=null, sheetState='idle';
+function fetchSheet(manual){
+  const url=(DATA.sheetUrl||'').trim();
+  if(!url){ sheetRows=[]; sheetState='idle'; renderSheetLog(); return; }
+  sheetState='loading'; if(manual) renderSheetLog();
+  fetch(url).then(r=>r.json()).then(d=>{ sheetRows=(d&&d.rows)?d.rows:[]; sheetUpdated=Date.now(); sheetState='ok'; renderSheetLog(); })
+    .catch(e=>{ sheetState='err'; renderSheetLog(); });
+}
+window.fetchSheet=fetchSheet;
+function ensureSheetPolling(){
+  const has=!!(DATA.sheetUrl||'').trim();
+  if(has && !sheetTimer){ fetchSheet(); sheetTimer=setInterval(()=>fetchSheet(false),60000); }
+  else if(!has && sheetTimer){ clearInterval(sheetTimer); sheetTimer=null; sheetRows=[]; }
+}
+function startSheetPolling(){ if(sheetTimer){clearInterval(sheetTimer);sheetTimer=null;} ensureSheetPolling(); if((DATA.sheetUrl||'').trim()) fetchSheet(true); }
+function timeAgo(ms){ if(!ms)return''; const s=Math.floor((Date.now()-ms)/1000); if(s<60)return'방금'; const m=Math.floor(s/60); if(m<60)return m+'분 전'; return Math.floor(m/60)+'시간 전'; }
+function renderSheetLog(){
+  const url=(DATA.sheetUrl||'').trim();
+  const st=document.getElementById('sheetStatus');
+  if(st){ st.textContent = !url?'⚪ 미연동' : sheetState==='loading'?'⏳ 불러오는 중…' : sheetState==='err'?'⚠️ 불러오기 실패 (배포·권한 확인)' : '🟢 연동됨 · '+sheetRows.length+'건 · '+timeAgo(sheetUpdated); }
+  const row=document.getElementById('sheetStatusRow'); if(row) row.classList.toggle('on', sheetState==='ok'&&!!url);
+  const cnt=document.getElementById('sheetCount'); if(cnt) cnt.textContent= url?('· '+sheetRows.length+'건'):'';
+  const box=document.getElementById('sheetLog'); if(!box) return;
+  if(!url){ box.innerHTML='<div class="empty">인터뷰로그가 아직 연동되지 않았습니다.<br>[정보] 탭에서 연동하세요.</div>'; return; }
+  if(sheetState==='err'){ box.innerHTML='<div class="empty">시트를 불러오지 못했습니다.<br>Apps Script 배포 상태와 접근 권한(Anyone)을 확인하세요.</div>'; return; }
+  if(sheetState==='loading'&&!sheetRows.length){ box.innerHTML='<div class="empty">불러오는 중…</div>'; return; }
+  if(!sheetRows.length){ box.innerHTML='<div class="empty">해당 담당자(임재영·유혜창·윤채영)의 시트 데이터가 없습니다.</div>'; return; }
+  box.innerHTML=sheetRows.slice().reverse().map(c=>{
+    const meta=[];
+    if(c.gender)meta.push(`<span><b>${esc(c.gender)}</b></span>`);
+    if(c.age)meta.push(`<span><b>${esc(c.age)}</b></span>`);
+    if(c.tel)meta.push(`<span>📞 <b>${esc(c.tel)}</b></span>`);
+    if(c.book)meta.push(`<span>부킹 <b>${esc(c.book)}</b></span>`);
+    if(c.intd||c.time)meta.push(`<span>면접 <b>${esc(c.intd)} ${esc(c.time||'')}</b></span>`);
+    const rm=RECRUITERS.find(r=>r.name===c.rec)||{soft:'#EFEDE6',deep:'#6C7079'};
+    return `<div class="cc"><div class="cc-top"><span class="cc-name">${esc(c.name||'(이름 없음)')}</span><span class="cc-rec" style="background:${rm.soft};color:${rm.deep}">${esc(c.rec)}</span><span class="cc-status" style="background:var(--blue-soft);color:var(--blue)">시트</span></div><div class="cc-meta">${meta.join('')}</div>${c.memo?`<div class="cc-memo">📝 ${esc(c.memo)}</div>`:''}</div>`;
+  }).join('');
+}
+function saveSheetUrl(){
+  const v=(document.getElementById('sheetUrlInput').value||'').trim();
+  const msg=document.getElementById('sheetMsgEl');
+  if(v&&!/^https:\/\//.test(v)){ msg.style.color='#E08070'; msg.textContent='주소는 https:// 로 시작해야 합니다.'; return; }
+  DATA.sheetUrl=v; writeKey('sheetUrl');
+  msg.style.color='#7FD45A'; msg.textContent=v?'연동됨 — 불러오는 중…':'연동 해제됨';
+  startSheetPolling();
+}
+window.saveSheetUrl=saveSheetUrl;
 
 function buildStatics(){
   buildNav(); buildPersonViews();   // 동적 탭/페이지 먼저 생성
@@ -651,6 +714,7 @@ function setVal(el,val){ if(el&&document.activeElement!==el) el.value=val==null?
 function renderInfo(){
   setVal(document.getElementById('albaId'),DATA.albaId);
   setVal(document.getElementById('albaPw'),DATA.albaPw);
+  setVal(document.getElementById('sheetUrlInput'),DATA.sheetUrl);
   document.querySelectorAll('#schedBox input').forEach(inp=>setVal(inp,DATA.schedule[inp.dataset.day]));
 }
 function renderConfirmInputs(){
