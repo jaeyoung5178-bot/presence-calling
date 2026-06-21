@@ -169,6 +169,9 @@
   .sheet-copy-btn{width:100%;background:var(--card);border:1px dashed #c9c2b0;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:var(--text);cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:7px;transition:.12s}
   .sheet-copy-btn:active{background:var(--paper);transform:scale(.99)}
   .qg-sec{margin-bottom:14px}
+  .person-memo{width:100%;box-sizing:border-box;margin-top:8px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;font-size:14.5px;line-height:1.65;font-family:var(--sans);color:var(--text);resize:vertical;min-height:130px}
+  .person-memo:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  .person-memo::placeholder{color:var(--muted-2)}
   .qg-banner{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:#fff;border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:12px;letter-spacing:-.01em}
   .qg-banner:active{transform:scale(.99)}
   .qg-banner span{font-size:13px;opacity:.85}
@@ -526,7 +529,7 @@ function syncEnabled(){ return !!(dbUrl() && typeof firebase!=='undefined'); }
 function defSchedule(){ return {mon:'오후 6시',tue:'오전 11시',wed:'오전 11시',thu:'',fri:'오후 3시',sat:'',sun:''}; }
 function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',date:'6월 16일 (화)',time:'11:00',channel:'알바몬'}); return o; }
 function defGoals(){ const o={}; RECRUITERS.forEach(r=>o[r.id]=10); return o; }
-function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals(),sheetUrl:'',recruiters:null}; }
+function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals(),sheetUrl:'',recruiters:null,memos:{}}; }
 let DATA=defData();
 let editingId=null;
 let mForm={recruiter:'jaeyoung',gender:'남',status:'부킹',platform:'알바몬',inout:'IN'};
@@ -546,6 +549,7 @@ function mergeData(v){
   DATA.goals=Object.assign(defGoals(),v.goals||{});
   DATA.sheetUrl=v.sheetUrl||'';
   DATA.recruiters=(Array.isArray(v.recruiters)&&v.recruiters.length)?v.recruiters:null;
+  DATA.memos=Object.assign({},v.memos||{});
   RECRUITERS=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
 }
 function candList(){ return Object.keys(DATA.candidates).map(k=>DATA.candidates[k]).sort((a,b)=>(b._t||0)-(a._t||0)); }
@@ -572,6 +576,7 @@ function deleteCandidateData(id){ delete DATA.candidates[id]; saveLocal(); if(SY
 function writeKey(key){ saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child(key).set(DATA[key]);}catch(e){}} }
 function writeConfirm(who){ saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('confirm/'+who).set(DATA.confirm[who]);}catch(e){}} }
 function writeGoal(who){ saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('goals/'+who).set(DATA.goals[who]);}catch(e){}} }
+function writeMemo(who){ saveLocal(); if(SYNC_ON&&fbRef&&!applyingRemote){try{fbRef.child('memos/'+who).set(DATA.memos[who]||'');}catch(e){}} }
 
 /* ════════ PIN ════════ */
 let pinBuf='';
@@ -615,7 +620,7 @@ window.go=go;
 /* ════════ BOOT ════════ */
 let booted=false;
 function boot(){ if(booted)return; booted=true; loadLocal(); buildStatics(); initSync(); renderAll(); }
-function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); renderInfo(); renderConfirmInputs(); renderSyncBox(); renderSheetLog(); ensureSheetPolling(); }
+function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); renderInfo(); renderConfirmInputs(); renderSyncBox(); renderSheetLog(); ensureSheetPolling(); fillMemos(); }
 
 /* ════════ 인터뷰로그 시트(Apps Script) 실시간 연동 ════════ */
 // ↓ 여기에 /exec 주소를 넣어두면 누가 열든 자동 연동됩니다 (저장 버튼 불필요)
@@ -757,7 +762,7 @@ function buildStatics(){
     if(tm) tm.addEventListener('input',()=>{ tm.value=fmtTime(tm.value); });
     const mp=document.getElementById('mPlatform');
     if(mp) mp.addEventListener('change',()=>autoIO(mp.value));
-    bindQgrids();
+    bindQgrids(); bindMemos();
   })();
   document.getElementById('mGender').innerHTML=['남','여'].map(g=>`<button data-g="${g}" onclick="pickGender('${g}')">${g}</button>`).join('');
   document.getElementById('mInout').innerHTML=['IN','OUT'].map(v=>`<button data-io="${v}" onclick="pickInout('${v}')">${v}</button>`).join('');
@@ -815,6 +820,22 @@ function bindQgrids(){
         else if(e.target.classList.contains('qg-date')) e.target.value=liveMD(e.target.value);
       });
     }
+  });
+}
+let memoTimers={};
+function bindMemos(){
+  document.querySelectorAll('.person-memo').forEach(t=>{
+    if(t.dataset.bound) return; t.dataset.bound='1';
+    t.addEventListener('input',()=>{
+      const id=t.dataset.rec; DATA.memos[id]=t.value; saveLocal();
+      clearTimeout(memoTimers[id]); memoTimers[id]=setTimeout(()=>writeMemo(id),600);
+    });
+  });
+}
+function fillMemos(){
+  document.querySelectorAll('.person-memo').forEach(t=>{
+    if(document.activeElement===t) return;
+    const v=DATA.memos[t.dataset.rec]||''; if(t.value!==v) t.value=v;
   });
 }
 
@@ -887,7 +908,7 @@ window.deleteRecruiter=deleteRecruiter;
 /* 리쿠르터 목록 변경 시 탭·페이지·통계 전체 재구성 */
 function applyRecruiterUI(){
   RECRUITERS=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
-  buildNav(); buildPersonViews(); bindQgrids(); renderConfirmInputs(); bindConfInputs();
+  buildNav(); buildPersonViews(); bindQgrids(); bindMemos(); renderConfirmInputs(); bindConfInputs();
   renderAll(); renderAdmin();
 }
 function renderAdmin(){
@@ -938,6 +959,9 @@ function buildPersonViews(){
         <button class="add-btn-full" style="background:${r.c1};margin-top:12px" onclick="qgridSubmit('${r.id}')"><span class="plus">＋</span> 표에 입력한 인원 인터뷰로그에 추가</button>
       </div>
     </div>
+
+    <div class="sec-t sm" style="margin-top:4px">📝 메모장 <span style="font-weight:500;color:var(--muted-2);font-size:11px">— 자유 기록 · 자동 저장</span></div>
+    <textarea class="person-memo" id="pmemo-${r.id}" data-rec="${r.id}" rows="7" placeholder="통화하면서 자유롭게 적어두세요.&#10;예) 010-1234-5678 김OO — 다음주 콜백 / 주말만 가능&#10;예) 박OO 누나 소개 건"></textarea>
 
     <div class="clist" id="clist-${r.id}"></div>
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
