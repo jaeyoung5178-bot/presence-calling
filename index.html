@@ -671,6 +671,7 @@ function buildStatics(){
       if(body) body.addEventListener('input',e=>{
         if(e.target.classList.contains('qg-tel')) e.target.value=liveTel(e.target.value);
         else if(e.target.classList.contains('qg-time')) e.target.value=fmtTime(e.target.value);
+        else if(e.target.classList.contains('qg-date')) e.target.value=liveMD(e.target.value);
       });
     });
   })();
@@ -765,7 +766,7 @@ function qgridRowsHTML(n){
     <td><input class="qg-tel" inputmode="numeric" placeholder="01000000000"></td>
     <td><input class="qg-age" inputmode="numeric" placeholder="21"></td>
     <td><select class="qg-gender"><option value="">·</option><option>남</option><option>여</option></select></td>
-    <td><input class="qg-date" inputmode="numeric" placeholder="6/21"></td>
+    <td><input class="qg-date" inputmode="numeric" placeholder="0623"></td>
     <td><input class="qg-time" inputmode="numeric" maxlength="5" placeholder="11:00"></td>
     <td class="ctr"><input class="qg-show" type="checkbox" title="쇼업 시 체크"></td>
     <td><select class="qg-plat"><option>알바몬</option><option>당근마켓</option><option>기타</option></select></td>
@@ -1082,6 +1083,12 @@ window.saveDbUrl=saveDbUrl;
 /* ════════ 유틸 ════════ */
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmtD(s){ if(!s)return''; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); return m?(parseInt(m[2])+'/'+parseInt(m[3])):esc(s); }
+function liveMD(s){
+  const d=String(s||'').replace(/\D/g,'').slice(0,4);
+  if(d.length<3) return d;                                   // 1~2자리는 그대로(월 입력 중)
+  const two=parseInt(d.slice(0,2),10), mLen=(two>=1&&two<=12)?2:1;  // 앞2자리가 01~12면 월=2자리
+  return parseInt(d.slice(0,mLen),10)+'/'+parseInt(d.slice(mLen),10);
+}
 function isToday(s){
   if(!s) return false; s=String(s).trim();
   const d=new Date();
