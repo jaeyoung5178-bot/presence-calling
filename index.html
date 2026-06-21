@@ -28,25 +28,35 @@
     --maxw:600px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  body{font-family:var(--sans);background:var(--paper);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+  body{font-family:var(--sans);background:linear-gradient(135deg,#FCEEF1,#FCF3E7,#FAF8E2,#EEF6E5,#E4F2F0,#E8ECFA,#F3ECF8,#FCEEF1);background-size:380% 380%;background-attachment:fixed;animation:rainbowDrift 34s ease-in-out infinite;color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+  @keyframes rainbowDrift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @media (prefers-reduced-motion:reduce){body,#gate,.gate-grass .blade{animation:none!important}}
   a{color:inherit;text-decoration:none}
   input,select,textarea,button{font-family:inherit;font-size:16px}
   ::selection{background:var(--green);color:#fff}
 
   /* ===== PIN GATE ===== */
-  #gate{position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;color:#fff}
-  #gate .glow{position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(79,156,48,.22),transparent 65%);top:-180px;right:-120px;pointer-events:none}
-  .gate-mk{width:56px;height:56px;margin-bottom:18px;z-index:2}
-  .gate-eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:#7FD45A;z-index:2}
-  .gate-t{font-size:23px;font-weight:800;margin-top:8px;z-index:2}
+  #gate{position:fixed;inset:0;z-index:9999;background:#04060d;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;color:#fff;overflow:hidden}
+  .ink{position:absolute;border-radius:50%;filter:blur(64px);z-index:0;pointer-events:none;mix-blend-mode:screen}
+  .ink.a{width:72vw;height:72vw;max-width:560px;max-height:560px;background:radial-gradient(circle,#1f5fd6,transparent 68%);top:-16%;left:-18%;opacity:.65;animation:inkA 24s ease-in-out infinite}
+  .ink.b{width:66vw;height:66vw;max-width:520px;max-height:520px;background:radial-gradient(circle,#0f86d8,transparent 70%);bottom:-18%;right:-14%;opacity:.55;animation:inkB 30s ease-in-out infinite}
+  .ink.c{width:58vw;height:58vw;max-width:460px;max-height:460px;background:radial-gradient(circle,#3b46c8,transparent 70%);top:32%;left:30%;opacity:.5;animation:inkC 34s ease-in-out infinite}
+  .ink.d{width:46vw;height:46vw;max-width:380px;max-height:380px;background:radial-gradient(circle,#12a9d6,transparent 72%);bottom:8%;left:-6%;opacity:.4;animation:inkA 28s ease-in-out infinite reverse}
+  @keyframes inkA{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(16%,12%) scale(1.22)}}
+  @keyframes inkB{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-15%,-10%) scale(1.18)}}
+  @keyframes inkC{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-12%,16%) scale(1.14)}}
+  #gate::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(125% 95% at 50% 42%, transparent 50%, rgba(2,4,10,.7) 100%)}
+  .gate-mk{width:56px;height:56px;margin-bottom:18px;z-index:2;filter:drop-shadow(0 4px 14px rgba(0,0,0,.45))}
+  .gate-eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:#7FB8EC;z-index:2}
+  .gate-t{font-size:23px;font-weight:800;margin-top:8px;color:#fff;z-index:2}
   .pin-dots{display:flex;gap:14px;margin:26px 0 22px;z-index:2}
-  .pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #4a525f;transition:.15s}
-  .pin-dot.on{background:var(--green);border-color:var(--green)}
+  .pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(255,255,255,.42);transition:.15s}
+  .pin-dot.on{background:#4D9BE0;border-color:#4D9BE0;box-shadow:0 0 10px rgba(77,155,224,.7)}
   .pin-pad{display:grid;grid-template-columns:repeat(3,68px);gap:14px;z-index:2}
-  .pin-key{height:68px;border-radius:50%;border:1px solid #2f3640;background:var(--ink-2);color:#fff;font-size:24px;font-weight:600;cursor:pointer;transition:.12s}
-  .pin-key:active{background:var(--green);border-color:var(--green);transform:scale(.94)}
-  .pin-key.empty{background:transparent;border:none;cursor:default}
-  .gate-msg{height:18px;margin-top:18px;font-family:var(--mono);font-size:11.5px;color:var(--red);z-index:2}
+  .pin-key{height:68px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:24px;font-weight:600;cursor:pointer;transition:.12s;backdrop-filter:blur(6px)}
+  .pin-key:active{background:rgba(77,155,224,.85);border-color:#4D9BE0;color:#04060d;transform:scale(.94)}
+  .pin-key.empty{background:transparent;border:none;cursor:default;backdrop-filter:none}
+  .gate-msg{height:18px;margin-top:18px;font-family:var(--mono);font-size:11.5px;color:#F0A58E;z-index:2}
   #gate.err .pin-dots{animation:shake .35s}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 
@@ -285,6 +295,24 @@
   .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
   .seg button:active{transform:scale(.95)}
 
+  #recModal{position:fixed;inset:0;z-index:1000;background:rgba(20,22,28,.5);display:none;align-items:flex-end;justify-content:center}
+  #recModal.on{display:flex;animation:fade .2s}
+  .swatch-row{display:flex;gap:10px;flex-wrap:wrap}
+  .swatch{width:40px;height:40px;border-radius:12px;border:2.5px solid transparent;cursor:pointer;display:grid;place-items:center;transition:.12s}
+  .swatch.on{border-color:var(--ink)}
+  .swatch.on::after{content:'✓';position:absolute;color:#fff;font-size:15px;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .swatch.col{position:relative}
+  .swatch svg{width:28px;height:28px}
+  .rec-del{width:100%;background:#fff;border:1.5px solid #E7B0A6;color:#C0492F;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer}
+  .fab-add{display:none;position:fixed;right:16px;bottom:calc(80px + env(safe-area-inset-bottom));z-index:580;width:54px;height:54px;border-radius:50%;border:none;background:var(--ink);color:#fff;font-size:30px;line-height:1;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,0,0,.28);cursor:pointer;transition:.12s}
+  .fab-add:active{transform:scale(.92)}
+  body.admin .fab-add{display:flex}
+  .rec-edit-btn{display:none!important}
+  body.admin .rec-edit-btn{display:inline-flex!important}
+  .admin-badge{display:none;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.03em;color:#fff;background:linear-gradient(135deg,#C8932E,#9A6E1E);padding:5px 11px;border-radius:99px;box-shadow:0 2px 8px rgba(154,110,30,.32);white-space:nowrap}
+  body.admin .admin-badge{display:inline-flex}
+  body.admin header{box-shadow:inset 0 3px 0 #C8932E}
+
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:5000;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -293,7 +321,7 @@
 
 <!-- ============ PIN GATE ============ -->
 <div id="gate">
-  <div class="glow"></div>
+  <div class="ink a"></div><div class="ink b"></div><div class="ink c"></div><div class="ink d"></div>
   <svg class="gate-mk" viewBox="0 0 150 150" fill="none"><text x="75" y="103" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="92" letter-spacing="-5" fill="#fff">PM</text><path d="M62 116 C 66 96 73 80 86 64" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#fff"><g transform="translate(64,106) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(67,96) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(72,85) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(77,75) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(83,66) rotate(-30)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g></g></svg>
   <div class="gate-eb">PEACEMAKER · CALLING HUB</div>
   <div class="gate-t">콜링 전용 공간</div>
@@ -306,7 +334,10 @@
 <div id="app">
   <header>
     <div class="hb"><span class="mk"><svg viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="62" letter-spacing="-6" fill="#fff">PM</text></svg></span><span>피스메이커<small>CALLING HUB</small></span></div>
-    <span id="sync-badge">⚪ 연결 중…</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="admin-badge">🛡 관리자 모드</span>
+      <span id="sync-badge">⚪ 연결 중…</span>
+    </div>
   </header>
 
   <!-- ===== 종합 ===== -->
@@ -369,6 +400,7 @@
 
   <nav class="bnav" id="bnav"></nav>
 </div>
+<button id="fabAdd" class="fab-add" onclick="openRecruiterModal()" title="리쿠르터 추가">+</button>
 
 <!-- ============ MODAL ============ -->
 <div id="modal">
@@ -404,15 +436,49 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ============ RECRUITER MODAL (관리자) ============ -->
+<div id="recModal">
+  <div class="modal-card">
+    <div class="modal-head"><b id="recModalTitle">리쿠르터 추가</b><button class="x" onclick="closeRecModal()">×</button></div>
+    <div class="modal-body">
+      <div class="fld hero"><input id="rName" placeholder="이름" autocomplete="off"></div>
+      <div class="row2">
+        <div class="fld"><label>직책 (선택)</label><input id="rRole" placeholder="예: 리쿠르터 / TL"></div>
+        <div class="fld"><label>코드</label><div class="seg" id="rCode"></div></div>
+      </div>
+      <div class="fld"><label>소속</label><div class="seg" id="rTeam"></div></div>
+      <div class="grp-t">색상</div>
+      <div class="swatch-row" id="rColors"></div>
+      <div class="grp-t">마스코트</div>
+      <div class="swatch-row" id="rTops"></div>
+      <div id="rDeleteWrap" style="margin-top:14px;display:none"><button class="rec-del" onclick="deleteRecruiter()">이 리쿠르터 삭제</button></div>
+    </div>
+    <div class="modal-foot"><button class="cancel" onclick="closeRecModal()">취소</button><button class="save" onclick="saveRecruiter()">저장하기</button></div>
+  </div>
+</div>
+
 <script>
 /* ════════ 설정 ════════ */
-const PIN='8250';
-const RECRUITERS=[
+const NORMAL_PIN='8250', ADMIN_PIN='0001';
+let isAdmin=false;
+const DEFAULT_RECRUITERS=[
   {id:'jaeyoung', name:'임재영', role:'AOP', code:'PR', team:'Presence', c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0', top:'flag'},
   {id:'chaeyoung',name:'윤채영', role:'TL',  code:'PR', team:'피스메이커', c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6', top:'star'},
   {id:'hyechang', name:'유혜창', role:'리쿠르터', code:'OR', team:'피스메이커', c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2', top:'sun'},
   {id:'youngjin', name:'유영진',   role:'',    code:'PR', team:'피스메이커', c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA', top:'spark'},
 ];
+let RECRUITERS=DEFAULT_RECRUITERS.map(r=>Object.assign({},r));
+const REC_PALETTE=[
+  {c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0'},
+  {c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6'},
+  {c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2'},
+  {c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA'},
+  {c1:'#D2588A', c2:'#E892B5', deep:'#A53D6A', soft:'#FBE6EF'},
+  {c1:'#2C9C8F', c2:'#6BCFC2', deep:'#1F7268', soft:'#E1F2EF'},
+  {c1:'#C0492F', c2:'#E08A77', deep:'#8E3220', soft:'#F8E5E0'},
+  {c1:'#5B6BC0', c2:'#92A0E0', deep:'#414E91', soft:'#E8EBFA'},
+];
+const REC_TOPS=['flag','star','sun','spark','heart'];
 const STATUSES=['부킹','쇼업','스타트','노쇼','거절'];
 const STATUS_META={'부킹':{c:'#3C7A22',bg:'#E9F2E0'},'쇼업':{c:'#2F6FB0',bg:'#E4EDF6'},'스타트':{c:'#9a5a1c',bg:'#FBEFE2'},'노쇼':{c:'#C0492F',bg:'#FBEAE6'},'거절':{c:'#6C7079',bg:'#EFEDE6'}};
 const DAYS=[['mon','월'],['tue','화'],['wed','수'],['thu','목'],['fri','금'],['sat','토'],['sun','일']];
@@ -439,7 +505,7 @@ function syncEnabled(){ return !!(dbUrl() && typeof firebase!=='undefined'); }
 function defSchedule(){ return {mon:'오후 6시',tue:'오전 11시',wed:'오전 11시',thu:'',fri:'오후 3시',sat:'',sun:''}; }
 function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',date:'6월 16일 (화)',time:'11:00',channel:'알바몬'}); return o; }
 function defGoals(){ const o={}; RECRUITERS.forEach(r=>o[r.id]=10); return o; }
-function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals(),sheetUrl:''}; }
+function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals(),sheetUrl:'',recruiters:null}; }
 let DATA=defData();
 let editingId=null;
 let mForm={recruiter:'jaeyoung',gender:'남',status:'부킹',platform:'알바몬',inout:'IN'};
@@ -458,6 +524,8 @@ function mergeData(v){
   DATA.confirm=c;
   DATA.goals=Object.assign(defGoals(),v.goals||{});
   DATA.sheetUrl=v.sheetUrl||'';
+  DATA.recruiters=(Array.isArray(v.recruiters)&&v.recruiters.length)?v.recruiters:null;
+  RECRUITERS=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
 }
 function candList(){ return Object.keys(DATA.candidates).map(k=>DATA.candidates[k]).sort((a,b)=>(b._t||0)-(a._t||0)); }
 function listFor(id){ return candList().filter(c=>c.recruiter===id); }
@@ -499,9 +567,10 @@ function buildPad(){
 function pinPush(d){ if(pinBuf.length>=4)return; pinBuf+=d; drawDots(); if(pinBuf.length===4) setTimeout(checkPin,120); }
 function drawDots(){ for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length); }
 function checkPin(){
-  if(pinBuf===PIN){
+  if(pinBuf===NORMAL_PIN || pinBuf===ADMIN_PIN){
+    isAdmin=(pinBuf===ADMIN_PIN);
     const g=document.getElementById('gate'); g.style.transition='opacity .4s'; g.style.opacity='0';
-    setTimeout(()=>{ g.style.display='none'; document.getElementById('app').classList.add('on'); boot(); },400);
+    setTimeout(()=>{ g.style.display='none'; document.getElementById('app').classList.add('on'); document.body.classList.toggle('admin',isAdmin); boot(); if(isAdmin) setTimeout(()=>toast('🛡 관리자 모드로 입장했어요'),300); },400);
   } else {
     const g=document.getElementById('gate'); g.classList.add('err');
     document.getElementById('gateMsg').textContent='비밀번호가 일치하지 않습니다'; pinBuf=''; drawDots();
@@ -666,26 +735,28 @@ function buildStatics(){
     if(tm) tm.addEventListener('input',()=>{ tm.value=fmtTime(tm.value); });
     const mp=document.getElementById('mPlatform');
     if(mp) mp.addEventListener('change',()=>autoIO(mp.value));
-    RECRUITERS.forEach(r=>{
-      const body=document.getElementById('qgrid-'+r.id);
-      if(body) body.addEventListener('input',e=>{
-        if(e.target.classList.contains('qg-tel')) e.target.value=liveTel(e.target.value);
-        else if(e.target.classList.contains('qg-time')) e.target.value=fmtTime(e.target.value);
-        else if(e.target.classList.contains('qg-date')) e.target.value=liveMD(e.target.value);
-      });
-    });
+    bindQgrids();
   })();
   document.getElementById('mGender').innerHTML=['남','여'].map(g=>`<button data-g="${g}" onclick="pickGender('${g}')">${g}</button>`).join('');
   document.getElementById('mInout').innerHTML=['IN','OUT'].map(v=>`<button data-io="${v}" onclick="pickInout('${v}')">${v}</button>`).join('');
   document.getElementById('mStatus').innerHTML=STATUSES.map(s=>`<button data-s="${s}" onclick="pickStatus('${s}')">${s}</button>`).join('');
   // 안내문 입력
-  document.querySelectorAll('.cf-in').forEach(inp=>inp.addEventListener('input',()=>{
-    const who=inp.dataset.who, f=inp.dataset.f;
-    if(f==='time') inp.value=fmtTime(inp.value);
-    DATA.confirm[who][f]=inp.value; writeConfirm(who); renderConfText(who);
-  }));
-  document.querySelectorAll('[data-copyconf]').forEach(b=>b.addEventListener('click',()=>copyText(document.getElementById('conf-'+b.dataset.copyconf).textContent)));
+  bindConfInputs();
   buildGuide();
+}
+function bindConfInputs(){
+  document.querySelectorAll('.cf-in').forEach(inp=>{
+    if(inp.dataset.bound) return; inp.dataset.bound='1';
+    inp.addEventListener('input',()=>{
+      const who=inp.dataset.who, f=inp.dataset.f;
+      if(f==='time') inp.value=fmtTime(inp.value);
+      DATA.confirm[who][f]=inp.value; writeConfirm(who); renderConfText(who);
+    });
+  });
+  document.querySelectorAll('[data-copyconf]').forEach(b=>{
+    if(b.dataset.bound) return; b.dataset.bound='1';
+    b.addEventListener('click',()=>copyText(document.getElementById('conf-'+b.dataset.copyconf).textContent));
+  });
 }
 
 /* ════════ 산 마스코트 생성기 ════════ */
@@ -695,6 +766,7 @@ function mascotSVG(r,big){
   if(r.top==='flag') top='<line x1="20" y1="7.4" x2="20" y2="'+(big?'2.2':'2.4')+'" stroke="'+(big?'#fff':'#15171C')+'" stroke-width="1.3" stroke-linecap="round"/><path d="M20 '+(big?'2.4':'2.6')+' L25.4 3.9 L20 5.3 Z" fill="#C0492F"/>';
   else if(r.top==='star') top='<path d="M20 1.3l1.2 2.5 2.7.3-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.3z" fill="#F2C14E"/>';
   else if(r.top==='sun') top='<circle cx="20" cy="3.6" r="2.7" fill="#F2B441"/>';
+  else if(r.top==='heart') top='<path d="M20 6.6l-2.5-2.5a1.6 1.6 0 1 1 2.3-2.2l.2.2.2-.2a1.6 1.6 0 1 1 2.3 2.2z" fill="#D2588A"/>';
   else top='<path d="M20 .9l1 2.4 2.4 1-2.4 1L20 7.6l-1-2.3-2.4-1 2.4-1z" fill="#B79AEA"/>';
   return '<svg viewBox="0 0 40 40"><path d="M20 7c1.1 0 1.8.6 2.3 1.5l11.5 20.6c.9 1.6-.2 3.4-2 3.4H8.2c-1.8 0-2.9-1.8-2-3.4L17.7 8.5C18.2 7.6 18.9 7 20 7Z" fill="'+body+'"/><path d="M20 7c1.1 0 1.8.6 2.3 1.5l3 5.4c-1.7 1-3.8.8-5.3-.3-1.2-.8-2.8-.8-4 0l3.7-6.6C18.2 7.6 18.9 7 20 7Z" fill="'+r.soft+'"/><circle cx="13.7" cy="26.4" r="1.7" fill="#F4A09A" opacity=".75"/><circle cx="26.3" cy="26.4" r="1.7" fill="#F4A09A" opacity=".75"/><circle cx="15.6" cy="24" r="2" fill="#fff"/><circle cx="24.4" cy="24" r="2" fill="#fff"/><circle cx="15.8" cy="24.2" r="1" fill="#15171C"/><circle cx="24.2" cy="24.2" r="1" fill="#15171C"/><path d="M16.6 27.8c1.7 1.5 5.1 1.5 6.8 0" stroke="#15171C" stroke-width="1.3" fill="none" stroke-linecap="round"/>'+top+'</svg>';
 }
@@ -708,11 +780,100 @@ function buildNav(){
   document.getElementById('bnav').innerHTML=h;
 }
 
+/* ════════ 빠른입력 표 입력 바인딩 (재생성 후 재바인딩용) ════════ */
+function bindQgrids(){
+  RECRUITERS.forEach(r=>{
+    const body=document.getElementById('qgrid-'+r.id);
+    if(body && !body.dataset.bound){
+      body.dataset.bound='1';
+      body.addEventListener('input',e=>{
+        if(e.target.classList.contains('qg-tel')) e.target.value=liveTel(e.target.value);
+        else if(e.target.classList.contains('qg-time')) e.target.value=fmtTime(e.target.value);
+        else if(e.target.classList.contains('qg-date')) e.target.value=liveMD(e.target.value);
+      });
+    }
+  });
+}
+
+/* ════════ 리쿠르터 추가/수정 (관리자) ════════ */
+let recEditingId=null, recForm=null;
+function openRecruiterModal(id){
+  if(!isAdmin) return;
+  recEditingId=id||null;
+  const base=id?Object.assign({},recMeta(id)):{name:'',role:'',code:'PR',team:'피스메이커',top:'star',c1:REC_PALETTE[1].c1};
+  // 색 인덱스 찾기
+  let ci=REC_PALETTE.findIndex(p=>p.c1===base.c1); if(ci<0) ci= id?0:1;
+  recForm={name:base.name||'',role:base.role||'',code:base.code||'PR',team:base.team||'피스메이커',colorIdx:ci,top:base.top||'star'};
+  document.getElementById('recModalTitle').textContent=id?'리쿠르터 수정':'리쿠르터 추가';
+  document.getElementById('rName').value=recForm.name;
+  document.getElementById('rRole').value=recForm.role;
+  // 코드/소속 세그
+  document.getElementById('rCode').innerHTML=['OR','PR'].map(v=>`<button data-v="${v}" onclick="recPick('code','${v}')">${v}</button>`).join('');
+  document.getElementById('rTeam').innerHTML=['Presence','피스메이커'].map(v=>`<button data-v="${v}" onclick="recPick('team','${v}')">${v}</button>`).join('');
+  recSeg('rCode',recForm.code); recSeg('rTeam',recForm.team);
+  // 색 스와치
+  document.getElementById('rColors').innerHTML=REC_PALETTE.map((p,i)=>`<div class="swatch col${i===recForm.colorIdx?' on':''}" style="background:${p.c1}" onclick="recPick('colorIdx',${i})"></div>`).join('');
+  // 마스코트 스와치
+  document.getElementById('rTops').innerHTML=REC_TOPS.map(t=>{const pr={c1:REC_PALETTE[recForm.colorIdx].c1,deep:REC_PALETTE[recForm.colorIdx].deep,soft:REC_PALETTE[recForm.colorIdx].soft,top:t};return `<div class="swatch${t===recForm.top?' on':''}" style="background:#fff;border-color:${t===recForm.top?'#15171C':'#E5E1D6'}" onclick="recPick('top','${t}')">${mascotSVG(pr,false)}</div>`;}).join('');
+  document.getElementById('rDeleteWrap').style.display=id?'block':'none';
+  document.getElementById('recModal').classList.add('on');
+}
+window.openRecruiterModal=openRecruiterModal;
+function recSeg(box,val){ document.querySelectorAll('#'+box+' button').forEach(b=>b.classList.toggle('on',b.dataset.v===String(val))); }
+function recPick(field,val){
+  recForm[field]=val;
+  if(field==='code'||field==='team') recSeg(field==='code'?'rCode':'rTeam',val);
+  else if(field==='colorIdx'){ document.querySelectorAll('#rColors .swatch').forEach((s,i)=>s.classList.toggle('on',i===val));
+    // 마스코트 미리보기 색 갱신
+    document.getElementById('rTops').innerHTML=REC_TOPS.map(t=>{const pr={c1:REC_PALETTE[val].c1,deep:REC_PALETTE[val].deep,soft:REC_PALETTE[val].soft,top:t};return `<div class="swatch${t===recForm.top?' on':''}" style="background:#fff;border-color:${t===recForm.top?'#15171C':'#E5E1D6'}" onclick="recPick('top','${t}')">${mascotSVG(pr,false)}</div>`;}).join(''); }
+  else if(field==='top'){ document.querySelectorAll('#rTops .swatch').forEach(s=>s.classList.remove('on')); event.currentTarget.classList.add('on'); event.currentTarget.style.borderColor='#15171C'; }
+}
+window.recPick=recPick;
+function closeRecModal(){ document.getElementById('recModal').classList.remove('on'); }
+window.closeRecModal=closeRecModal;
+function recIdFromName(name){ return 'rec_'+Math.abs(name.split('').reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,0)).toString(36)+'_'+Date.now().toString(36).slice(-3); }
+function saveRecruiter(){
+  const name=document.getElementById('rName').value.trim();
+  if(!name){ toast('이름을 입력하세요'); return; }
+  const p=REC_PALETTE[recForm.colorIdx];
+  const rec={ id:recEditingId||recIdFromName(name), name:name, role:document.getElementById('rRole').value.trim(),
+    code:recForm.code, team:recForm.team, c1:p.c1, c2:p.c2, deep:p.deep, soft:p.soft, top:recForm.top };
+  let list=RECRUITERS.map(r=>Object.assign({},r));
+  if(recEditingId){ const i=list.findIndex(r=>r.id===recEditingId); if(i>=0) list[i]=rec; }
+  else { list.push(rec); if(!DATA.confirm[rec.id]) DATA.confirm[rec.id]={name:'',date:'6월 16일 (화)',time:'11:00',channel:'알바몬'}; if(DATA.goals[rec.id]==null) DATA.goals[rec.id]=10; }
+  DATA.recruiters=list;
+  writeKey('recruiters'); writeKey('confirm'); writeKey('goals');
+  applyRecruiterUI();
+  closeRecModal();
+  toast(recEditingId?'수정됐어요':'추가됐어요');
+  go(rec.id);
+}
+window.saveRecruiter=saveRecruiter;
+function deleteRecruiter(){
+  if(!recEditingId) return;
+  if(!confirm('이 리쿠르터를 앱에서 삭제할까요? (시트·기존 데이터는 남습니다)')) return;
+  DATA.recruiters=RECRUITERS.filter(r=>r.id!==recEditingId).map(r=>Object.assign({},r));
+  if(!DATA.recruiters.length){ DATA.recruiters=null; }
+  writeKey('recruiters');
+  applyRecruiterUI();
+  closeRecModal();
+  toast('삭제됐어요');
+  go('home');
+}
+window.deleteRecruiter=deleteRecruiter;
+/* 리쿠르터 목록 변경 시 탭·페이지·통계 전체 재구성 */
+function applyRecruiterUI(){
+  RECRUITERS=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
+  buildNav(); buildPersonViews(); bindQgrids(); renderConfirmInputs(); bindConfInputs();
+  renderAll();
+}
+
 /* ════════ 개인 페이지 동적 생성 ════════ */
 function buildPersonViews(){
   document.getElementById('personViews').innerHTML=RECRUITERS.map(r=>`
   <div class="view" id="v-${r.id}">
     <div class="person-hd" style="background:linear-gradient(135deg,${r.deep},${r.c1})"><div class="glow"></div>
+      <button class="rec-edit-btn" onclick="openRecruiterModal('${r.id}')" style="position:absolute;top:12px;right:14px;z-index:4;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.42);color:#fff;border-radius:99px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer">✎ 정보 수정</button>
       <span class="ph-mascot">${mascotSVG(r,true)}</span>
       <div class="ph-name">${r.name}${r.role?` <span>${r.role}</span>`:''}</div>
       <div class="ph-sub">내 탭 — 여기서 추가하면 종합에 자동 반영됩니다</div></div>
@@ -1049,7 +1210,7 @@ function initSync(){
     fbRef.on('value',snap=>{
       const v=snap.val(); applyingRemote=true;
       if(!v){ fbRef.set(DATA); }
-      else { mergeData(v); saveLocal(); renderAll(); }
+      else { const before=RECRUITERS.map(r=>r.id).join(','); mergeData(v); saveLocal(); const after=RECRUITERS.map(r=>r.id).join(','); if(before!==after && booted) applyRecruiterUI(); else renderAll(); }
       applyingRemote=false; setSyncBadge(true);
     },err=>{ console.warn('sync error',err); setSyncBadge(false); });
     SYNC_ON=true;
@@ -1119,6 +1280,17 @@ function copyText(txt){
 }
 window.copyText=copyText;
 
+function buildGrass(){
+  const g=document.getElementById('gateGrass'); if(!g) return;
+  const n=46; let h='';
+  for(let i=0;i<n;i++){
+    const left=(i/(n-1))*100, jit=(Math.random()*2-1)*1.4;
+    const ht=46+Math.random()*64, dur=2.6+Math.random()*2.4, dl=-(Math.random()*3).toFixed(2);
+    const hue=Math.random()<.5?'#2f6b1c':'#3f8526';
+    h+=`<span class="blade" style="left:calc(${left}% + ${jit}px);--h:${ht.toFixed(0)}px;--d:${dur.toFixed(2)}s;--dl:${dl}s;background:linear-gradient(to top,#16330c,${hue} 72%,#67c23f)"></span>`;
+  }
+  g.innerHTML=h;
+}
 buildPad();
 </script>
 </body>
