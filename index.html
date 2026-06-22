@@ -1252,8 +1252,8 @@ body.app-on #ambientBg{opacity:.7}
 .mem-list{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
 .mem-chip{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;padding:6px 11px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--cream)}
 .mem-chip.extra{background:rgba(92,188,46,.14);border-color:rgba(92,188,46,.4)}
-.mem-chip.extra button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0;line-height:1}
-.mem-chip.extra button:hover{color:var(--danger)}
+.mem-chip button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0;line-height:1;margin-left:2px}
+.mem-chip button:hover{color:var(--danger)}
 .mem-sync{width:100%;background:var(--wepair);color:#062330;font-weight:800;border:none;border-radius:10px;padding:11px;font-size:13px;cursor:pointer}
 .mem-sync:hover{filter:brightness(1.05)}
 .mem-note{font-size:10.5px;color:var(--faint);line-height:1.5;margin-top:8px;text-align:center}
@@ -1987,7 +1987,7 @@ function meIsBot(){return isTestBot(me);}
 function testbot1Obj(){return {uid:'testbot1',name:'testbot1',id:'testbot1',role:'IC',status:'active',surveys:{},test:true,createdAt:0,lastLogin:Date.now(),pwHash:hash('0000')};}
 // 구글 스코어 시트 '팀원 정보' 명단 — 이 명단에 있는 이름만 가입 가능 (없는 사람은 가입 차단)
 let ALLOWED_MEMBERS = ['임재영','윤채영','고윤경','박인선','손예진','간승학','나승찬','김하진','권영웅','최이수','고다연'];
-function allMembers(){const ex=(typeof state!=='undefined'&&Array.isArray(state.extraMembers))?state.extraMembers:[];const seen={},out=[];ALLOWED_MEMBERS.concat(ex).forEach(n=>{const k=(n||'').replace(/\s/g,'');if(k&&!seen[k]){seen[k]=1;out.push(n);}});return out;}
+function allMembers(){const ex=(typeof state!=='undefined'&&Array.isArray(state.extraMembers))?state.extraMembers:[];const rm=((typeof state!=='undefined'&&Array.isArray(state.removedMembers))?state.removedMembers:[]).map(n=>(n||'').replace(/\s/g,''));const seen={},out=[];ALLOWED_MEMBERS.concat(ex).forEach(n=>{const k=(n||'').replace(/\s/g,'');if(k&&!seen[k]&&rm.indexOf(k)<0){seen[k]=1;out.push(n);}});return out;}
 function isAllowedName(name){const nm=(name||'').replace(/\s/g,'');return allMembers().some(s=>s.replace(/\s/g,'')===nm)}
 function nk(name){return String(name||'').trim().replace(/[.#$\/\[\]]/g,'_');}
 function roleOf(name){const u=Object.values(state.users).find(x=>x.name===name);return u?u.role:'IC';}
@@ -2113,6 +2113,7 @@ let state={
   managers:[],
   salesMeta:{},bep:{},
   extraMembers:[],
+  removedMembers:[],
   settings:{},
   popupAnnounce:null,
   obj:[
@@ -2682,7 +2683,7 @@ function openRecruitModal(){const r=myRecruit(),mk=recruitMonth(),mn=parseInt(mk
 function rmAdj(f,delta){const r=myRecruit();r.bk_g=Math.max(0,parseInt(document.getElementById('rm-bk-g').value,10)||0);r.su_g=Math.max(0,parseInt(document.getElementById('rm-su-g').value,10)||0);r.st_g=Math.max(0,parseInt(document.getElementById('rm-st-g').value,10)||0);r[f]=Math.max(0,(+r[f]||0)+delta);rcSave(r);document.getElementById('rmv-bk').textContent=r.bk_d||0;document.getElementById('rmv-su').textContent=r.su_d||0;document.getElementById('rmv-st').textContent=r.st_d||0;}
 function saveRecruitModal(){const r=myRecruit();const gv=id=>Math.max(0,parseInt(document.getElementById(id).value,10)||0);r.bk_g=gv('rm-bk-g');r.su_g=gv('rm-su-g');r.st_g=gv('rm-st-g');rcSave(r);closeModal('recruitModal');toast('내 목표를 저장했어요 🎯');}
 function fmtLinks(s){return esc(s||'').replace(/\n/g,'<br>').replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:var(--wepair);word-break:break-all">$1</a>');}
-const PRESENCE_ICON='data:image/png;base64,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';
+const PRESENCE_ICON="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2314161B'/%3E%3Cpath d='M20 74 L37 36 Q39 32 41 36 L44 50 L52 34 Q54 30 56 34 L80 74 Z' fill='%235CBC2E'/%3E%3Cpath d='M52 34 Q54 30 56 34 L80 74 L60 74 Z' fill='%238AE05C'/%3E%3C/svg%3E";
 const KAKAO_ROOMS=[
  {key:'arrival',emj:'🚌',name:'도착현황',leader:false},
  {key:'peacemaker',emj:'🕊️',name:'피스메이커 카톡방',leader:false},
@@ -3841,6 +3842,34 @@ function removeMember(name){
   renderMemberAdmin();if(document.getElementById('dailyList'))renderDaily();
   toast(`${name}님을 명단에서 뺐어요`);
 }
+
+function deleteMember(name){
+  if(!isFounder(me)){toast('관리자만 가능해요');return;}
+  name=(name||'').trim();if(!name)return;
+  if(!confirm('정말 '+name+'님을 삭제하시겠습니까?\n\n· 팀원 명단에서 제외됩니다\n· 가입한 계정·트리·피드 표시가 삭제됩니다\n· 이 작업은 되돌릴 수 없어요')) return;
+  const nm=name.replace(/\s/g,'');
+  // 1) 가입 계정 삭제
+  Object.values(state.users||{}).forEach(u=>{
+    if(u&&u.name&&u.name.replace(/\s/g,'')===nm&&!isTestBot(u)){
+      const uid=u.uid; delete state.users[uid]; if(LIVE)DB.set('users/'+uid,null);
+    }
+  });
+  // 2) 기본 명단이면 removedMembers에, 추가 명단이면 제거
+  if(ALLOWED_MEMBERS.some(n=>n.replace(/\s/g,'')===nm)){
+    state.removedMembers=state.removedMembers||[];
+    if(!state.removedMembers.some(n=>(n||'').replace(/\s/g,'')===nm))state.removedMembers.push(name);
+    if(LIVE)DB.set('removedMembers',state.removedMembers);
+  }
+  state.extraMembers=(state.extraMembers||[]).filter(n=>n.replace(/\s/g,'')!==nm);
+  if(LIVE)DB.set('extraMembers',state.extraMembers);
+  // 3) 매니저 목록에서도 제거
+  if(Array.isArray(state.managers)&&state.managers.some(n=>(n||'').replace(/\s/g,'')===nm)){
+    state.managers=state.managers.filter(n=>(n||'').replace(/\s/g,'')!==nm);
+    if(LIVE)DB.set('managers',state.managers);
+  }
+  renderMemberAdmin();if(typeof renderManagerAdmin==='function')renderManagerAdmin();if(document.getElementById('dailyList'))renderDaily();updateCounts&&updateCounts();
+  toast('🗑️ '+name+'님을 삭제했어요');
+}
 /* ===== 팀 세일즈관리 (개인별 월간 리뷰 · 리젝률·인컴·BEP) ===== */
 let smMonthKey=null;
 function smMK(){return smMonthKey||curMonthKey();}
@@ -3963,10 +3992,10 @@ function renderMemberAdmin(){
   const box=document.getElementById('memberAdminBody');if(!box)return;
   const ex=state.extraMembers||[];
   const baseCnt=ALLOWED_MEMBERS.length;
+  const list=allMembers();const exk=ex.map(n=>(n||'').replace(/\s/g,''));
   box.innerHTML=`<div class="mem-add"><input id="newMemberIn" placeholder="새 팀원 이름" maxlength="12" onkeydown="if(event.key==='Enter')addMember(document.getElementById('newMemberIn').value)"/><button onclick="addMember(document.getElementById('newMemberIn').value)">+ 추가</button></div>`
     +`<div class="mem-list">`
-    + ALLOWED_MEMBERS.map(n=>`<span class="mem-chip base">${esc(n)}</span>`).join('')
-    + ex.map(n=>`<span class="mem-chip extra">${esc(n)}<button onclick="removeMember('${n}')" title="명단에서 빼기">✕</button></span>`).join('')
+    + list.map(n=>{const isEx=exk.indexOf((n||'').replace(/\s/g,''))>=0;return `<span class="mem-chip ${isEx?'extra':'base'}">${esc(n)}<button onclick="deleteMember('${esc(n)}')" title="팀원 삭제">✕</button></span>`;}).join('')
     +`</div>`
     +`<button class="mem-sync" onclick="pullRoster({manual:true})">🔄 구글시트 '팀' 탭에서 팀원 동기화</button>`
     +`<div class="mem-note">시트 '팀' 탭에 이름을 추가한 뒤 이 버튼을 누르면 새 팀원이 자동으로 들어와요. (관리자 접속 시에도 자동으로 한 번 확인해요.)</div>`;
@@ -4397,6 +4426,7 @@ async function initFirebase(){
   DB.on('rewards',v=>{state.rewards=Array.isArray(v)?v:(v?Object.values(v):[]);if(me&&isFounder(me))renderRewardAdmin();});
   DB.on('comp',v=>{state.comp=v||{};});
   DB.on('extraMembers',v=>{state.extraMembers=Array.isArray(v)?v:(v?Object.values(v):[]);if(me){renderMemberAdmin();if(document.getElementById('dailyList'))renderDaily();}});
+  DB.on('removedMembers',v=>{state.removedMembers=Array.isArray(v)?v:(v?Object.values(v):[]);if(me){renderMemberAdmin();if(document.getElementById('dailyList'))renderDaily();}});
   DB.on('settings',v=>{state.settings=v||{};renderSheetConn();renderWeb2Conn();});
   DB.on('popupAnnounce',v=>{state.popupAnnounce=v||null;if(me)showAnnounceIfNew();if(me&&isFounder(me))renderAnnounceAdmin();});
   DB.on('recruit',v=>{state.recruit=v||{};if(me)renderCalling()});
