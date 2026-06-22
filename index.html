@@ -498,6 +498,12 @@ const DEFAULT_RECRUITERS=[
   {id:'youngjin', name:'유영진',   role:'',    code:'PR', team:'피스메이커', c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA', top:'spark'},
 ];
 let RECRUITERS=DEFAULT_RECRUITERS.map(r=>Object.assign({},r));
+/* 동기화된 목록을 쓰되, 기본 4명의 코드(유혜창=OR, 나머지=PR)는 항상 올바르게 고정 */
+function buildRecruiters(){
+  const list=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
+  list.forEach(r=>{ const d=DEFAULT_RECRUITERS.find(x=>x.id===r.id); if(d) r.code=d.code; });
+  return list;
+}
 const REC_PALETTE=[
   {c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0'},
   {c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6'},
@@ -556,7 +562,7 @@ function mergeData(v){
   DATA.sheetUrl=v.sheetUrl||'';
   DATA.recruiters=(Array.isArray(v.recruiters)&&v.recruiters.length)?v.recruiters:null;
   DATA.memos=Object.assign({},v.memos||{});
-  RECRUITERS=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
+  RECRUITERS=buildRecruiters();
 }
 function candList(){ return Object.keys(DATA.candidates).map(k=>DATA.candidates[k]).sort((a,b)=>(b._t||0)-(a._t||0)); }
 function listFor(id){ return candList().filter(c=>c.recruiter===id); }
@@ -635,10 +641,11 @@ const SHEET_API='https://script.google.com/macros/s/AKfycbwzWWfKb7BROexiO6fs19HR
 function effSheetUrl(){ return (DATA.sheetUrl||'').trim() || SHEET_API; }
 let sheetRows=[], sheetUpdated=0, sheetTimer=null, sheetState='idle', seenSheetIds={}, delTomb={};
 function fetchSheet(manual){
-  const url=effSheetUrl();
-  if(!url){ sheetRows=[]; sheetState='idle'; renderSheetLog(); return; }
+  const base=effSheetUrl();
+  if(!base){ sheetRows=[]; sheetState='idle'; renderSheetLog(); return; }
+  const url=base+(base.indexOf('?')>=0?'&':'?')+'_t='+Date.now();   // 캐시 방지
   sheetState='loading'; if(manual) renderSheetLog();
-  fetch(url).then(r=>r.json()).then(d=>{ sheetRows=(d&&d.rows)?d.rows:[]; sheetUpdated=Date.now(); sheetState='ok'; renderSheetLog(); reconcileDeletions(); reconcileStatus(); })
+  fetch(url,{cache:'no-store'}).then(r=>r.json()).then(d=>{ sheetRows=(d&&d.rows)?d.rows:[]; sheetUpdated=Date.now(); sheetState='ok'; renderSheetLog(); reconcileDeletions(); reconcileStatus(); })
     .catch(e=>{ sheetState='err'; renderSheetLog(); });
 }
 window.fetchSheet=fetchSheet;
@@ -738,6 +745,7 @@ async function qgridSubmit(rid){
   rows.forEach(tr=>{ tr.querySelectorAll('input').forEach(inp=>{ if(inp.type==='checkbox') inp.checked=false; else inp.value=''; }); tr.querySelectorAll('select').forEach(s=>s.selectedIndex=0); });
   toast(cands.length+'명 인터뷰로그에 추가됨 · 종합에서 확인');
   setTimeout(()=>fetchSheet(false),2200);
+  setTimeout(()=>fetchSheet(false),6000);
 }
 window.qgridSubmit=qgridSubmit;
 let sheetOpen=false;
@@ -924,7 +932,7 @@ function deleteRecruiter(){
 window.deleteRecruiter=deleteRecruiter;
 /* 리쿠르터 목록 변경 시 탭·페이지·통계 전체 재구성 */
 function applyRecruiterUI(){
-  RECRUITERS=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
+  RECRUITERS=buildRecruiters();
   buildNav(); buildPersonViews(); bindQgrids(); bindMemos(); renderConfirmInputs(); bindConfInputs();
   renderAll(); renderAdmin();
 }
@@ -1235,8 +1243,18 @@ function saveCandidate(){
   const isNew=!editingId;
   writeCandidate(c); closeModal();
   if(effSheetUrl()) sheetPush(isNew?'add':'update', c);
+  // 위에서 한 명 추가 → 아래 부킹 안내문 자동 세팅 (바로 문자 보낼 수 있게)
+  if(isNew && DATA.confirm[c.recruiter]){
+    const cf=DATA.confirm[c.recruiter];
+    cf.name=c.name; cf.tel=c.tel||'';
+    if(c.intDate) cf.date=toKDate(c.intDate);
+    if(c.intTime) cf.time=c.intTime;
+    cf.channel=String(c.platform||'').includes('당근')?'당근·SNS':'알바몬';
+    writeConfirm(c.recruiter);
+    renderConfirmInputs();
+  }
   renderHome(); renderPerson(c.recruiter);
-  toast(editingId?'수정됐습니다':(effSheetUrl()?'추가됨 · 시트에도 기록 중':'추가됐습니다'));
+  toast(editingId?'수정됐습니다':(effSheetUrl()?'추가됨 · 안내문 자동 채움 완료':'추가됐습니다'));
 }
 window.saveCandidate=saveCandidate;
 function delCandidate(id){
@@ -1348,6 +1366,15 @@ window.saveDbUrl=saveDbUrl;
 /* ════════ 유틸 ════════ */
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmtD(s){ if(!s)return''; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); return m?(parseInt(m[2])+'/'+parseInt(m[3])):esc(s); }
+function toKDate(s){
+  s=String(s||'').trim(); if(!s) return '';
+  let y,mo,da, m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m){ y=+m[1]; mo=+m[2]; da=+m[3]; }
+  else { m=s.match(/(\d{1,2})\D+(\d{1,2})/); if(m){ y=(new Date()).getFullYear(); mo=+m[1]; da=+m[2]; } }
+  if(!mo||!da) return s;
+  const dt=new Date(y,mo-1,da); if(isNaN(dt)) return s;
+  return mo+'월 '+da+'일 ('+['일','월','화','수','목','금','토'][dt.getDay()]+')';
+}
 function liveMD(s){
   const d=String(s||'').replace(/\D/g,'').slice(0,4);
   if(d.length<3) return d;                                   // 1~2자리는 그대로(월 입력 중)
