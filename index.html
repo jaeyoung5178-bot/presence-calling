@@ -258,6 +258,12 @@
   .conf-out .bar{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--ink-3)}
   .conf-out .bar span{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:#7FD45A;text-transform:uppercase}
   .conf-out pre{color:#E8EAEE;font-size:13.5px;line-height:1.7;padding:15px;white-space:pre-wrap;margin:0;font-family:var(--sans)}
+  .time-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .time-chips button{flex:0 0 auto;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:7px 14px;font-size:13px;font-weight:700;font-family:var(--mono);color:var(--ink);cursor:pointer;transition:.1s}
+  .time-chips button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .time-chips button:active{transform:scale(.94)}
+  .sms-btn{width:100%;margin-top:10px;background:#2C9C4A;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15.5px;font-weight:800;cursor:pointer;box-shadow:0 5px 14px rgba(44,156,74,.28)}
+  .sms-btn:active{transform:scale(.98)}
   .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px}
   .row2>.fld{min-width:0}
   .fld input,.fld select,.fld textarea{min-width:0;max-width:100%}
@@ -527,7 +533,7 @@ function syncEnabled(){ return !!(dbUrl() && typeof firebase!=='undefined'); }
 
 /* ════════ 데이터 ════════ */
 function defSchedule(){ return {mon:'오후 6시',tue:'오전 11시',wed:'오전 11시',thu:'',fri:'오후 3시',sat:'',sun:''}; }
-function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',date:'6월 16일 (화)',time:'11:00',channel:'알바몬'}); return o; }
+function defConfirm(){ const o={}; RECRUITERS.forEach(r=>o[r.id]={name:'',tel:'',date:'6월 16일 (화)',time:'11:00',channel:'알바몬'}); return o; }
 function defGoals(){ const o={}; RECRUITERS.forEach(r=>o[r.id]=10); return o; }
 function defData(){ return {candidates:{},albaId:'appcokorea',albaPw:'08th@@June2026',schedule:defSchedule(),confirm:defConfirm(),goals:defGoals(),sheetUrl:'',recruiters:null,memos:{}}; }
 let DATA=defData();
@@ -560,8 +566,9 @@ function nameToId(name){ const r=RECRUITERS.find(x=>x.name===String(name||'').tr
 function sheetToCand(c){ return {id:c.id||('sheet:'+(c.name||'')+'|'+(c.tel||'')), recruiter:nameToId(c.rec), name:c.name, age:c.age, gender:c.gender, tel:c.tel, bookDate:c.book, intDate:c.intd, intTime:c.time, status:c.status||'부킹', memo:c.memo, _sheet:true}; }
 function combinedCands(){
   const seenId={}, seenKey={}, out=[];
-  candList().forEach(c=>{ seenId[c.id]=1; seenKey[(c.name||'')+'|'+digitsTel(c.tel)]=1; out.push(c); });
+  candList().forEach(c=>{ if(delTomb[String(c.id)])return; seenId[c.id]=1; seenKey[(c.name||'')+'|'+digitsTel(c.tel)]=1; out.push(c); });
   (typeof sheetRows!=='undefined'?sheetRows:[]).forEach(sc=>{
+    if(sc.id && delTomb[String(sc.id)]) return;
     if(sc.id && seenId[sc.id]) return;
     const k=(sc.name||'')+'|'+digitsTel(sc.tel); if(seenKey[k]) return;
     seenKey[k]=1; out.push(sheetToCand(sc));
@@ -626,7 +633,7 @@ function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); r
 // ↓ 여기에 /exec 주소를 넣어두면 누가 열든 자동 연동됩니다 (저장 버튼 불필요)
 const SHEET_API='https://script.google.com/macros/s/AKfycbwzWWfKb7BROexiO6fs19HRiRGEIWa4eOBf1NCMvnR-ZvvMY2PbNThAwz1z3Jn3nXzedQ/exec';
 function effSheetUrl(){ return (DATA.sheetUrl||'').trim() || SHEET_API; }
-let sheetRows=[], sheetUpdated=0, sheetTimer=null, sheetState='idle', seenSheetIds={};
+let sheetRows=[], sheetUpdated=0, sheetTimer=null, sheetState='idle', seenSheetIds={}, delTomb={};
 function fetchSheet(manual){
   const url=effSheetUrl();
   if(!url){ sheetRows=[]; sheetState='idle'; renderSheetLog(); return; }
@@ -703,30 +710,34 @@ window.saveSheetUrl=saveSheetUrl;
 /* ════════ 빠른 입력 표(여러 명 한번에 → 인터뷰로그) ════════ */
 function qgToggle(rid){ const w=document.getElementById('qgwrap-'+rid); const open=w.style.display==='none'; w.style.display=open?'block':'none'; document.getElementById('qgcaret-'+rid).textContent=open?'▾':'▸'; }
 window.qgToggle=qgToggle;
-function qgridSubmit(rid){
+async function qgridSubmit(rid){
   if(!effSheetUrl()){ toast('인터뷰로그가 연동되어 있어야 추가됩니다'); return; }
   const rows=document.querySelectorAll('#qgrid-'+rid+' tr');
-  let added=0;
+  const cands=[];
   rows.forEach(tr=>{
     const g=s=>tr.querySelector(s);
     const name=g('.qg-name').value.trim();
     if(!name) return;
-    const c={
-      id:'c_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+    cands.push({
+      id:'c_'+Date.now().toString(36)+cands.length.toString(36)+Math.random().toString(36).slice(2,7),
       recruiter:rid, name,
       tel:g('.qg-tel').value.trim(), age:g('.qg-age').value.trim(),
       gender:g('.qg-gender').value, platform:g('.qg-plat').value, inout:'IN',
       bookDate:todayStr(), intDate:g('.qg-date').value.trim(), intTime:fmtTime(g('.qg-time').value),
       status:g('.qg-show').checked?'쇼업':'부킹', memo:g('.qg-memo').value.trim()
-    };
-    sheetPush('add', c, {noRefresh:true});
-    added++;
+    });
   });
-  if(!added){ toast('이름을 입력한 행이 없습니다'); return; }
+  if(!cands.length){ toast('이름을 입력한 행이 없습니다'); return; }
+  toast(cands.length+'명 추가 중… 잠시만요');
+  // 한 명씩 순서대로 전송 (동시 전송으로 인한 유실 방지)
+  for(let i=0;i<cands.length;i++){
+    await Promise.race([ sheetPush('add', cands[i], {noRefresh:true}), new Promise(res=>setTimeout(res,5000)) ]);
+    if(i<cands.length-1) await new Promise(res=>setTimeout(res,450));
+  }
   // 입력칸 비우기
-  rows.forEach(tr=>{ tr.querySelectorAll('input').forEach(i=>{ if(i.type==='checkbox') i.checked=false; else i.value=''; }); tr.querySelectorAll('select').forEach(s=>s.selectedIndex=s.classList.contains('qg-plat')?0:0); });
-  toast(added+'명 인터뷰로그에 추가됨 · 종합에서 확인');
-  setTimeout(()=>fetchSheet(false),2000);
+  rows.forEach(tr=>{ tr.querySelectorAll('input').forEach(inp=>{ if(inp.type==='checkbox') inp.checked=false; else inp.value=''; }); tr.querySelectorAll('select').forEach(s=>s.selectedIndex=0); });
+  toast(cands.length+'명 인터뷰로그에 추가됨 · 종합에서 확인');
+  setTimeout(()=>fetchSheet(false),2200);
 }
 window.qgridSubmit=qgridSubmit;
 let sheetOpen=false;
@@ -744,9 +755,9 @@ function sheetPush(action,c,opts){
   const show=(c.status==='쇼업'||c.status==='스타트')?'O':'';
   const payload={ action:action, id:c.id, rec:r.name||'', plat:plat, book:fmtD(c.bookDate)||'', intd:fmtD(c.intDate)||'', show:show, time:c.intTime||'', nm:'NM', io:io, name:c.name||'', age:fmtAge(c.age)||'', gender:c.gender||'', tel:fmtTel(c.tel)||'', code:r.code||'', memo:c.memo||'' };
   try{
-    fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'})
+    return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'})
       .then(()=>{ if(!opts||!opts.noRefresh) setTimeout(()=>fetchSheet(false),1500); }).catch(()=>{});
-  }catch(e){}
+  }catch(e){ return Promise.resolve(); }
 }
 
 function buildStatics(){
@@ -777,7 +788,13 @@ function bindConfInputs(){
     inp.addEventListener('input',()=>{
       const who=inp.dataset.who, f=inp.dataset.f;
       if(f==='time') inp.value=fmtTime(inp.value);
-      DATA.confirm[who][f]=inp.value; writeConfirm(who); renderConfText(who);
+      DATA.confirm[who][f]=inp.value;
+      if(f==='date' && inp.value.trim() && !(DATA.confirm[who].time||'').trim()){
+        DATA.confirm[who].time='11:00';
+        const ti=document.querySelector('.cf-in[data-who="'+who+'"][data-f="time"]'); if(ti) ti.value='11:00';
+      }
+      if(f==='time'||f==='date') hlTimeChips(who);
+      writeConfirm(who); renderConfText(who);
     });
   });
   document.querySelectorAll('[data-copyconf]').forEach(b=>{
@@ -967,13 +984,18 @@ function buildPersonViews(){
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
     <div class="card card-pad">
       <div class="fld"><label>유입경로</label><div class="seg" id="cfch-${r.id}"><button data-ch="알바몬" onclick="pickConfChannel('${r.id}','알바몬')">알바몬</button><button data-ch="당근·SNS" onclick="pickConfChannel('${r.id}','당근·SNS')">당근·SNS PR</button></div></div>
-      <div class="fld"><label>이름</label><input class="cf-in" data-who="${r.id}" data-f="name" placeholder="홍길동"></div>
+      <div class="row2">
+        <div class="fld"><label>이름</label><input class="cf-in" data-who="${r.id}" data-f="name" placeholder="홍길동"></div>
+        <div class="fld"><label>연락처</label><input class="cf-in" data-who="${r.id}" data-f="tel" inputmode="numeric" placeholder="010-0000-0000"></div>
+      </div>
       <div class="row2">
         <div class="fld"><label>면접 일자</label><input class="cf-in" data-who="${r.id}" data-f="date" placeholder="6월 16일 (화)"></div>
         <div class="fld"><label>면접 시간</label><input class="cf-in" data-who="${r.id}" data-f="time" inputmode="numeric" maxlength="5" placeholder="11:00"></div>
       </div>
+      <div class="time-chips" id="tchips-${r.id}">${['10:00','11:00','13:00','14:00','15:00','19:00'].map(t=>`<button onclick="setConfTime('${r.id}','${t}')">${t}</button>`).join('')}</div>
     </div>
     <div class="conf-out"><div class="bar"><span>${r.name} · 발송용 안내문</span><button class="copybtn" data-copyconf="${r.id}">복사</button></div><pre id="conf-${r.id}"></pre></div>
+    <button class="sms-btn" onclick="openSMS('${r.id}')">📱 이 번호로 문자 보내기</button>
   </div>`).join('');
 }
 function qgridRowsHTML(n){
@@ -1051,7 +1073,7 @@ function renderPerson(id){
   const s=statsFor(combinedFor(id));
   const el=document.getElementById('sb-'+id); el.innerHTML=signboardHTML(s,RECRUITERS.find(r=>r.id===id).name); fillSignboard(el,s);
   renderGoal(id);
-  renderCards('clist-'+id,listFor(id),false);
+  renderCards('clist-'+id,combinedFor(id),false);
   renderConfText(id);
 }
 
@@ -1124,10 +1146,31 @@ function renderInfo(){
 }
 function renderConfirmInputs(){
   document.querySelectorAll('.cf-in').forEach(inp=>setVal(inp,DATA.confirm[inp.dataset.who][inp.dataset.f]));
-  RECRUITERS.forEach(r=>{ segOn('cfch-'+r.id,'ch',DATA.confirm[r.id].channel||'알바몬'); renderConfText(r.id); });
+  RECRUITERS.forEach(r=>{ segOn('cfch-'+r.id,'ch',DATA.confirm[r.id].channel||'알바몬'); hlTimeChips(r.id); renderConfText(r.id); });
 }
 function pickConfChannel(who,ch){ DATA.confirm[who].channel=ch; writeConfirm(who); segOn('cfch-'+who,'ch',ch); renderConfText(who); }
 window.pickConfChannel=pickConfChannel;
+function hlTimeChips(who){
+  const box=document.getElementById('tchips-'+who); if(!box) return;
+  const cur=(DATA.confirm[who].time||'').trim();
+  box.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.textContent.trim()===cur));
+}
+function setConfTime(who,t){
+  DATA.confirm[who].time=t; writeConfirm(who);
+  const ti=document.querySelector('.cf-in[data-who="'+who+'"][data-f="time"]'); if(ti) ti.value=t;
+  hlTimeChips(who); renderConfText(who);
+}
+window.setConfTime=setConfTime;
+function openSMS(who){
+  const c=DATA.confirm[who]||{};
+  const tel=(c.tel||'').replace(/[^0-9+]/g,'');
+  if(!tel){ toast('연락처(받는 번호)를 먼저 입력해주세요'); return; }
+  const body=(document.getElementById('conf-'+who)||{}).textContent||'';
+  const ua=navigator.userAgent||'';
+  const sep=/iPhone|iPad|iPod/.test(ua) ? '&' : '?';
+  window.location.href='sms:'+tel+sep+'body='+encodeURIComponent(body);
+}
+window.openSMS=openSMS;
 function renderConfText(who){
   const c=DATA.confirm[who];
   const name=(c.name||'').trim()||'OOO', date=(c.date||'').trim()||'O월 O일 (O)', time=(c.time||'').trim()||'OO:OO';
@@ -1197,9 +1240,14 @@ function saveCandidate(){
 }
 window.saveCandidate=saveCandidate;
 function delCandidate(id){
-  const c=DATA.candidates[id]; if(!c)return;
+  let c=DATA.candidates[id];
+  if(!c) c=combinedCands().find(x=>String(x.id)===String(id));   // 시트 전용(빠른입력) 항목도 찾기
+  if(!c)return;
   if(!confirm((c.name||'이 면접자')+' 정보를 삭제할까요?\n(연동 시 인터뷰로그 시트의 해당 행도 삭제됩니다)'))return;
-  const rec=c.recruiter; sheetPush('delete', c); deleteCandidateData(id);
+  const rec=c.recruiter;
+  sheetPush('delete', c);
+  if(DATA.candidates[id]) deleteCandidateData(id);
+  delTomb[String(id)]=1;                       // 다음 동기화 전까지 즉시 숨김
   renderHome(); renderPerson(rec); toast('삭제됐습니다');
 }
 window.delCandidate=delCandidate;
