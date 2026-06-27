@@ -512,14 +512,11 @@ const DEFAULT_RECRUITERS=[
   {id:'chaeyoung',name:'윤채영', role:'TL',  code:'PR', team:'피스메이커', c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6', top:'star'},
   {id:'hyechang', name:'유혜창', role:'리쿠르터', code:'OR', team:'피스메이커', c1:'#D9894C', c2:'#EEB57E', deep:'#9a5a1c', soft:'#FBEFE2', top:'sun'},
   {id:'youngjin', name:'유영진',   role:'',    code:'PR', team:'피스메이커', c1:'#7C5CBF', c2:'#A98FE0', deep:'#5B4291', soft:'#EDE8FA', top:'spark'},
-  {id:'yunkyung', name:'고윤경', role:'리더', code:'PR', team:'피스메이커', c1:'#D2588A', c2:'#E892B5', deep:'#A53D6A', soft:'#FBE6EF', top:'heart'},
 ];
 let RECRUITERS=DEFAULT_RECRUITERS.map(r=>Object.assign({},r));
 /* 동기화된 목록을 쓰되, 기본 4명의 코드(유혜창=OR, 나머지=PR)는 항상 올바르게 고정 */
 function buildRecruiters(){
   const list=(DATA.recruiters||DEFAULT_RECRUITERS).map(r=>Object.assign({},r));
-  // 기본 리쿠르터(고윤경 포함)는 동기화된 목록에 없더라도 항상 보충해 표시
-  DEFAULT_RECRUITERS.forEach(d=>{ if(!list.some(r=>r.id===d.id)) list.push(Object.assign({},d)); });
   list.forEach(r=>{ const d=DEFAULT_RECRUITERS.find(x=>x.id===r.id); if(d) r.code=d.code; });
   return list;
 }
@@ -932,6 +929,10 @@ function recIdFromName(name){ return 'rec_'+Math.abs(name.split('').reduce((a,c)
 function saveRecruiter(){
   const name=document.getElementById('rName').value.trim();
   if(!name){ toast('이름을 입력하세요'); return; }
+  const editing=!!recEditingId;
+  if(!editing && RECRUITERS.some(r=>r.name===name)){
+    if(!confirm('이미 "'+name+'" 리쿠르터가 있어요.\n그래도 하나 더 추가할까요?')) return;
+  }
   const p=REC_PALETTE[recForm.colorIdx];
   const rec={ id:recEditingId||recIdFromName(name), name:name, role:document.getElementById('rRole').value.trim(),
     code:recForm.code, team:recForm.team, c1:p.c1, c2:p.c2, deep:p.deep, soft:p.soft, top:recForm.top };
@@ -942,7 +943,8 @@ function saveRecruiter(){
   writeKey('recruiters'); writeKey('confirm'); writeKey('goals');
   applyRecruiterUI();
   closeRecModal();
-  toast(recEditingId?'수정됐어요':'추가됐어요');
+  if(editing){ toast('"'+name+'" 정보를 수정했어요'); }
+  else { alert('✅ "'+name+'" 리쿠르터가 추가되었습니다.\n\n하단 탭과 전용 페이지가 생성됐어요.'); }
   go(rec.id);
 }
 window.saveRecruiter=saveRecruiter;
