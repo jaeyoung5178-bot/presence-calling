@@ -428,6 +428,12 @@
   .ops-fold:active{transform:scale(.95)}
   .ops-chips{margin-bottom:11px}
   .ops-chips:empty{display:none}
+  /* 결과 요약을 맨 위로 */
+  .ops-sum.ops-sum-top{border-top:none;border-bottom:1px solid var(--line-2);background:var(--paper)}
+  .ops-note{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#FFFDF4;border-bottom:1px solid var(--line-2);font-size:12px;color:var(--muted);font-weight:600}
+  .ops-note button{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 11px;font-size:11.5px;font-weight:700;color:var(--blue);cursor:pointer}
+  .ops-more{display:block;width:100%;border:none;border-top:1px solid var(--line-2);background:var(--paper);padding:13px;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer}
+  .ops-more:active{background:var(--blue-soft)}
 
   /* 검색 + 칩 */
   .home-search{position:relative;margin-bottom:11px}
@@ -514,7 +520,7 @@
     <div class="hb"><span class="mk"><svg viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="62" letter-spacing="-6" fill="#fff">PM</text></svg></span><span>피스메이커<small>CALLING HUB</small></span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="admin-badge">🛡 관리자 모드</span>
-      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.5.0</button>
+      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.6.0</button>
       <span id="sync-badge">⚪ 연결 중…</span>
     </div>
   </header>
@@ -681,7 +687,7 @@
 /* ════════ 설정 ════════ */
 const NORMAL_PIN='8250', ADMIN_PIN='0001';
 /* ═══════ 앱 버전 (배포 확인용 · 수정할 때마다 올라감) ═══════ */
-const APP_VERSION='2.5.0 · 07/02 17:30';
+const APP_VERSION='2.6.0 · 07/02 18:00';
 let isAdmin=false;
 /* ═══════ 새 버전 자동 감지 → 하단 팝업 ═══════
    깃허브에 새 파일이 올라오면, 열려있던 화면에도 "새 버전" 배너가 떠서 무한 새로고침이 필요 없음 */
@@ -1429,7 +1435,7 @@ function timeToMin(t){ const m=/(\d{1,2}):(\d{2})/.exec(cleanTime(t)||''); retur
 /* ── 오늘 면접 · 보기 상태 (time=시간순 / rec=리쿠르터별 / date=날짜별) ── */
 let opsMode='time', opsDate='';   // opsDate '' = 오늘, 아니면 'YYYY-MM-DD'
 const opsFilter={ time:'', rec:'' };   // 2차 드릴다운: 특정 시간대 / 특정 리쿠르터만
-let opsCollapsed=false;
+let opsCollapsed=false, opsShowAll=false;
 function toggleOps(){
   opsCollapsed=!opsCollapsed;
   const b=document.getElementById('opsBody'); if(b) b.style.display=opsCollapsed?'none':'';
@@ -1437,14 +1443,14 @@ function toggleOps(){
 }
 window.toggleOps=toggleOps;
 function setOpsMode(m){
-  opsMode=m; opsFilter.time=''; opsFilter.rec='';   // 모드 바꾸면 2차 필터 초기화
+  opsMode=m; opsFilter.time=''; opsFilter.rec=''; opsShowAll=false;   // 모드 바꾸면 2차 필터·더보기 초기화
   document.querySelectorAll('#opsView button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   const db=document.getElementById('opsDatebar'); if(db) db.style.display=(m==='date')?'flex':'none';
   renderTodayOps();
 }
 window.setOpsMode=setOpsMode;
-function setOpsTime(t){ opsFilter.time=(opsFilter.time===t?'':t); renderTodayOps(); }
-function setOpsRec(id){ opsFilter.rec=(opsFilter.rec===id?'':id); renderTodayOps(); }
+function setOpsTime(t){ opsFilter.time=(opsFilter.time===t?'':t); opsShowAll=false; renderTodayOps(); }
+function setOpsRec(id){ opsFilter.rec=(opsFilter.rec===id?'':id); opsShowAll=false; renderTodayOps(); }
 window.setOpsTime=setOpsTime; window.setOpsRec=setOpsRec;
 /* 현재 날짜의 데이터로 모드별 2차 필터 칩을 그림 (시간순=시간대, 리쿠르터별=리쿠르터) */
 function buildOpsChips(dayList){
@@ -1468,13 +1474,13 @@ function opsTargetIso(){ // 현재 보고 있는 날짜(ISO)
   if(opsMode==='date' && opsDate) return opsDate;
   const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-function opsDatePick(v){ opsDate=v||''; renderTodayOps(); }
+function opsDatePick(v){ opsDate=v||''; opsShowAll=false; renderTodayOps(); }
 window.opsDatePick=opsDatePick;
 function opsDateShift(delta){
   const base=parseDateT(opsTargetIso()); if(base==null) return;
   const d=new Date(base); d.setDate(d.getDate()+delta);
   opsDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  renderTodayOps();
+  opsShowAll=false; renderTodayOps();
 }
 window.opsDateShift=opsDateShift;
 
@@ -1504,6 +1510,8 @@ function opsRowHTML(c,nowMin,showToday,acc){
 }
 function byTime(a,b){ const am=timeToMin(a.intTime),bm=timeToMin(b.intTime); if(am==null)return 1; if(bm==null)return -1; return am-bm; }
 
+function statusRank(c){ if(c.status==='쇼업'||c.status==='스타트')return 0; if(c.status==='노쇼'||c.status==='거절')return 2; return 1; }
+function byStatusTime(a,b){ const ra=statusRank(a),rb=statusRank(b); if(ra!==rb)return ra-rb; return byTime(a,b); }
 function renderTodayOps(){
   const box=document.getElementById('todayOps'); if(!box) return;
   const iso=opsTargetIso(), t=parseDateT(iso), pd=t!=null?new Date(t):new Date();
@@ -1515,40 +1523,52 @@ function renderTodayOps(){
   const di=document.getElementById('opsDateInput'); if(di) di.value=iso;
 
   const dayList=combinedCands().filter(c=>{ const ct=parseDateT(c.intDate); if(ct==null)return false; const d=new Date(ct); return d.getFullYear()===pd.getFullYear()&&d.getMonth()===pd.getMonth()&&d.getDate()===pd.getDate(); });
-  buildOpsChips(dayList);   // 2차 필터 칩 (그날 데이터 기준)
+  buildOpsChips(dayList);
 
   if(!dayList.length){
     box.innerHTML='<div class="ops-empty">'+(isTodayView?'오늘':(pd.getMonth()+1)+'월 '+pd.getDate()+'일')+' 예정된 면접이 없습니다.<br>면접일을 지정하면 여기 표시됩니다.</div>';
     return;
   }
-  // 2차 드릴다운 적용: 시간순→선택 시간대만 / 리쿠르터별→선택 리쿠르터만
+  // ── 요약(결과)은 '그날 전체' 기준 → 종합현황 오늘면접/쇼업과 항상 일치, 맨 위 고정 ──
+  const active=dayList.filter(c=>c.status!=='거절');
+  const dShow=active.filter(c=>c.status==='쇼업'||c.status==='스타트').length;
+  const dNo=active.filter(c=>c.status==='노쇼').length;
+  const dWait=active.length-dShow-dNo;
+  const summary=`<div class="ops-sum ops-sum-top"><div><div class="n">${active.length}</div><div class="l">전체</div></div><div><div class="n" style="color:var(--green-deep)">${dShow}</div><div class="l">참석</div></div><div><div class="n">${dWait}</div><div class="l">대기</div></div><div><div class="n" style="color:var(--red)">${dNo}</div><div class="l">노쇼</div></div></div>`;
+
+  // ── 2차 드릴다운(시간대/리쿠르터)은 아래 명단에만 적용 ──
   let list=dayList;
   if(opsMode==='time' && opsFilter.time) list=dayList.filter(c=>(cleanTime(c.intTime)||'시간미정')===opsFilter.time);
   if(opsMode==='rec' && opsFilter.rec) list=dayList.filter(c=>c.recruiter===opsFilter.rec);
+  const filterNote=(opsFilter.time||opsFilter.rec)
+    ? `<div class="ops-note">🔍 ${opsFilter.time?esc(opsFilter.time):esc(recMeta(opsFilter.rec).name)} 만 보는 중 · ${list.length}명 <button onclick="${opsFilter.time?"setOpsTime('"+opsFilter.time+"')":"setOpsRec('"+opsFilter.rec+"')"}">전체 보기</button></div>` : '';
 
   const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
-  const acc={show:0,wait:0,no:0};
-  let inner='';
+  const CAP=6; let inner='', moreBtn='';
   if(opsMode==='rec'){
-    // 리쿠르터별 그룹 → 각 그룹 안은 시간순 (리쿠르터 칩 선택 시 해당 그룹만)
+    // 리쿠르터별 그룹 → 각 그룹 안은 참석→대기→노쇼 순
     const groups={};
     list.forEach(c=>{ (groups[c.recruiter]=groups[c.recruiter]||[]).push(c); });
     const order=RECRUITERS.map(r=>r.id).filter(id=>groups[id]);
     Object.keys(groups).forEach(id=>{ if(order.indexOf(id)<0) order.push(id); });
     order.forEach((id,gi)=>{
-      const rm=recMeta(id), g=groups[id].slice().sort(byTime);
+      const rm=recMeta(id), g=groups[id].slice().sort(byStatusTime);
       const gShow=g.filter(c=>c.status==='쇼업'||c.status==='스타트').length;
       inner+=`<div class="ops-grp ${gi>0?'gtop':''}"><span class="gdot" style="background:${rm.c1||'#999'}"></span><span class="gnm">${esc(rm.name)}</span>${rm.role?`<span class="grole">${esc(rm.role)}</span>`:''}<span class="gcnt"><b>${gShow}</b> / ${g.length}명</span></div>`;
-      inner+=g.map(c=>opsRowHTML(c,nowMin,isTodayView,acc)).join('');
+      inner+=g.map(c=>opsRowHTML(c,nowMin,isTodayView,null)).join('');
     });
   }else{
-    // 시간순 (time / date 공용)
-    inner=list.slice().sort(byTime).map(c=>opsRowHTML(c,nowMin,isTodayView,acc)).join('');
+    // 시간순 / 날짜 → 참석 위, 대기/미체크 다음, 노쇼·취소 아래 (각 블록 시간순)
+    const sorted=list.slice().sort(byStatusTime);
+    const vis=(opsShowAll||sorted.length<=CAP)?sorted:sorted.slice(0,CAP);
+    inner=vis.map(c=>opsRowHTML(c,nowMin,isTodayView,null)).join('');
+    if(!opsShowAll && sorted.length>CAP){ moreBtn=`<button class="ops-more" onclick="opsMore()">▾ 나머지 ${sorted.length-CAP}명 더 보기</button>`; }
   }
-  if(!list.length){ inner='<div class="ops-empty" style="padding:20px 16px">선택한 조건의 면접자가 없습니다. 위 칩에서 "전체"를 눌러보세요.</div>'; }
-  const sum=`<div class="ops-sum"><div><div class="n">${list.length}</div><div class="l">${(opsFilter.time||opsFilter.rec)?'표시':'전체'}</div></div><div><div class="n" style="color:var(--green-deep)">${acc.show}</div><div class="l">참석</div></div><div><div class="n">${acc.wait}</div><div class="l">대기</div></div><div><div class="n" style="color:var(--red)">${acc.no}</div><div class="l">노쇼</div></div></div>`;
-  box.innerHTML=inner+sum;
+  if(!list.length){ inner='<div class="ops-empty" style="padding:20px 16px">선택한 조건의 면접자가 없습니다.</div>'; }
+  box.innerHTML=summary+filterNote+'<div class="ops-list">'+inner+'</div>'+moreBtn;
 }
+function opsMore(){ opsShowAll=true; renderTodayOps(); }
+window.opsMore=opsMore;
 function opsTargetIsoToday(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 /* 한 번 탭으로 상태 변경 → 앱·Firebase·인터뷰로그 시트 동시 반영 */
 function quickStatus(id,status){
