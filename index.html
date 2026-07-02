@@ -352,6 +352,89 @@
 
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:5000;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ═══════════ 2.0 · 운영 대시보드 (기존 토큰 재사용) ═══════════ */
+  /* 기간 토글 */
+  .period-toggle{display:flex;gap:6px;margin-bottom:14px}
+  .period-toggle button{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:11px;padding:9px 4px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:.12s}
+  .period-toggle button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .period-toggle button:active{transform:scale(.96)}
+
+  /* 오늘 운영 타임라인 */
+  .ops-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}
+  .ops-empty{text-align:center;color:var(--muted-2);font-size:14px;padding:26px 16px;line-height:1.6}
+  .ops-row{display:flex;align-items:stretch;border-bottom:1px solid var(--line-2)}
+  .ops-row:last-child{border-bottom:none}
+  .ops-time{flex:0 0 60px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 4px;font-family:var(--mono);font-weight:700;font-size:15px;color:var(--text);background:var(--paper);border-right:1px solid var(--line-2)}
+  .ops-time small{font-size:8.5px;font-weight:700;color:var(--muted-2);margin-top:3px;font-family:var(--mono);letter-spacing:.04em}
+  .ops-main{flex:1;min-width:0;padding:11px 13px}
+  .ops-nm{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px;flex-wrap:wrap;letter-spacing:-.01em}
+  .ops-nm .rc{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+  .ops-badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;margin-left:auto;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+  .ops-sub{font-size:13px;color:var(--muted);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
+  .ops-sub b{color:var(--text);font-weight:700}
+  .ops-acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .ops-acts button{flex:1;min-width:50px;border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:9px 4px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--text);transition:.1s}
+  .ops-acts button:active{transform:scale(.94)}
+  .ops-acts .a-go{color:var(--green-deep)} .ops-acts .a-go:active{background:var(--green-soft)}
+  .ops-acts .a-no{color:var(--red)} .ops-acts .a-no:active{background:var(--red-soft)}
+  .ops-acts .a-ch{color:var(--blue)} .ops-acts .a-ch:active{background:var(--blue-soft)}
+  .ops-acts .a-cx{color:var(--muted)} .ops-acts .a-cx:active{background:#EFEDE6}
+  .ops-row.now{background:linear-gradient(90deg,rgba(79,156,48,.10),transparent 60%)}
+  .ops-row.now .ops-time{background:var(--green);color:#fff}
+  .ops-row.now .ops-time small{color:rgba(255,255,255,.9)}
+  .ops-row.alert .ops-time{background:var(--red);color:#fff}
+  .ops-row.alert .ops-time small{color:rgba(255,255,255,.9)}
+  .ops-row.done{opacity:.6}
+  .ops-row.done .ops-time{background:#EFEDE6;color:var(--muted)}
+  .ops-live{width:7px;height:7px;border-radius:50%;background:#7FD45A;box-shadow:0 0 0 0 rgba(127,212,90,.6);animation:opspulse 1.5s infinite}
+  @keyframes opspulse{0%{box-shadow:0 0 0 0 rgba(127,212,90,.6)}70%{box-shadow:0 0 0 7px rgba(127,212,90,0)}100%{box-shadow:0 0 0 0 rgba(127,212,90,0)}}
+  .ops-sum{display:flex;gap:0;background:var(--paper);border-top:1px solid var(--line-2)}
+  .ops-sum div{flex:1;text-align:center;padding:10px 4px}
+  .ops-sum div+div{border-left:1px solid var(--line-2)}
+  .ops-sum .n{font-family:var(--mono);font-size:19px;font-weight:800;line-height:1}
+  .ops-sum .l{font-size:10.5px;color:var(--muted);margin-top:3px;font-weight:600}
+
+  /* 검색 + 칩 */
+  .home-search{position:relative;margin-bottom:11px}
+  .home-search input{width:100%;border:1.5px solid var(--line);border-radius:13px;padding:12px 14px 12px 40px;background:#fff;outline:none;font-size:16px;color:var(--text);transition:.15s;font-family:inherit}
+  .home-search input:focus{border-color:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
+  .home-search input::placeholder{color:#b6b1a4}
+  .home-search .si{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--muted-2)}
+  .chip-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+  .chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:.12s;white-space:nowrap}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip:active{transform:scale(.95)}
+
+  /* 카드 전화/문자 원터치 */
+  .cc-quick{display:flex;gap:8px;margin-top:11px}
+  .cc-quick a,.cc-quick button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;color:var(--text);transition:.1s;text-decoration:none;font-family:inherit}
+  .cc-quick .q-call{color:var(--green-deep)} .cc-quick .q-call:active{background:var(--green-soft)}
+  .cc-quick .q-sms{color:var(--blue)} .cc-quick .q-sms:active{background:var(--blue-soft)}
+
+  /* 월간 캘린더 */
+  .collapse-h{display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin:24px 0 12px}
+  .collapse-h .sec-t.sm{margin:0}
+  .collapse-h .cx{color:var(--muted-2);font-size:13px}
+  .cal-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow);padding:14px 14px 16px;margin-bottom:14px}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .cal-head b{font-size:16px;font-weight:800}
+  .cal-nav{display:flex;gap:6px}
+  .cal-nav button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--paper);font-size:17px;cursor:pointer;color:var(--text);line-height:1}
+  .cal-nav button:active{transform:scale(.9)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .cal-dow{text-align:center;font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--muted-2);padding:2px 0}
+  .cal-cell{aspect-ratio:1;border-radius:9px;border:1.5px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:13.5px;font-weight:700;color:var(--text);cursor:pointer;transition:.1s}
+  .cal-cell.pad{cursor:default}
+  .cal-cell.has{background:var(--paper)}
+  .cal-cell.today{border-color:var(--green);color:var(--green-deep)}
+  .cal-cell.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .cal-cell .cdot{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--green-deep)}
+  .cal-cell.sel .cdot{color:#7FD45A}
+  .cal-cell:not(.pad):active{transform:scale(.9)}
+
+  /* 퍼널 전환율 라벨 */
+  .sb-cell .cv{font-size:9px;color:#8A909C;margin-top:4px;font-weight:700;font-family:var(--mono)}
 </style>
 </head>
 <body>
@@ -379,12 +462,30 @@
 
   <!-- ===== 종합 ===== -->
   <div class="view on" id="v-home">
+    <!-- 오늘 운영 현황 (가장 먼저) -->
+    <div class="sec-eb">TODAY · 운영 현황</div>
+    <div class="sec-t" id="opsTitle">오늘 면접</div>
+    <div class="ops-card" id="todayOps"></div>
+
     <div class="sec-eb">OVERVIEW · 자동 합산</div>
     <div class="sec-t">종합 현황</div>
+    <div class="period-toggle" id="homePeriod">
+      <button data-p="today" onclick="setHomePeriod('today')">오늘</button>
+      <button data-p="week" onclick="setHomePeriod('week')">이번주</button>
+      <button data-p="month" onclick="setHomePeriod('month')">이번달</button>
+      <button data-p="all" class="on" onclick="setHomePeriod('all')">전체</button>
+    </div>
     <div class="signboard" id="sb-home"></div>
     <div class="today-box" id="todayBox"></div>
     <div class="rstat-grid" id="rstats"></div>
+
+    <div class="collapse-h" onclick="toggleCal()"><div class="sec-t sm">🗓️ 인터뷰 캘린더</div><span class="cx" id="calCaret">▸ 펼치기</span></div>
+    <div id="calWrap" style="display:none"><div class="cal-card" id="calCard"></div></div>
+
     <div class="row-between"><div class="sec-t sm">전체 면접자 <span id="ccount-home" style="font-family:var(--mono);color:var(--green-deep)"></span></div><button class="mini-copy" onclick="copySheetAll()">📋 전체 시트 복사</button></div>
+    <div class="home-search"><span class="si">🔍</span><input id="homeQ" placeholder="이름·연락처·메모·담당·유입 검색" oninput="onHomeSearch(this.value)" autocomplete="off"></div>
+    <div class="chip-row" id="homeStatusChips"></div>
+    <div class="chip-row" id="homeRecChips"></div>
     <div class="clist" id="clist-home"></div>
 
     <div class="row-between" onclick="toggleSheet()" style="cursor:pointer"><div class="sec-t sm">📄 인터뷰로그 시트 <span id="sheetCount" style="font-family:var(--mono);color:var(--blue)"></span> <span id="sheetCaret" style="color:var(--muted-2);font-size:13px">▸</span></div><button class="mini-copy" style="background:var(--blue-soft);border-color:#cfe0f0;color:var(--blue)" onclick="event.stopPropagation();fetchSheet(true)">↻ 새로고침</button></div>
@@ -1021,6 +1122,7 @@ function buildPersonViews(){
     <div class="clist" id="clist-${r.id}"></div>
     <div class="sec-t sm">✉️ 부킹 완료 안내문</div>
     <div class="card card-pad">
+      <div class="fld"><label>문자 종류</label><div class="seg" id="cftpl-${r.id}" style="flex-wrap:wrap">${['면접안내','하루전','당일','일정변경','감사'].map(t=>`<button data-tpl="${t}" onclick="pickConfTpl('${r.id}','${t}')">${t}</button>`).join('')}</div></div>
       <div class="fld"><label>유입경로</label><div class="seg" id="cfch-${r.id}"><button data-ch="알바몬" onclick="pickConfChannel('${r.id}','알바몬')">알바몬</button><button data-ch="당근·SNS" onclick="pickConfChannel('${r.id}','당근·SNS')">당근·SNS PR</button></div></div>
       <div class="row2">
         <div class="fld"><label>이름</label><input class="cf-in" data-who="${r.id}" data-f="name" placeholder="홍길동"></div>
@@ -1057,8 +1159,9 @@ function statsFor(list){
   const booked=list.filter(c=>['부킹','쇼업','스타트','노쇼'].includes(c.status)).length;
   const show=list.filter(c=>['쇼업','스타트'].includes(c.status)).length;
   const start=list.filter(c=>c.status==='스타트').length;
+  const noshow=list.filter(c=>c.status==='노쇼').length;
   const drop=list.filter(c=>['노쇼','거절'].includes(c.status)).length;
-  return {total:list.length,booked,show,start,drop,showRate:booked?show/booked*100:0};
+  return {total:list.length,booked,show,start,noshow,drop,showRate:booked?show/booked*100:0};
 }
 function animatePct(el,target){
   if(!el)return; const dur=850; let t0=null; const ease=x=>1-Math.pow(1-x,3);
@@ -1073,10 +1176,10 @@ function signboardHTML(s,whoTxt){
     <div class="sb-rate"><div class="big sb-big">0<small>%</small></div><div class="cap">부킹 <b>${s.booked}</b>건 중 쇼업 <b>${s.show}</b>건</div></div>
     <div class="sb-bar"><i class="sb-fill"></i></div>
     <div class="sb-funnel">
-      <div class="sb-cell book"><div class="n">${s.booked}</div><div class="l">부킹</div></div>
-      <div class="sb-cell show"><div class="n">${s.show}</div><div class="l">쇼업</div></div>
-      <div class="sb-cell start"><div class="n">${s.start}</div><div class="l">스타트</div></div>
-      <div class="sb-cell drop"><div class="n">${s.drop}</div><div class="l">노쇼·거절</div></div>
+      <div class="sb-cell book"><div class="n">${s.booked}</div><div class="l">부킹</div><div class="cv">기준</div></div>
+      <div class="sb-cell show"><div class="n">${s.show}</div><div class="l">쇼업</div><div class="cv">${s.booked?Math.round(s.show/s.booked*100):0}%</div></div>
+      <div class="sb-cell start"><div class="n">${s.start}</div><div class="l">스타트</div><div class="cv">${s.show?Math.round(s.start/s.show*100):0}%</div></div>
+      <div class="sb-cell drop"><div class="n">${s.drop}</div><div class="l">노쇼·거절</div><div class="cv">${s.booked?Math.round(s.drop/s.booked*100):0}%</div></div>
     </div>`;
 }
 function fillSignboard(el,s){
@@ -1086,26 +1189,192 @@ function fillSignboard(el,s){
 
 /* ════════ 종합 ════════ */
 function renderHome(){
-  const all=combinedCands(), s=statsFor(all);
-  const el=document.getElementById('sb-home'); el.innerHTML=signboardHTML(s,'전체 (앱+시트)'); fillSignboard(el,s);
+  const all=combinedCands();
+  const periodAll = homePeriod==='all' ? all : all.filter(c=>inPeriod(c.bookDate,homePeriod));
+  const s=statsFor(periodAll);
+  const el=document.getElementById('sb-home'); el.innerHTML=signboardHTML(s,periodLabel()); fillSignboard(el,s);
+  renderTodayOps();
   const td=all.filter(c=>isToday(c.intDate) && c.status!=='거절');
   const tdShow=td.filter(c=>c.status==='쇼업'||c.status==='스타트').length;
   const dt=new Date(), dstr=(dt.getMonth()+1)+'월 '+dt.getDate()+'일';
   const tb=document.getElementById('todayBox');
   if(tb) tb.innerHTML=`<div class="td-col"><div class="td-date">오늘 면접 · ${dstr}</div><div style="display:flex;align-items:baseline;gap:5px;margin-top:5px"><span class="td-n">${td.length}</span><span class="td-lab">명</span></div></div><div class="td-div"></div><div class="td-col"><div class="td-date">오늘 쇼업</div><div style="display:flex;align-items:baseline;gap:5px;margin-top:5px"><span class="td-n" style="color:#7FD45A">${tdShow}</span><span class="td-lab">명</span></div></div>`;
   document.getElementById('rstats').innerHTML=RECRUITERS.map(r=>{
-    const st=statsFor(combinedFor(r.id));
+    const st=statsFor(periodAll.filter(c=>c.recruiter===r.id));
     return `<div class="rstat" onclick="go('${r.id}')">
       <div class="rn">${r.name}<span class="role">${r.role}</span></div>
-      <div class="row"><span>부킹</span><b>${st.booked}</b></div>
-      <div class="row"><span>쇼업 / 스타트</span><b>${st.show} / ${st.start}</b></div>
+      <div class="row"><span>부킹 / 쇼업</span><b>${st.booked} / ${st.show}</b></div>
+      <div class="row"><span>스타트 / 노쇼</span><b>${st.start} / ${st.noshow}</b></div>
       <div class="rate">쇼업률 ${st.showRate.toFixed(0)}%</div>
       <div class="go">탭하면 개인 페이지로 →</div></div>`;
   }).join('');
-  const inApp=candList();
-  document.getElementById('ccount-home').textContent='· '+inApp.length+'명';
-  renderCards('clist-home',inApp,true);
+  buildHomeChips();
+  renderCalendar();
+  renderHomeList();
 }
+function periodLabel(){ return homePeriod==='today'?'오늘 부킹 기준':homePeriod==='week'?'이번주 부킹 기준':homePeriod==='month'?'이번달 부킹 기준':'전체 · 앱+시트'; }
+
+/* ════════ 2.0 · 운영 대시보드 로직 ════════ */
+let homePeriod='all';
+const homeFilter={q:'',status:'',rec:''};
+function setHomePeriod(p){ homePeriod=p; document.querySelectorAll('#homePeriod button').forEach(b=>b.classList.toggle('on',b.dataset.p===p)); renderHome(); }
+window.setHomePeriod=setHomePeriod;
+
+/* 날짜 문자열(ISO·M/D)을 타임스탬프로 — 기간/캘린더 공용 */
+function parseDateT(s){
+  if(!s) return null; s=String(s).trim();
+  let m=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s);
+  if(m) return new Date(+m[1],+m[2]-1,+m[3],12,0,0,0).getTime();
+  m=/^(\d{1,2})\s*[\/.\-]\s*(\d{1,2})$/.exec(s);
+  if(m) return new Date((new Date()).getFullYear(),+m[1]-1,+m[2],12,0,0,0).getTime();
+  return null;
+}
+function periodRange(p){
+  const d=new Date(),y=d.getFullYear(),mo=d.getMonth(),da=d.getDate();
+  if(p==='today') return [new Date(y,mo,da,0,0,0,0).getTime(), new Date(y,mo,da,23,59,59,999).getTime()];
+  if(p==='week')  return weekRange();
+  if(p==='month') return [new Date(y,mo,1,0,0,0,0).getTime(), new Date(y,mo+1,0,23,59,59,999).getTime()];
+  return null;
+}
+function inPeriod(dateStr,p){ if(p==='all'||!p) return true; const t=parseDateT(dateStr); if(t==null) return false; const r=periodRange(p); return t>=r[0]&&t<=r[1]; }
+
+/* ── 오늘 운영 타임라인 (시간순 · 진행중=초록 · 지남미체크=빨강) ── */
+function timeToMin(t){ const m=/(\d{1,2}):(\d{2})/.exec(cleanTime(t)||''); return m?(+m[1]*60+ +m[2]):null; }
+function renderTodayOps(){
+  const box=document.getElementById('todayOps'); if(!box) return;
+  const dt=new Date(), dow=['일','월','화','수','목','금','토'][dt.getDay()];
+  const tt=document.getElementById('opsTitle');
+  if(tt) tt.innerHTML='오늘 면접 <span style="font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:600">'+(dt.getMonth()+1)+'월 '+dt.getDate()+'일 ('+dow+')</span>';
+  const today=combinedCands().filter(c=>isToday(c.intDate));
+  if(!today.length){ box.innerHTML='<div class="ops-empty">오늘 예정된 면접이 없습니다.<br>면접일을 오늘로 지정하면 여기 시간순으로 표시됩니다.</div>'; return; }
+  const nowMin=dt.getHours()*60+dt.getMinutes();
+  const rows=today.map(c=>({c,min:timeToMin(c.intTime)})).sort((a,b)=>{ if(a.min==null)return 1; if(b.min==null)return -1; return a.min-b.min; });
+  let cShow=0,cWait=0,cNo=0;
+  const html=rows.map(({c,min})=>{
+    const done=(c.status==='쇼업'||c.status==='스타트'), no=(c.status==='노쇼'), cx=(c.status==='거절');
+    let cls='up',badge='예정',bs='background:var(--blue-soft);color:var(--blue)',state='대기';
+    if(done){ cls='done'; badge='✓ 참석'; bs='background:var(--green-soft);color:var(--green-deep)'; state='완료'; cShow++; }
+    else if(no){ cls='done'; badge='노쇼'; bs='background:var(--red-soft);color:var(--red)'; state='노쇼'; cNo++; }
+    else if(cx){ cls='done'; badge='취소'; bs='background:#EFEDE6;color:var(--muted)'; state='취소'; }
+    else if(min!=null && nowMin>=min+45){ cls='alert'; badge='⚠ 미체크'; bs='background:var(--red-soft);color:var(--red)'; state='지남'; cWait++; }
+    else if(min!=null && nowMin>=min && nowMin<min+60){ cls='now'; badge='<span class="ops-live"></span>진행중'; bs='background:var(--green-soft);color:var(--green-deep)'; state='NOW'; cWait++; }
+    else { cWait++; }
+    const rm=recMeta(c.recruiter), tl=cleanTime(c.intTime)||'—';
+    const sub=[]; if(c.tel)sub.push('📞 <b>'+esc(c.tel)+'</b>'); if(c.age)sub.push('<b>'+esc(ageLabel(c.age))+'</b>'); if(c.gender)sub.push('<b>'+esc(c.gender)+'</b>');
+    const acts=(done||no||cx)
+      ? `<div class="ops-acts"><button class="a-ch" onclick="quickStatus('${c.id}','부킹')">↺ 되돌리기</button><button class="a-ch" onclick="openEdit('${c.id}')">✏️ 수정</button></div>`
+      : `<div class="ops-acts"><button class="a-go" onclick="quickStatus('${c.id}','쇼업')">참석</button><button class="a-no" onclick="quickStatus('${c.id}','노쇼')">노쇼</button><button class="a-ch" onclick="openEdit('${c.id}')">일정변경</button><button class="a-cx" onclick="quickStatus('${c.id}','거절')">취소</button></div>`;
+    return `<div class="ops-row ${cls}">
+      <div class="ops-time">${esc(tl)}<small>${state}</small></div>
+      <div class="ops-main">
+        <div class="ops-nm">${esc(c.name||'(이름 없음)')}<span class="rc" style="background:${rm.soft};color:${rm.deep}">${esc(rm.name)}</span><span class="ops-badge" style="${bs}">${badge}</span></div>
+        ${sub.length?`<div class="ops-sub">${sub.map(x=>'<span>'+x+'</span>').join('')}</div>`:''}
+        ${acts}
+      </div></div>`;
+  }).join('');
+  const sum=`<div class="ops-sum"><div><div class="n">${rows.length}</div><div class="l">전체</div></div><div><div class="n" style="color:var(--green-deep)">${cShow}</div><div class="l">참석</div></div><div><div class="n">${cWait}</div><div class="l">대기</div></div><div><div class="n" style="color:var(--red)">${cNo}</div><div class="l">노쇼</div></div></div>`;
+  box.innerHTML=html+sum;
+}
+/* 한 번 탭으로 상태 변경 → 앱·Firebase·인터뷰로그 시트 동시 반영 */
+function quickStatus(id,status){
+  let c=DATA.candidates[id]; if(!c) c=combinedCands().find(x=>String(x.id)===String(id));
+  if(!c) return;
+  const nc=Object.assign({},c,{status}); delete nc._sheet;
+  writeCandidate(nc);
+  if(effSheetUrl()) sheetPush('update',nc);
+  renderHome(); renderPerson(c.recruiter);
+  toast((c.name||'면접자')+' → '+status);
+}
+window.quickStatus=quickStatus;
+
+/* ── 검색 + 상태/담당 칩 (홈 전체 면접자) ── */
+function onHomeSearch(v){ homeFilter.q=(v||'').trim(); renderHomeList(); }
+window.onHomeSearch=onHomeSearch;
+function setHomeStatus(s){ homeFilter.status=(homeFilter.status===s?'':s); buildHomeChips(); renderHomeList(); }
+function setHomeRec(id){ homeFilter.rec=(homeFilter.rec===id?'':id); buildHomeChips(); renderHomeList(); }
+window.setHomeStatus=setHomeStatus; window.setHomeRec=setHomeRec;
+function buildHomeChips(){
+  const sc=document.getElementById('homeStatusChips');
+  if(sc) sc.innerHTML=['전체'].concat(STATUSES).map(s=>{ const v=(s==='전체'?'':s); return `<button class="chip ${homeFilter.status===v?'on':''}" onclick="setHomeStatus('${v}')">${s}</button>`; }).join('');
+  const rc=document.getElementById('homeRecChips');
+  if(rc) rc.innerHTML=`<button class="chip ${homeFilter.rec===''?'on':''}" onclick="setHomeRec('')">전체 담당</button>`+RECRUITERS.map(r=>`<button class="chip ${homeFilter.rec===r.id?'on':''}" onclick="setHomeRec('${r.id}')">${esc(r.name)}</button>`).join('');
+}
+function homeListData(){
+  let list=candList();
+  if(homeFilter.rec) list=list.filter(c=>c.recruiter===homeFilter.rec);
+  if(homeFilter.status) list=list.filter(c=>c.status===homeFilter.status);
+  if(homeFilter.q){
+    const q=homeFilter.q.toLowerCase(), qd=digitsTel(homeFilter.q);
+    list=list.filter(c=>{
+      const hay=[c.name,c.tel,c.memo,recMeta(c.recruiter).name,c.platform].map(x=>String(x||'').toLowerCase()).join(' ');
+      return hay.indexOf(q)>=0 || (qd && digitsTel(c.tel).indexOf(qd)>=0);
+    });
+  }
+  return list;
+}
+function renderHomeList(){
+  const list=homeListData();
+  const cc=document.getElementById('ccount-home'); if(cc) cc.textContent='· '+list.length+'명';
+  renderCards('clist-home',list,true);
+}
+
+/* ── 월간 인터뷰 캘린더 ── */
+let calMonth=null, calOpen=false;
+function toggleCal(){ const w=document.getElementById('calWrap'); calOpen=!calOpen; w.style.display=calOpen?'block':'none'; document.getElementById('calCaret').textContent=calOpen?'▾ 접기':'▸ 펼치기'; if(calOpen) renderCalendar(); }
+window.toggleCal=toggleCal;
+function calShift(delta){ const d=new Date(); if(!calMonth) calMonth={y:d.getFullYear(),m:d.getMonth()}; let m=calMonth.m+delta,y=calMonth.y; if(m<0){m=11;y--;} if(m>11){m=0;y++;} calMonth={y,m}; renderCalendar(); }
+window.calShift=calShift;
+function renderCalendar(){
+  const card=document.getElementById('calCard'); if(!card || !calOpen) return;
+  const now=new Date(); if(!calMonth) calMonth={y:now.getFullYear(),m:now.getMonth()};
+  const {y,m}=calMonth, counts={};
+  combinedCands().forEach(c=>{ const t=parseDateT(c.intDate); if(t==null)return; const d=new Date(t); if(d.getFullYear()===y&&d.getMonth()===m) counts[d.getDate()]=(counts[d.getDate()]||0)+1; });
+  const startDow=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  const selF=getFilter('clist-home'); let selDay=null;
+  if(selF.date){ const t=parseDateT(selF.date); if(t!=null){ const d=new Date(t); if(d.getFullYear()===y&&d.getMonth()===m) selDay=d.getDate(); } }
+  let cells=['일','월','화','수','목','금','토'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<startDow;i++) cells+='<div class="cal-cell pad"></div>';
+  for(let day=1;day<=days;day++){
+    const n=counts[day]||0, isT=(y===now.getFullYear()&&m===now.getMonth()&&day===now.getDate());
+    const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0'), sel=(selDay===day);
+    cells+=`<div class="cal-cell ${n?'has':''} ${isT?'today':''} ${sel?'sel':''}" onclick="calPick('${iso}')">${day}${n?`<span class="cdot">${n}</span>`:''}</div>`;
+  }
+  card.innerHTML=`<div class="cal-head"><b>${y}년 ${m+1}월</b><div class="cal-nav"><button onclick="calShift(-1)">‹</button><button onclick="calShift(1)">›</button></div></div><div class="cal-grid">${cells}</div>`;
+}
+function calPick(iso){
+  const f=getFilter('clist-home');
+  if(f.date===iso && f.basis==='int'){ f.date=''; } else { f.date=iso; f.basis='int'; }
+  renderHomeList(); renderCalendar();
+  const el=document.getElementById('clist-home'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+window.calPick=calPick;
+
+/* ── 문자 템플릿 5종 ── */
+function smsBody(type,c,closing){
+  const name=(c.name||'').trim()||'OOO';
+  const dateK = c.intDate ? toKDate(c.intDate) : 'O월 O일';
+  const time = cleanTime(c.intTime) || 'OO:OO';
+  const sender = String(c.platform||'').includes('당근') ? (recMeta(c.recruiter).team||'피스메이커') : '피스메이커';
+  const addrFull='인천 부평구 경인로 954-1 경인스타빌딩 3층 (부평동 645-16번지)';
+  const closePhrase = ((closing||autoCloseKey())==='주말') ? '좋은 주말되시고' : '좋은 하루되시고';
+  if(type==='하루전') return `${name}님 안녕하세요:)\n${sender}입니다. 내일(${dateK}) ${time} 면접 안내 다시 드려요.\n- 주소 : ${addrFull}\n[부평역 1번출구 도보 2-3분]\n- 이력서 작성을 위해 10분 정도 여유있게 와주세요.\n내일 뵙겠습니다~🥰`;
+  if(type==='당일')   return `${name}님 안녕하세요:)\n오늘 ${time} 면접 잊지 않으셨죠?:)\n- 주소 : ${addrFull}\n[부평역 1번출구 도보 2-3분]\n혹시 늦어지시면 이 번호로 편히 연락주세요. 곧 뵈어요~🥰`;
+  if(type==='일정변경') return `${name}님 안녕하세요:)\n${sender}입니다. 면접 일정 조율 관련해 연락드려요:)\n편하신 날짜와 시간 알려주시면 다시 정확히 안내드리겠습니다. 감사합니다!`;
+  if(type==='감사')   return `${name}님, 오늘 면접에 와주셔서 진심으로 감사했습니다:)\n함께하게 되어 기대가 큽니다. 다음 안내는 곧 문자로 드릴게요.\n${closePhrase} 편안한 하루 보내세요~🥰`;
+  return `${name}님 안녕하세요:)\n${sender} 면접일정 안내드립니다.\n- 시간 : ${dateK} ${time}\n- 주소 : ${addrFull}\n[부평역 1번출구에서 도보 2-3분거리]\n-> 부평역 1번 출구(남부전용출구)로 나와 직진하신 후, 파리바게트에서 신호등을 건너시면 좌측에 경인스타빌딩 3층\n- 참고사항 : 이력서 작성을 위해 10분정도 여유있게 참석부탁드리며 문의사항 발생 시 상기 번호로 연락부탁드립니다.\n${closePhrase} 면접에서 뵈어요~🥰`;
+}
+function pickConfTpl(who,t){ DATA.confirm[who].tpl=t; writeConfirm(who); segOn('cftpl-'+who,'tpl',t); renderConfText(who); }
+window.pickConfTpl=pickConfTpl;
+/* 카드의 💬 문자 → 면접안내 템플릿으로 기본 문자앱 실행 */
+function smsCandidate(id){
+  let c=DATA.candidates[id]; if(!c) c=combinedCands().find(x=>String(x.id)===String(id));
+  if(!c) return;
+  const tel=digitsTel(c.tel); if(!tel){ toast('연락처가 없습니다'); return; }
+  const body=smsBody('면접안내',c);
+  const ua=navigator.userAgent||'', sep=/iPhone|iPad|iPod/.test(ua)?'&':'?';
+  window.location.href='sms:'+tel+sep+'body='+encodeURIComponent(body);
+}
+window.smsCandidate=smsCandidate;
 
 /* ════════ 개인 페이지 ════════ */
 function renderPerson(id){
@@ -1164,7 +1433,7 @@ function dateKey(s){
 /* ── 컨테이너별 필터 상태 (date 비움=전체 / basis: book|int / hidden) ── */
 const listFilter={};
 function getFilter(cid){ return listFilter[cid]||(listFilter[cid]={date:'',basis:'book',hidden:false}); }
-function listSource(cid){ return cid==='clist-home'?candList():combinedFor(cid.replace('clist-','')); }
+function listSource(cid){ return cid==='clist-home'?homeListData():combinedFor(cid.replace('clist-','')); }
 function rerenderList(cid){ renderCards(cid, listSource(cid), cid==='clist-home'); }
 function setListDate(cid,v){ getFilter(cid).date=v||''; rerenderList(cid); }
 function clearListDate(cid){ getFilter(cid).date=''; rerenderList(cid); }
@@ -1224,6 +1493,7 @@ function renderCards(containerId,list,showRecBadge){
         <span class="cc-status" style="background:${sm.bg};color:${sm.c}">${c.status}</span></div>
       <div class="cc-meta">${meta.join('')}</div>
       ${c.memo?`<div class="cc-memo">📝 ${esc(c.memo)}</div>`:''}
+      ${digitsTel(c.tel)?`<div class="cc-quick"><a class="q-call" href="tel:${digitsTel(c.tel)}">📞 전화</a><button class="q-sms" onclick="smsCandidate('${c.id}')">💬 문자</button></div>`:''}
       <div class="cc-actions"><button class="sheet" onclick="copySheetRow('${c.id}')">📋 시트</button><button class="edit" onclick="openEdit('${c.id}')">✏️ 수정</button><button class="del" onclick="delCandidate('${c.id}')">🗑 삭제</button></div>
     </div>`;
   }).join('');
@@ -1242,7 +1512,7 @@ function renderInfo(){
 }
 function renderConfirmInputs(){
   document.querySelectorAll('.cf-in').forEach(inp=>setVal(inp,DATA.confirm[inp.dataset.who][inp.dataset.f]));
-  RECRUITERS.forEach(r=>{ segOn('cfch-'+r.id,'ch',DATA.confirm[r.id].channel||'알바몬'); segOn('cfclose-'+r.id,'cl',DATA.confirm[r.id].closing||autoCloseKey()); hlTimeChips(r.id); renderConfText(r.id); });
+  RECRUITERS.forEach(r=>{ segOn('cftpl-'+r.id,'tpl',DATA.confirm[r.id].tpl||'면접안내'); segOn('cfch-'+r.id,'ch',DATA.confirm[r.id].channel||'알바몬'); segOn('cfclose-'+r.id,'cl',DATA.confirm[r.id].closing||autoCloseKey()); hlTimeChips(r.id); renderConfText(r.id); });
 }
 function pickConfChannel(who,ch){ DATA.confirm[who].channel=ch; writeConfirm(who); segOn('cfch-'+who,'ch',ch); renderConfText(who); }
 window.pickConfChannel=pickConfChannel;
@@ -1270,20 +1540,11 @@ function openSMS(who){
 }
 window.openSMS=openSMS;
 function renderConfText(who){
-  const c=DATA.confirm[who];
-  const name=(c.name||'').trim()||'OOO', date=(c.date||'').trim()||'O월 O일 (O)', time=(c.time||'').trim()||'OO:OO';
-  const sender=(c.channel==='알바몬'||!c.channel) ? '피스메이커' : (recMeta(who).team||'피스메이커');
-  const closePhrase=((c.closing||autoCloseKey())==='주말')?'좋은 주말되시고':'좋은 하루되시고';
+  const c=DATA.confirm[who]||{};
   const el=document.getElementById('conf-'+who); if(!el)return;
-  el.textContent=
-`${name}님 안녕하세요:)
-${sender} 면접일정 안내드립니다.
-- 시간 : ${date} ${time}
-- 주소 : 인천 부평구 경인로 954-1 경인스타빌딩 3층 (부평동 645-16번지)
-[부평역 1번출구에서 도보 2-3분거리]
--> 부평역 1번 출구(남부전용출구)로 나와 직진하신 후, 파리바게트에서 신호등을 건너시면 좌측에 경인스타빌딩 3층
-- 참고사항 : 이력서 작성을 위해 10분정도 여유있게 참석부탁드리며 문의사항 발생 시 상기 번호로 연락부탁드립니다.
-${closePhrase} 면접에서 뵈어요~🥰`;
+  const pseudo={ name:c.name, intDate:c.date, intTime:c.time, recruiter:who,
+    platform:(c.channel==='알바몬'||!c.channel)?'알바몬':'당근' };
+  el.textContent=smsBody(c.tpl||'면접안내', pseudo, c.closing);
 }
 
 /* ════════ 모달 ════════ */
