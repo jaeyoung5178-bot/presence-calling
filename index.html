@@ -57,8 +57,33 @@
   .pin-key:active{background:var(--green);border-color:var(--green);color:#fff;transform:scale(.94);box-shadow:0 4px 14px rgba(79,156,48,.35)}
   .pin-key.empty{background:transparent;border:none;cursor:default;box-shadow:none}
   .gate-msg{height:18px;margin-top:18px;font-family:var(--mono);font-size:11.5px;color:#C0492F;z-index:2;font-weight:600}
+  .gate-hint{margin-top:14px;font-size:11px;color:#8A9A86;z-index:2;font-weight:600;letter-spacing:.01em}
+  /* 관리자 진입 모드 강조 */
+  #gate.admin-arm{background:linear-gradient(165deg,#F1F7FF 0%,#E3EEFF 42%,#EAF0FF 74%,#F4F7FF 100%)}
+  #gate.admin-arm .gate-mk{filter:drop-shadow(0 6px 18px rgba(47,111,176,.4))}
+  #gate.admin-arm .gate-t{color:var(--blue)}
+  #gate.admin-arm .gate-eb{color:var(--blue)}
+  #gate.admin-arm .pin-dot.on{background:var(--blue);border-color:var(--blue);box-shadow:0 0 12px rgba(47,111,176,.5)}
+  #gate.admin-arm .pin-key:active{background:var(--blue);border-color:var(--blue)}
+  #gate.admin-arm .gate-hint{color:var(--blue);font-weight:700}
   #gate.err .pin-dots{animation:shake .35s}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  /* 리쿠르터 선택 오버레이 */
+  #recPick{position:fixed;inset:0;z-index:9000;background:linear-gradient(165deg,#F4FBFF 0%,#E6F4FF 40%,#E9F8EF 74%,#F4FEF6 100%);display:flex;align-items:center;justify-content:center;padding:24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
+  #recPick .rp-card{width:100%;max-width:380px}
+  #recPick .rp-eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--green-deep);font-weight:700;text-align:center}
+  #recPick .rp-title{font-size:21px;font-weight:800;color:var(--ink);text-align:center;line-height:1.35;margin:8px 0 22px}
+  #recPick .rp-list{display:flex;flex-direction:column;gap:10px}
+  #recPick .rp-item{display:flex;align-items:center;gap:13px;background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:14px 16px;cursor:pointer;transition:.12s;box-shadow:0 3px 12px rgba(47,111,176,.07);width:100%;text-align:left}
+  #recPick .rp-item:active{transform:scale(.98);border-color:var(--green)}
+  #recPick .rp-ic{flex:0 0 auto;width:34px;height:34px;display:flex;align-items:center;justify-content:center}
+  #recPick .rp-ic svg{width:34px;height:34px}
+  #recPick .rp-nm{flex:1;font-size:16px;font-weight:800;color:var(--ink);display:flex;flex-direction:column;gap:1px}
+  #recPick .rp-nm small{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted-2)}
+  #recPick .rp-go{flex:0 0 auto;font-size:18px;color:var(--muted-2);font-weight:700}
+  #recPick .rp-foot{margin-top:20px;font-size:11px;color:var(--muted);text-align:center;line-height:1.5}
+
 
   #app{display:none;max-width:var(--maxw);margin:0 auto;padding-bottom:80px}
   #app.on{display:block}
@@ -435,6 +460,32 @@
   .ops-more{display:block;width:100%;border:none;border-top:1px solid var(--line-2);background:var(--paper);padding:13px;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer}
   .ops-more:active{background:var(--blue-soft)}
 
+  /* ===== 전역 면접자 검색 ===== */
+  .gsearch{position:relative;margin-bottom:12px}
+  .gsearch input{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:14px 42px 14px 42px;background:#fff;font-size:16px;color:var(--text);outline:none;box-shadow:0 4px 14px rgba(47,111,176,.08);transition:.15s;font-family:inherit}
+  .gsearch input:focus{border-color:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
+  .gsearch input::placeholder{color:#b6b1a4}
+  .gs-ic{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none}
+  .gs-clear{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:var(--paper);border-radius:50%;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;line-height:1}
+  .gs-clear:active{transform:translateY(-50%) scale(.9)}
+  .gs-results{margin-bottom:14px}
+  .gs-results:empty{display:none}
+  .gs-count{font-size:11.5px;color:var(--muted);font-weight:700;margin:2px 0 9px 3px;font-family:var(--mono)}
+  .gs-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:.12s;box-shadow:0 2px 8px rgba(20,22,28,.04)}
+  .gs-item:active{transform:scale(.99);background:var(--paper)}
+  .gs-when{flex:0 0 auto;text-align:center;min-width:50px}
+  .gs-when .wd{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--ink);line-height:1.1}
+  .gs-when .wr{display:inline-block;font-size:9px;font-weight:700;margin-top:3px;padding:2px 6px;border-radius:99px;white-space:nowrap}
+  .gs-when .wr.today{background:var(--green-soft);color:var(--green-deep)}
+  .gs-when .wr.up{background:var(--blue-soft);color:var(--blue)}
+  .gs-when .wr.past{background:#EFEDE6;color:var(--muted)}
+  .gs-body{flex:1;min-width:0}
+  .gs-nm{font-size:14.5px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .gs-nm .rc{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+  .gs-sub{font-size:11.5px;color:var(--muted);margin-top:3px;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gs-st{flex:0 0 auto;font-size:11px;font-weight:800;padding:5px 11px;border-radius:99px;white-space:nowrap}
+  .gs-empty{text-align:center;color:var(--muted);font-size:13px;padding:22px 12px;background:#fff;border:1px dashed var(--line);border-radius:13px}
+
   /* 검색 + 칩 */
   .home-search{position:relative;margin-bottom:11px}
   .home-search input{width:100%;border:1.5px solid var(--line);border-radius:13px;padding:12px 14px 12px 40px;background:#fff;outline:none;font-size:16px;color:var(--text);transition:.15s;font-family:inherit}
@@ -506,13 +557,25 @@
 <!-- ============ PIN GATE ============ -->
 <div id="gate">
   <div class="ink a"></div><div class="ink b"></div><div class="ink c"></div><div class="ink d"></div>
-  <svg class="gate-mk" viewBox="0 0 150 150" fill="none"><text x="75" y="103" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="92" letter-spacing="-5" fill="#15171C">PM</text><path d="M62 116 C 66 96 73 80 86 64" stroke="#4F9C30" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#4F9C30"><g transform="translate(64,106) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(67,96) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(72,85) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(77,75) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(83,66) rotate(-30)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g></g></svg>
-  <div class="gate-eb">PEACEMAKER · CALLING HUB</div>
-  <div class="gate-t">콜링 전용 공간</div>
+  <svg class="gate-mk" onclick="gateAdminArm()" style="cursor:pointer" viewBox="0 0 150 150" fill="none"><text x="75" y="103" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="92" letter-spacing="-5" fill="#15171C">PM</text><path d="M62 116 C 66 96 73 80 86 64" stroke="#4F9C30" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#4F9C30"><g transform="translate(64,106) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(67,96) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(72,85) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(77,75) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(83,66) rotate(-30)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g></g></svg>
+  <div class="gate-eb" id="gateEb">PEACEMAKER · CALLING HUB</div>
+  <div class="gate-t" id="gateT">콜링 전용 공간</div>
   <div class="pin-dots"><div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div></div>
   <div class="pin-pad" id="pinPad"></div>
   <div class="gate-msg" id="gateMsg"></div>
+  <div class="gate-hint" id="gateHint">PM 로고를 누르면 관리자용으로 전환됩니다</div>
 </div>
+
+<!-- ============ 리쿠르터 선택 (비관리자) ============ -->
+<div id="recPick" style="display:none">
+  <div class="rp-card">
+    <div class="rp-eb">CALLING HUB</div>
+    <div class="rp-title">누구의 리쿠르팅 페이지로<br>들어가시겠어요?</div>
+    <div class="rp-list"></div>
+    <div class="rp-foot">관리자(팀 종합 현황)는 로그인 화면에서 PM 로고로 진입해요</div>
+  </div>
+</div>
+
 
 <!-- ============ APP ============ -->
 <div id="app">
@@ -520,13 +583,21 @@
     <div class="hb"><span class="mk"><svg viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="62" letter-spacing="-6" fill="#fff">PM</text></svg></span><span>피스메이커<small>CALLING HUB</small></span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="admin-badge">🛡 관리자 모드</span>
-      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.8.0</button>
+      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v3.0.0</button>
       <span id="sync-badge">⚪ 연결 중…</span>
     </div>
   </header>
 
   <!-- ===== 종합 ===== -->
   <div class="view on" id="v-home">
+    <!-- 전역 면접자 검색 (맨 위) -->
+    <div class="gsearch">
+      <span class="gs-ic">🔍</span>
+      <input id="gsInput" type="text" placeholder="면접자 검색 · 이름 또는 연락처" oninput="onGlobalSearch(this.value)" autocomplete="off" enterkeyhint="search">
+      <button class="gs-clear" id="gsClear" onclick="clearGlobalSearch()" style="display:none">✕</button>
+    </div>
+    <div class="gs-results" id="gsResults"></div>
+
     <!-- 오늘 운영 현황 (가장 먼저) -->
     <div class="sec-eb">TODAY · 운영 현황</div>
     <div class="sec-t ops-head"><span id="opsTitle">오늘 면접</span><button id="opsCollapse" class="ops-fold" onclick="toggleOps()">▾ 접기</button></div>
@@ -543,6 +614,7 @@
         <button class="od-nav" onclick="opsDateShift(1)">›</button>
         <button class="od-today" onclick="opsDatePick('')">오늘</button>
       </div>
+      <div class="cal-card ops-cal" id="opsCalCard" style="display:none"></div>
       <div class="ops-card" id="todayOps"></div>
     </div>
 
@@ -685,9 +757,10 @@
 
 <script>
 /* ════════ 설정 ════════ */
-const NORMAL_PIN='8250', ADMIN_PIN='0001';
+const NORMAL_PIN='8250', ADMIN_PIN='1004';   // 관리자: PM 로고 → 1004
+let gateAdmin=false;   // 게이트에서 PM 로고를 눌러 '관리자용으로 진입' 모드로 전환됐는지
 /* ═══════ 앱 버전 (배포 확인용 · 수정할 때마다 올라감) ═══════ */
-const APP_VERSION='2.8.0 · 07/02 18:40';
+const APP_VERSION='3.0.0 · 07/02 19:30';
 let isAdmin=false;
 /* ═══════ 새 버전 자동 감지 → 하단 팝업 ═══════
    깃허브에 새 파일이 올라오면, 열려있던 화면에도 "새 버전" 배너가 떠서 무한 새로고침이 필요 없음 */
@@ -841,27 +914,65 @@ function buildPad(){
     else { b.className='pin-key'; b.textContent=k; b.onclick=()=>pinPush(k); }
     pad.appendChild(b);
   });
+  // 물리 키보드 입력 (맥북·PC) — 게이트가 열려 있을 때만
+  document.addEventListener('keydown',e=>{
+    const g=document.getElementById('gate'); if(!g || g.style.display==='none' || getComputedStyle(g).opacity==='0') return;
+    if(/^[0-9]$/.test(e.key)){ e.preventDefault(); pinPush(e.key); }
+    else if(e.key==='Backspace'){ e.preventDefault(); pinBuf=pinBuf.slice(0,-1); drawDots(); }
+    else if(e.key==='Escape' && gateAdmin){ gateAdminArm(); }
+  });
 }
+/* PM 로고 → 관리자 진입 모드 토글 */
+function gateAdminArm(){
+  gateAdmin=!gateAdmin;
+  const g=document.getElementById('gate'); if(g) g.classList.toggle('admin-arm',gateAdmin);
+  const T=document.getElementById('gateT'), E=document.getElementById('gateEb'), H=document.getElementById('gateHint'), M=document.getElementById('gateMsg');
+  if(T) T.textContent = gateAdmin ? '관리자용으로 진입하기' : '콜링 전용 공간';
+  if(E) E.textContent = gateAdmin ? 'ADMIN ACCESS · 관리자 인증' : 'PEACEMAKER · CALLING HUB';
+  if(H) H.textContent = gateAdmin ? '관리자 비밀번호 4자리를 입력하세요 · 로고 다시 누르면 취소' : 'PM 로고를 누르면 관리자용으로 전환됩니다';
+  if(M) M.textContent='';
+  pinBuf=''; drawDots();
+}
+window.gateAdminArm=gateAdminArm;
 function pinPush(d){ if(pinBuf.length>=4)return; pinBuf+=d; drawDots(); if(pinBuf.length===4) setTimeout(checkPin,120); }
 function drawDots(){ for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length); }
 function checkPin(){
-  if(pinBuf===NORMAL_PIN || pinBuf===ADMIN_PIN){
-    isAdmin=(pinBuf===ADMIN_PIN);
+  const target = gateAdmin ? ADMIN_PIN : NORMAL_PIN;
+  if(pinBuf===target){
+    isAdmin=gateAdmin;
     const g=document.getElementById('gate'); g.style.transition='opacity .4s'; g.style.opacity='0';
-    setTimeout(()=>{ g.style.display='none'; document.getElementById('app').classList.add('on'); document.body.classList.toggle('admin',isAdmin); boot(); if(isAdmin) setTimeout(()=>toast('🛡 관리자 모드로 입장했어요'),300); },400);
+    setTimeout(()=>{ g.style.display='none'; document.getElementById('app').classList.add('on'); document.body.classList.toggle('admin',isAdmin); boot();
+      if(isAdmin){ go('home'); setTimeout(()=>toast('🛡 관리자 모드로 입장했어요'),300); }
+      else { showRecPicker(); }
+    },400);
   } else {
     const g=document.getElementById('gate'); g.classList.add('err');
-    document.getElementById('gateMsg').textContent='비밀번호가 일치하지 않습니다'; pinBuf=''; drawDots();
+    document.getElementById('gateMsg').textContent = gateAdmin ? '관리자 비밀번호가 일치하지 않습니다' : '비밀번호가 일치하지 않습니다';
+    pinBuf=''; drawDots();
     setTimeout(()=>g.classList.remove('err'),360);
   }
 }
+/* ── 비관리자: 리쿠르터 선택 → 자기 페이지만 ── */
+let pickedRec=null;
+function showRecPicker(){
+  const ov=document.getElementById('recPick'); if(!ov) return;
+  ov.querySelector('.rp-list').innerHTML=RECRUITERS.map(r=>`<button class="rp-item" onclick="pickRec('${r.id}')"><span class="rp-ic">${mascotSVG(r,false)}</span><span class="rp-nm">${esc(r.name)}<small>${esc(r.role||'리쿠르터')}</small></span><span class="rp-go">→</span></button>`).join('');
+  ov.style.display='flex';
+}
+function pickRec(id){ pickedRec=id; const ov=document.getElementById('recPick'); if(ov) ov.style.display='none'; buildNav(); go(id); }
+function switchRec(){ showRecPicker(); }
+window.showRecPicker=showRecPicker; window.pickRec=pickRec; window.switchRec=switchRec;
 
 /* ════════ NAV ════════ */
 function go(name){
+  if(!isAdmin){
+    if(name==='home'||name==='admin') name = pickedRec || 'info';
+    else if(RECRUITERS.some(r=>r.id===name) && name!==pickedRec) name = pickedRec || 'info';
+  }
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.getElementById('v-'+name).classList.add('on');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('nav-'+name).classList.add('on');
+  const nb=document.getElementById('nav-'+name); if(nb) nb.classList.add('on');
   window.scrollTo(0,0);
   if(name==='home'){ renderHome(); if(typeof autoFetchThrottled==='function') autoFetchThrottled(); }
   else if(name==='admin') renderAdmin();
@@ -1125,11 +1236,21 @@ function mascotSVG(r,big){
 
 /* ════════ 하단 네비 동적 생성 ════════ */
 function buildNav(){
-  let h='<button class="nav-btn on" id="nav-home" onclick="go(\'home\')"><span class="ni">📊</span><span class="nl">종합</span></button>';
-  RECRUITERS.forEach(r=>{ h+='<button class="nav-btn" id="nav-'+r.id+'" onclick="go(\''+r.id+'\')"><span class="ni">'+mascotSVG(r,false)+'</span><span class="nl">'+r.name+'</span></button>'; });
-  h+='<button class="nav-btn nav-admin" id="nav-admin" onclick="go(\'admin\')"><span class="ni">⚙️</span><span class="nl">관리자</span></button>';
-  h+='<button class="nav-btn" id="nav-info" onclick="go(\'info\')"><span class="ni">🔗</span><span class="nl">정보</span></button>'+
-     '<button class="nav-btn" id="nav-guide" onclick="go(\'guide\')"><span class="ni">📞</span><span class="nl">가이드</span></button>';
+  let h='';
+  if(isAdmin){
+    h+='<button class="nav-btn on" id="nav-home" onclick="go(\'home\')"><span class="ni">📊</span><span class="nl">종합</span></button>';
+    RECRUITERS.forEach(r=>{ h+='<button class="nav-btn" id="nav-'+r.id+'" onclick="go(\''+r.id+'\')"><span class="ni">'+mascotSVG(r,false)+'</span><span class="nl">'+r.name+'</span></button>'; });
+    h+='<button class="nav-btn nav-admin" id="nav-admin" onclick="go(\'admin\')"><span class="ni">⚙️</span><span class="nl">관리자</span></button>';
+    h+='<button class="nav-btn" id="nav-info" onclick="go(\'info\')"><span class="ni">🔗</span><span class="nl">정보</span></button>'+
+       '<button class="nav-btn" id="nav-guide" onclick="go(\'guide\')"><span class="ni">📞</span><span class="nl">가이드</span></button>';
+  } else {
+    // 비관리자: 자기 리쿠르팅 페이지만 (+ 정보 · 가이드 · 전환)
+    const r=RECRUITERS.find(x=>x.id===pickedRec);
+    if(r){ h+='<button class="nav-btn on" id="nav-'+r.id+'" onclick="go(\''+r.id+'\')"><span class="ni">'+mascotSVG(r,false)+'</span><span class="nl">'+r.name+'</span></button>'; }
+    h+='<button class="nav-btn" id="nav-info" onclick="go(\'info\')"><span class="ni">🔗</span><span class="nl">정보</span></button>'+
+       '<button class="nav-btn" id="nav-guide" onclick="go(\'guide\')"><span class="ni">📞</span><span class="nl">가이드</span></button>'+
+       '<button class="nav-btn" id="nav-switch" onclick="switchRec()"><span class="ni">🔁</span><span class="nl">전환</span></button>';
+  }
   document.getElementById('bnav').innerHTML=h;
 }
 
@@ -1446,9 +1567,33 @@ function setOpsMode(m){
   opsMode=m; opsFilter.time=''; opsFilter.rec=''; opsShowAll=false;   // 모드 바꾸면 2차 필터·더보기 초기화
   document.querySelectorAll('#opsView button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   const db=document.getElementById('opsDatebar'); if(db) db.style.display=(m==='date')?'flex':'none';
+  const cc=document.getElementById('opsCalCard'); if(cc) cc.style.display=(m==='date')?'block':'none';
+  if(m==='date'){ const st=parseDateT(opsTargetIso()); const d=st!=null?new Date(st):new Date(); opsCalMonth={y:d.getFullYear(),m:d.getMonth()}; }
   renderTodayOps();
 }
 window.setOpsMode=setOpsMode;
+/* 날짜별 모드 인앱 월 달력 — 면접 있던 날에 건수 표시, 탭하면 그날 참여현황 */
+let opsCalMonth=null;
+function renderOpsCal(){
+  const card=document.getElementById('opsCalCard'); if(!card) return;
+  const now=new Date(), selIso=opsTargetIso(), st=parseDateT(selIso), sd=st!=null?new Date(st):now;
+  if(!opsCalMonth) opsCalMonth={y:sd.getFullYear(),m:sd.getMonth()};
+  const {y,m}=opsCalMonth, counts={};
+  combinedCands().forEach(c=>{ const t=parseDateT(c.intDate); if(t==null)return; const d=new Date(t); if(d.getFullYear()===y&&d.getMonth()===m) counts[d.getDate()]=(counts[d.getDate()]||0)+1; });
+  const startDow=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  let selDay=(sd.getFullYear()===y&&sd.getMonth()===m)?sd.getDate():null;
+  let cells=['일','월','화','수','목','금','토'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<startDow;i++) cells+='<div class="cal-cell pad"></div>';
+  for(let day=1;day<=days;day++){
+    const n=counts[day]||0, isT=(y===now.getFullYear()&&m===now.getMonth()&&day===now.getDate());
+    const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0'), sel=(selDay===day);
+    cells+=`<div class="cal-cell ${n?'has':''} ${isT?'today':''} ${sel?'sel':''}" onclick="opsCalPick('${iso}')">${day}${n?`<span class="cdot">${n}</span>`:''}</div>`;
+  }
+  card.innerHTML=`<div class="cal-head"><b>${y}년 ${m+1}월</b><div class="cal-nav"><button onclick="opsCalShift(-1)">‹</button><button onclick="opsCalShift(1)">›</button></div></div><div class="cal-grid">${cells}</div>`;
+}
+function opsCalShift(delta){ const now=new Date(); if(!opsCalMonth) opsCalMonth={y:now.getFullYear(),m:now.getMonth()}; let mm=opsCalMonth.m+delta,yy=opsCalMonth.y; if(mm<0){mm=11;yy--;} if(mm>11){mm=0;yy++;} opsCalMonth={y:yy,m:mm}; renderOpsCal(); }
+function opsCalPick(iso){ opsDate=iso; opsShowAll=false; const t=parseDateT(iso); if(t!=null){ const d=new Date(t); opsCalMonth={y:d.getFullYear(),m:d.getMonth()}; } renderTodayOps(); }
+window.opsCalShift=opsCalShift; window.opsCalPick=opsCalPick;
 function setOpsTime(t){ opsFilter.time=(opsFilter.time===t?'':t); opsShowAll=false; renderTodayOps(); }
 function setOpsRec(id){ opsFilter.rec=(opsFilter.rec===id?'':id); opsShowAll=false; renderTodayOps(); }
 window.setOpsTime=setOpsTime; window.setOpsRec=setOpsRec;
@@ -1474,13 +1619,13 @@ function opsTargetIso(){ // 현재 보고 있는 날짜(ISO)
   if(opsMode==='date' && opsDate) return opsDate;
   const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-function opsDatePick(v){ opsDate=v||''; opsShowAll=false; renderTodayOps(); }
+function opsDatePick(v){ opsDate=v||''; opsShowAll=false; const t=parseDateT(opsTargetIso()); if(t!=null){ const d=new Date(t); opsCalMonth={y:d.getFullYear(),m:d.getMonth()}; } renderTodayOps(); }
 window.opsDatePick=opsDatePick;
 function opsDateShift(delta){
   const base=parseDateT(opsTargetIso()); if(base==null) return;
   const d=new Date(base); d.setDate(d.getDate()+delta);
   opsDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  opsShowAll=false; renderTodayOps();
+  opsShowAll=false; opsCalMonth={y:d.getFullYear(),m:d.getMonth()}; renderTodayOps();
 }
 window.opsDateShift=opsDateShift;
 
@@ -1569,10 +1714,49 @@ function renderTodayOps(){
   }
   if(!list.length){ inner='<div class="ops-empty" style="padding:20px 16px">선택한 조건의 면접자가 없습니다.</div>'; }
   box.innerHTML=summary+filterNote+'<div class="ops-list">'+inner+'</div>'+moreBtn;
+  if(opsMode==='date') renderOpsCal();
 }
 function opsMore(){ opsShowAll=true; renderTodayOps(); }
 window.opsMore=opsMore;
 function opsTargetIsoToday(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+/* ── 전역 면접자 검색: 이름·연락처로 찾고, 면접일이 오늘/예정/지난인지 한눈에 ── */
+function onGlobalSearch(q){
+  q=String(q||'').trim();
+  const clr=document.getElementById('gsClear'); if(clr) clr.style.display=q?'block':'none';
+  const box=document.getElementById('gsResults'); if(!box) return;
+  if(q.length<1){ box.innerHTML=''; return; }
+  const ql=q.toLowerCase(), digits=q.replace(/\D/g,'');
+  const res=combinedCands().filter(c=>{
+    if((c.name||'').toLowerCase().includes(ql)) return true;
+    if(digits.length>=2 && digitsTel(c.tel||'').includes(digits)) return true;
+    if((c.memo||'').toLowerCase().includes(ql)) return true;
+    return false;
+  });
+  // 면접일 가까운/최근 순 (미래·오늘 먼저, 그다음 최근 과거)
+  res.sort((a,b)=>{ const ta=parseDateT(a.intDate), tb=parseDateT(b.intDate); if(ta==null)return 1; if(tb==null)return -1; return tb-ta; });
+  if(!res.length){ box.innerHTML='<div class="gs-empty">\u201c'+esc(q)+'\u201d 에 해당하는 면접자가 없습니다.</div>'; return; }
+  const t0=new Date(); t0.setHours(0,0,0,0);
+  const rows=res.slice(0,40).map(c=>{
+    const rm=recMeta(c.recruiter), sm=STATUS_META[c.status]||STATUS_META['부킹'];
+    const t=parseDateT(c.intDate);
+    let wd='—', wrCls='past', wrTxt='미정';
+    if(t!=null){ const d=new Date(t); d.setHours(0,0,0,0); wd=(d.getMonth()+1)+'/'+d.getDate();
+      const dd=Math.round((d.getTime()-t0.getTime())/86400000);
+      if(dd===0){ wrCls='today'; wrTxt='오늘'; }
+      else if(dd>0){ wrCls='up'; wrTxt='D-'+dd; }
+      else { wrCls='past'; wrTxt=(-dd)+'일 전'; }
+    }
+    const sub=[cleanTime(c.intTime), c.tel?fmtTel(c.tel):'', ageLabel(c.age), c.gender].filter(Boolean).join(' · ');
+    return `<div class="gs-item" onclick="go('${c.recruiter}')">
+      <div class="gs-when"><div class="wd">${esc(wd)}</div><div class="wr ${wrCls}">${wrTxt}</div></div>
+      <div class="gs-body"><div class="gs-nm">${esc(c.name||'(이름 없음)')}<span class="rc" style="background:${rm.soft||'#eee'};color:${rm.deep||'#555'}">${esc(rm.name)}</span></div><div class="gs-sub">${esc(sub)||'&nbsp;'}</div></div>
+      <div class="gs-st" style="background:${sm.bg};color:${sm.c}">${esc(c.status||'')}</div></div>`;
+  }).join('');
+  box.innerHTML='<div class="gs-count">'+res.length+'명 검색됨'+(res.length>40?' · 상위 40명 표시':'')+'</div>'+rows;
+}
+window.onGlobalSearch=onGlobalSearch;
+function clearGlobalSearch(){ const i=document.getElementById('gsInput'); if(i) i.value=''; onGlobalSearch(''); }
+window.clearGlobalSearch=clearGlobalSearch;
 /* 한 번 탭으로 상태 변경 → 앱·Firebase·인터뷰로그 시트 동시 반영 */
 function quickStatus(id,status){
   let c=DATA.candidates[id]; if(!c) c=combinedCands().find(x=>String(x.id)===String(id));
