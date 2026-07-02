@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>피스메이커 · Calling Hub</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -28,7 +28,7 @@
     --maxw:600px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  body{font-family:var(--sans);background:linear-gradient(160deg,#EAF2FB,#E2ECF7,#DAE7F4);background-attachment:fixed;color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+  body{font-family:var(--sans);background:linear-gradient(168deg,#FBFEFF 0%,#EAF7FF 32%,#EFFBF2 70%,#F6FEF7 100%);background-attachment:fixed;color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
   @keyframes rainbowDrift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
   @media (prefers-reduced-motion:reduce){body,#gate,.gate-grass .blade{animation:none!important}}
   a{color:inherit;text-decoration:none}
@@ -36,27 +36,27 @@
   ::selection{background:var(--green);color:#fff}
 
   /* ===== PIN GATE ===== */
-  #gate{position:fixed;inset:0;z-index:9999;background:#04060d;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;color:#fff;overflow:hidden}
-  .ink{position:absolute;border-radius:50%;filter:blur(64px);z-index:0;pointer-events:none;mix-blend-mode:screen}
-  .ink.a{width:72vw;height:72vw;max-width:560px;max-height:560px;background:radial-gradient(circle,#1f5fd6,transparent 68%);top:-16%;left:-18%;opacity:.65;animation:inkA 24s ease-in-out infinite}
-  .ink.b{width:66vw;height:66vw;max-width:520px;max-height:520px;background:radial-gradient(circle,#0f86d8,transparent 70%);bottom:-18%;right:-14%;opacity:.55;animation:inkB 30s ease-in-out infinite}
-  .ink.c{width:58vw;height:58vw;max-width:460px;max-height:460px;background:radial-gradient(circle,#3b46c8,transparent 70%);top:32%;left:30%;opacity:.5;animation:inkC 34s ease-in-out infinite}
-  .ink.d{width:46vw;height:46vw;max-width:380px;max-height:380px;background:radial-gradient(circle,#12a9d6,transparent 72%);bottom:8%;left:-6%;opacity:.4;animation:inkA 28s ease-in-out infinite reverse}
-  @keyframes inkA{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(16%,12%) scale(1.22)}}
-  @keyframes inkB{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-15%,-10%) scale(1.18)}}
-  @keyframes inkC{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-12%,16%) scale(1.14)}}
-  #gate::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(125% 95% at 50% 42%, transparent 50%, rgba(2,4,10,.7) 100%)}
-  .gate-mk{width:56px;height:56px;margin-bottom:18px;z-index:2;filter:drop-shadow(0 4px 14px rgba(0,0,0,.45))}
-  .gate-eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:#7FB8EC;z-index:2}
-  .gate-t{font-size:23px;font-weight:800;margin-top:8px;color:#fff;z-index:2}
+  #gate{position:fixed;inset:0;z-index:9999;background:linear-gradient(165deg,#F4FBFF 0%,#E6F4FF 40%,#E9F8EF 74%,#F4FEF6 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));color:var(--ink);overflow:hidden}
+  .ink{position:absolute;border-radius:50%;filter:blur(60px);z-index:0;pointer-events:none;mix-blend-mode:multiply}
+  .ink.a{width:72vw;height:72vw;max-width:520px;max-height:520px;background:radial-gradient(circle,#BFE6C8,transparent 70%);top:-16%;left:-18%;opacity:.55;animation:inkA 24s ease-in-out infinite}
+  .ink.b{width:66vw;height:66vw;max-width:480px;max-height:480px;background:radial-gradient(circle,#BEE1F7,transparent 70%);bottom:-18%;right:-14%;opacity:.55;animation:inkB 30s ease-in-out infinite}
+  .ink.c{width:56vw;height:56vw;max-width:420px;max-height:420px;background:radial-gradient(circle,#D8F0DE,transparent 72%);top:34%;left:32%;opacity:.5;animation:inkC 34s ease-in-out infinite}
+  .ink.d{width:44vw;height:44vw;max-width:340px;max-height:340px;background:radial-gradient(circle,#CDE9FB,transparent 74%);bottom:10%;left:-6%;opacity:.45;animation:inkA 28s ease-in-out infinite reverse}
+  @keyframes inkA{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(16%,12%) scale(1.2)}}
+  @keyframes inkB{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-15%,-10%) scale(1.16)}}
+  @keyframes inkC{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-12%,16%) scale(1.12)}}
+  #gate::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(120% 90% at 50% 30%, rgba(255,255,255,.5) 0%, transparent 55%)}
+  .gate-mk{width:58px;height:58px;margin-bottom:16px;z-index:2;filter:drop-shadow(0 6px 16px rgba(60,122,34,.22))}
+  .gate-eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--green-deep);z-index:2;font-weight:600}
+  .gate-t{font-size:23px;font-weight:800;margin-top:8px;color:var(--ink);z-index:2}
   .pin-dots{display:flex;gap:14px;margin:26px 0 22px;z-index:2}
-  .pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(255,255,255,.42);transition:.15s}
-  .pin-dot.on{background:#4D9BE0;border-color:#4D9BE0;box-shadow:0 0 10px rgba(77,155,224,.7)}
+  .pin-dot{width:14px;height:14px;border-radius:50%;border:1.8px solid rgba(21,23,28,.22);background:rgba(255,255,255,.5);transition:.15s}
+  .pin-dot.on{background:var(--green);border-color:var(--green);box-shadow:0 0 12px rgba(79,156,48,.5)}
   .pin-pad{display:grid;grid-template-columns:repeat(3,68px);gap:14px;z-index:2}
-  .pin-key{height:68px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:24px;font-weight:600;cursor:pointer;transition:.12s;backdrop-filter:blur(6px)}
-  .pin-key:active{background:rgba(77,155,224,.85);border-color:#4D9BE0;color:#04060d;transform:scale(.94)}
-  .pin-key.empty{background:transparent;border:none;cursor:default;backdrop-filter:none}
-  .gate-msg{height:18px;margin-top:18px;font-family:var(--mono);font-size:11.5px;color:#F0A58E;z-index:2}
+  .pin-key{height:68px;border-radius:50%;border:1px solid rgba(21,23,28,.08);background:#fff;color:var(--ink);font-size:24px;font-weight:700;cursor:pointer;transition:.12s;box-shadow:0 3px 10px rgba(47,111,176,.10)}
+  .pin-key:active{background:var(--green);border-color:var(--green);color:#fff;transform:scale(.94);box-shadow:0 4px 14px rgba(79,156,48,.35)}
+  .pin-key.empty{background:transparent;border:none;cursor:default;box-shadow:none}
+  .gate-msg{height:18px;margin-top:18px;font-family:var(--mono);font-size:11.5px;color:#C0492F;z-index:2;font-weight:600}
   #gate.err .pin-dots{animation:shake .35s}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 
@@ -395,6 +395,33 @@
   .ops-sum .n{font-family:var(--mono);font-size:19px;font-weight:800;line-height:1}
   .ops-sum .l{font-size:10.5px;color:var(--muted);margin-top:3px;font-weight:600}
 
+  /* ── 오늘 면접 · 보기 전환 토글 ── */
+  .ops-view{display:flex;gap:6px;margin-bottom:11px}
+  .ops-view button{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:8px 4px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:.12s;white-space:nowrap}
+  .ops-view button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ops-view button:active{transform:scale(.96)}
+  .ops-datebar{display:flex;align-items:center;gap:8px;margin-bottom:11px}
+  .ops-datebar .od-nav{width:38px;height:38px;flex:0 0 38px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;font-size:19px;font-weight:700;color:var(--text);cursor:pointer;line-height:1}
+  .ops-datebar .od-nav:active{transform:scale(.94);background:var(--paper)}
+  .ops-datebar .od-pick{flex:1;position:relative;display:flex;align-items:center;justify-content:center;gap:6px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:9px 10px;font-size:13.5px;font-weight:700;color:var(--text);cursor:pointer}
+  .ops-datebar .od-pick::before{content:'📅';font-size:14px}
+  .ops-datebar .od-pick input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+  .ops-datebar .od-today{flex:0 0 auto;border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 13px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer}
+  .ops-datebar .od-today:active{transform:scale(.95)}
+
+  /* ── 리쿠르터별 그룹 헤더 ── */
+  .ops-grp{display:flex;align-items:center;gap:9px;padding:11px 14px;background:var(--paper);border-bottom:1px solid var(--line-2)}
+  .ops-grp.gtop{border-top:6px solid var(--line-2)}
+  .ops-grp .gdot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .ops-grp .gnm{font-size:14px;font-weight:800;letter-spacing:-.01em}
+  .ops-grp .grole{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted-2);margin-left:-3px}
+  .ops-grp .gcnt{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px 9px}
+  .ops-grp .gcnt b{color:var(--green-deep)}
+
+  /* 컴팩트하게 다듬은 행 (가독성 유지 · 글자 축소) */
+  .ops-nm{font-size:14.5px}
+  .ops-sub{font-size:12px}
+
   /* 검색 + 칩 */
   .home-search{position:relative;margin-bottom:11px}
   .home-search input{width:100%;border:1.5px solid var(--line);border-radius:13px;padding:12px 14px 12px 40px;background:#fff;outline:none;font-size:16px;color:var(--text);transition:.15s;font-family:inherit}
@@ -466,7 +493,7 @@
 <!-- ============ PIN GATE ============ -->
 <div id="gate">
   <div class="ink a"></div><div class="ink b"></div><div class="ink c"></div><div class="ink d"></div>
-  <svg class="gate-mk" viewBox="0 0 150 150" fill="none"><text x="75" y="103" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="92" letter-spacing="-5" fill="#fff">PM</text><path d="M62 116 C 66 96 73 80 86 64" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#fff"><g transform="translate(64,106) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(67,96) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(72,85) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(77,75) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(83,66) rotate(-30)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g></g></svg>
+  <svg class="gate-mk" viewBox="0 0 150 150" fill="none"><text x="75" y="103" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="92" letter-spacing="-5" fill="#15171C">PM</text><path d="M62 116 C 66 96 73 80 86 64" stroke="#4F9C30" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#4F9C30"><g transform="translate(64,106) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(67,96) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(72,85) rotate(-52)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(77,75) rotate(40)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g><g transform="translate(83,66) rotate(-30)"><path d="M0 0 C 3 -3.5 7 -4.5 11 -2 C 7 1.6 3 1.6 0 0 Z"/></g></g></svg>
   <div class="gate-eb">PEACEMAKER · CALLING HUB</div>
   <div class="gate-t">콜링 전용 공간</div>
   <div class="pin-dots"><div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div></div>
@@ -480,7 +507,7 @@
     <div class="hb"><span class="mk"><svg viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="62" letter-spacing="-6" fill="#fff">PM</text></svg></span><span>피스메이커<small>CALLING HUB</small></span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="admin-badge">🛡 관리자 모드</span>
-      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.1.0</button>
+      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.4.0</button>
       <span id="sync-badge">⚪ 연결 중…</span>
     </div>
   </header>
@@ -490,6 +517,17 @@
     <!-- 오늘 운영 현황 (가장 먼저) -->
     <div class="sec-eb">TODAY · 운영 현황</div>
     <div class="sec-t" id="opsTitle">오늘 면접</div>
+    <div class="ops-view" id="opsView">
+      <button data-m="time" class="on" onclick="setOpsMode('time')">🕒 시간순</button>
+      <button data-m="rec" onclick="setOpsMode('rec')">👥 리쿠르터별</button>
+      <button data-m="date" onclick="setOpsMode('date')">📅 날짜별</button>
+    </div>
+    <div class="ops-datebar" id="opsDatebar" style="display:none">
+      <button class="od-nav" onclick="opsDateShift(-1)">‹</button>
+      <label class="od-pick"><span id="opsDateLabel">오늘</span><input type="date" id="opsDateInput" onchange="opsDatePick(this.value)"></label>
+      <button class="od-nav" onclick="opsDateShift(1)">›</button>
+      <button class="od-today" onclick="opsDatePick('')">오늘</button>
+    </div>
     <div class="ops-card" id="todayOps"></div>
 
     <div class="sec-eb">OVERVIEW · 자동 합산</div>
@@ -633,7 +671,7 @@
 /* ════════ 설정 ════════ */
 const NORMAL_PIN='8250', ADMIN_PIN='0001';
 /* ═══════ 앱 버전 (배포 확인용 · 수정할 때마다 올라감) ═══════ */
-const APP_VERSION='2.1.0 · 07/02 15:40';
+const APP_VERSION='2.4.0 · 07/02 17:00';
 let isAdmin=false;
 /* ═══════ 새 버전 자동 감지 → 하단 팝업 ═══════
    깃허브에 새 파일이 올라오면, 열려있던 화면에도 "새 버전" 배너가 떠서 무한 새로고침이 필요 없음 */
@@ -1377,41 +1415,94 @@ function inPeriod(dateStr,p){ if(p==='all'||!p) return true; const t=parseDateT(
 
 /* ── 오늘 운영 타임라인 (시간순 · 진행중=초록 · 지남미체크=빨강) ── */
 function timeToMin(t){ const m=/(\d{1,2}):(\d{2})/.exec(cleanTime(t)||''); return m?(+m[1]*60+ +m[2]):null; }
+
+/* ── 오늘 면접 · 보기 상태 (time=시간순 / rec=리쿠르터별 / date=날짜별) ── */
+let opsMode='time', opsDate='';   // opsDate '' = 오늘, 아니면 'YYYY-MM-DD'
+function setOpsMode(m){
+  opsMode=m;
+  document.querySelectorAll('#opsView button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  const db=document.getElementById('opsDatebar'); if(db) db.style.display=(m==='date')?'flex':'none';
+  renderTodayOps();
+}
+window.setOpsMode=setOpsMode;
+function opsTargetIso(){ // 현재 보고 있는 날짜(ISO)
+  if(opsMode==='date' && opsDate) return opsDate;
+  const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function opsDatePick(v){ opsDate=v||''; renderTodayOps(); }
+window.opsDatePick=opsDatePick;
+function opsDateShift(delta){
+  const base=parseDateT(opsTargetIso()); if(base==null) return;
+  const d=new Date(base); d.setDate(d.getDate()+delta);
+  opsDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  renderTodayOps();
+}
+window.opsDateShift=opsDateShift;
+
+/* 한 면접자 행 HTML + 상태 카운트 (시간순·리쿠르터별 공용) */
+function opsRowHTML(c,nowMin,showToday,acc){
+  const min=timeToMin(c.intTime);
+  const done=(c.status==='쇼업'||c.status==='스타트'), no=(c.status==='노쇼'), cx=(c.status==='거절');
+  let cls='up',badge='예정',bs='background:var(--blue-soft);color:var(--blue)',state='대기';
+  if(done){ cls='done'; badge='✓ 참석'; bs='background:var(--green-soft);color:var(--green-deep)'; state='완료'; if(acc)acc.show++; }
+  else if(no){ cls='done'; badge='노쇼'; bs='background:var(--red-soft);color:var(--red)'; state='노쇼'; if(acc)acc.no++; }
+  else if(cx){ cls='done'; badge='취소'; bs='background:#EFEDE6;color:var(--muted)'; state='취소'; }
+  else if(showToday && min!=null && nowMin>=min+45){ cls='alert'; badge='⚠ 미체크'; bs='background:var(--red-soft);color:var(--red)'; state='지남'; if(acc)acc.wait++; }
+  else if(showToday && min!=null && nowMin>=min && nowMin<min+60){ cls='now'; badge='<span class="ops-live"></span>진행중'; bs='background:var(--green-soft);color:var(--green-deep)'; state='NOW'; if(acc)acc.wait++; }
+  else { if(acc)acc.wait++; }
+  const rm=recMeta(c.recruiter), tl=cleanTime(c.intTime)||'—';
+  const sub=[]; if(c.tel)sub.push('📞 <b>'+esc(c.tel)+'</b>'); if(c.age)sub.push('<b>'+esc(ageLabel(c.age))+'</b>'); if(c.gender)sub.push('<b>'+esc(c.gender)+'</b>');
+  const acts=(done||no||cx)
+    ? `<div class="ops-acts"><button class="a-ch" onclick="quickStatus('${c.id}','부킹')">↺ 되돌리기</button><button class="a-ch" onclick="openEdit('${c.id}')">✏️ 수정</button></div>`
+    : `<div class="ops-acts"><button class="a-go" onclick="quickStatus('${c.id}','쇼업')">참석</button><button class="a-no" onclick="quickStatus('${c.id}','노쇼')">노쇼</button><button class="a-ch" onclick="openEdit('${c.id}')">일정변경</button><button class="a-cx" onclick="quickStatus('${c.id}','거절')">취소</button></div>`;
+  return `<div class="ops-row ${cls}">
+    <div class="ops-time">${esc(tl)}<small>${state}</small></div>
+    <div class="ops-main">
+      <div class="ops-nm">${esc(c.name||'(이름 없음)')}<span class="rc" style="background:${rm.soft};color:${rm.deep}">${esc(rm.name)}</span><span class="ops-badge" style="${bs}">${badge}</span></div>
+      ${sub.length?`<div class="ops-sub">${sub.map(x=>'<span>'+x+'</span>').join('')}</div>`:''}
+      ${acts}
+    </div></div>`;
+}
+function byTime(a,b){ const am=timeToMin(a.intTime),bm=timeToMin(b.intTime); if(am==null)return 1; if(bm==null)return -1; return am-bm; }
+
 function renderTodayOps(){
   const box=document.getElementById('todayOps'); if(!box) return;
-  const dt=new Date(), dow=['일','월','화','수','목','금','토'][dt.getDay()];
+  const iso=opsTargetIso(), t=parseDateT(iso), pd=t!=null?new Date(t):new Date();
+  const dow=['일','월','화','수','목','금','토'][pd.getDay()];
+  const isTodayView=(iso===opsTargetIsoToday());
   const tt=document.getElementById('opsTitle');
-  if(tt) tt.innerHTML='오늘 면접 <span style="font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:600">'+(dt.getMonth()+1)+'월 '+dt.getDate()+'일 ('+dow+')</span>';
-  const today=combinedCands().filter(c=>isToday(c.intDate));
-  if(!today.length){ box.innerHTML='<div class="ops-empty">오늘 예정된 면접이 없습니다.<br>면접일을 오늘로 지정하면 여기 시간순으로 표시됩니다.</div>'; return; }
-  const nowMin=dt.getHours()*60+dt.getMinutes();
-  const rows=today.map(c=>({c,min:timeToMin(c.intTime)})).sort((a,b)=>{ if(a.min==null)return 1; if(b.min==null)return -1; return a.min-b.min; });
-  let cShow=0,cWait=0,cNo=0;
-  const html=rows.map(({c,min})=>{
-    const done=(c.status==='쇼업'||c.status==='스타트'), no=(c.status==='노쇼'), cx=(c.status==='거절');
-    let cls='up',badge='예정',bs='background:var(--blue-soft);color:var(--blue)',state='대기';
-    if(done){ cls='done'; badge='✓ 참석'; bs='background:var(--green-soft);color:var(--green-deep)'; state='완료'; cShow++; }
-    else if(no){ cls='done'; badge='노쇼'; bs='background:var(--red-soft);color:var(--red)'; state='노쇼'; cNo++; }
-    else if(cx){ cls='done'; badge='취소'; bs='background:#EFEDE6;color:var(--muted)'; state='취소'; }
-    else if(min!=null && nowMin>=min+45){ cls='alert'; badge='⚠ 미체크'; bs='background:var(--red-soft);color:var(--red)'; state='지남'; cWait++; }
-    else if(min!=null && nowMin>=min && nowMin<min+60){ cls='now'; badge='<span class="ops-live"></span>진행중'; bs='background:var(--green-soft);color:var(--green-deep)'; state='NOW'; cWait++; }
-    else { cWait++; }
-    const rm=recMeta(c.recruiter), tl=cleanTime(c.intTime)||'—';
-    const sub=[]; if(c.tel)sub.push('📞 <b>'+esc(c.tel)+'</b>'); if(c.age)sub.push('<b>'+esc(ageLabel(c.age))+'</b>'); if(c.gender)sub.push('<b>'+esc(c.gender)+'</b>');
-    const acts=(done||no||cx)
-      ? `<div class="ops-acts"><button class="a-ch" onclick="quickStatus('${c.id}','부킹')">↺ 되돌리기</button><button class="a-ch" onclick="openEdit('${c.id}')">✏️ 수정</button></div>`
-      : `<div class="ops-acts"><button class="a-go" onclick="quickStatus('${c.id}','쇼업')">참석</button><button class="a-no" onclick="quickStatus('${c.id}','노쇼')">노쇼</button><button class="a-ch" onclick="openEdit('${c.id}')">일정변경</button><button class="a-cx" onclick="quickStatus('${c.id}','거절')">취소</button></div>`;
-    return `<div class="ops-row ${cls}">
-      <div class="ops-time">${esc(tl)}<small>${state}</small></div>
-      <div class="ops-main">
-        <div class="ops-nm">${esc(c.name||'(이름 없음)')}<span class="rc" style="background:${rm.soft};color:${rm.deep}">${esc(rm.name)}</span><span class="ops-badge" style="${bs}">${badge}</span></div>
-        ${sub.length?`<div class="ops-sub">${sub.map(x=>'<span>'+x+'</span>').join('')}</div>`:''}
-        ${acts}
-      </div></div>`;
-  }).join('');
-  const sum=`<div class="ops-sum"><div><div class="n">${rows.length}</div><div class="l">전체</div></div><div><div class="n" style="color:var(--green-deep)">${cShow}</div><div class="l">참석</div></div><div><div class="n">${cWait}</div><div class="l">대기</div></div><div><div class="n" style="color:var(--red)">${cNo}</div><div class="l">노쇼</div></div></div>`;
-  box.innerHTML=html+sum;
+  if(tt) tt.innerHTML=(isTodayView?'오늘 면접':'면접')+' <span style="font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:600">'+(pd.getMonth()+1)+'월 '+pd.getDate()+'일 ('+dow+')</span>';
+  const lab=document.getElementById('opsDateLabel'); if(lab) lab.textContent=isTodayView?'오늘':((pd.getMonth()+1)+'/'+pd.getDate());
+  const di=document.getElementById('opsDateInput'); if(di) di.value=iso;
+
+  const list=combinedCands().filter(c=>{ const ct=parseDateT(c.intDate); if(ct==null)return false; const d=new Date(ct); return d.getFullYear()===pd.getFullYear()&&d.getMonth()===pd.getMonth()&&d.getDate()===pd.getDate(); });
+  if(!list.length){
+    box.innerHTML='<div class="ops-empty">'+(isTodayView?'오늘':(pd.getMonth()+1)+'월 '+pd.getDate()+'일')+' 예정된 면접이 없습니다.<br>면접일을 지정하면 여기 표시됩니다.</div>';
+    return;
+  }
+  const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
+  const acc={show:0,wait:0,no:0};
+  let inner='';
+  if(opsMode==='rec'){
+    // 리쿠르터별 그룹 → 각 그룹 안은 시간순
+    const groups={};
+    list.forEach(c=>{ (groups[c.recruiter]=groups[c.recruiter]||[]).push(c); });
+    const order=RECRUITERS.map(r=>r.id).filter(id=>groups[id]);
+    Object.keys(groups).forEach(id=>{ if(order.indexOf(id)<0) order.push(id); });
+    order.forEach((id,gi)=>{
+      const rm=recMeta(id), g=groups[id].slice().sort(byTime);
+      const gShow=g.filter(c=>c.status==='쇼업'||c.status==='스타트').length;
+      inner+=`<div class="ops-grp ${gi>0?'gtop':''}"><span class="gdot" style="background:${rm.c1||'#999'}"></span><span class="gnm">${esc(rm.name)}</span>${rm.role?`<span class="grole">${esc(rm.role)}</span>`:''}<span class="gcnt"><b>${gShow}</b> / ${g.length}명</span></div>`;
+      inner+=g.map(c=>opsRowHTML(c,nowMin,isTodayView,acc)).join('');
+    });
+  }else{
+    // 시간순 (time / date 공용)
+    inner=list.slice().sort(byTime).map(c=>opsRowHTML(c,nowMin,isTodayView,acc)).join('');
+  }
+  const sum=`<div class="ops-sum"><div><div class="n">${list.length}</div><div class="l">전체</div></div><div><div class="n" style="color:var(--green-deep)">${acc.show}</div><div class="l">참석</div></div><div><div class="n">${acc.wait}</div><div class="l">대기</div></div><div><div class="n" style="color:var(--red)">${acc.no}</div><div class="l">노쇼</div></div></div>`;
+  box.innerHTML=inner+sum;
 }
+function opsTargetIsoToday(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 /* 한 번 탭으로 상태 변경 → 앱·Firebase·인터뷰로그 시트 동시 반영 */
 function quickStatus(id,status){
   let c=DATA.candidates[id]; if(!c) c=combinedCands().find(x=>String(x.id)===String(id));
