@@ -741,7 +741,7 @@ function go(name){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('nav-'+name).classList.add('on');
   window.scrollTo(0,0);
-  if(name==='home') renderHome();
+  if(name==='home'){ renderHome(); if(typeof autoFetchThrottled==='function') autoFetchThrottled(); }
   else if(name==='admin') renderAdmin();
   else if(RECRUITERS.some(r=>r.id===name)) renderPerson(name);
 }
@@ -762,10 +762,19 @@ function fetchSheet(manual){
   if(!base){ sheetRows=[]; sheetState='idle'; renderSheetLog(); return; }
   const url=base+(base.indexOf('?')>=0?'&':'?')+'_t='+Date.now();   // 캐시 방지
   sheetState='loading'; if(manual) renderSheetLog();
-  fetch(url,{cache:'no-store'}).then(r=>r.json()).then(d=>{ sheetRows=(d&&d.rows)?d.rows:[]; sheetUpdated=Date.now(); sheetState='ok'; renderSheetLog(); reconcileDeletions(); reconcileStatus(); })
+  fetch(url,{cache:'no-store'}).then(r=>r.json()).then(d=>{ sheetRows=(d&&d.rows)?d.rows:[]; sheetUpdated=Date.now(); sheetState='ok'; reconcileDeletions(); reconcileStatus(); refreshFromSheet(); })
     .catch(e=>{ sheetState='err'; renderSheetLog(); });
 }
 window.fetchSheet=fetchSheet;
+/* 현재 열린 화면 이름 */
+function currentView(){ const v=document.querySelector('.view.on'); return v? v.id.replace('v-','') : ''; }
+/* 시트 갱신 후 화면 반영 — 시트에만 새로 들어온 면접자도 즉시 홈 타임라인에 나타나도록 (검색 입력 포커스는 건드리지 않음) */
+function refreshFromSheet(){
+  try{ if(typeof renderHome==='function') renderHome(); }catch(e){}
+  const cur=currentView();
+  if(typeof RECRUITERS!=='undefined' && RECRUITERS.some(r=>r.id===cur)){ try{ renderPerson(cur); }catch(e){} }
+  try{ renderSheetLog(); }catch(e){}
+}
 /* 인터뷰로그에서 쇼업(O) 체크 → 앱 면접자 상태도 쇼업으로 반영 (앱→시트는 sheetPush가 처리) */
 function reconcileStatus(){
   if(sheetState!=='ok'||!sheetRows.length) return;
@@ -790,10 +799,18 @@ function reconcileDeletions(){
   Object.keys(cur).forEach(id=>{ seenSheetIds[id]=1; });
   if(removed){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); }
 }
+let lastAutoFetch=0, _visWired=false;
+function autoFetchThrottled(){ if(!effSheetUrl())return; const n=Date.now(); if(n-lastAutoFetch<5000)return; lastAutoFetch=n; fetchSheet(false); }
+window.autoFetchThrottled=autoFetchThrottled;
 function ensureSheetPolling(){
   const has=!!effSheetUrl();
-  if(has && !sheetTimer){ fetchSheet(); sheetTimer=setInterval(()=>fetchSheet(false),30000); }
+  if(has && !sheetTimer){ fetchSheet(); sheetTimer=setInterval(()=>fetchSheet(false),15000); }
   else if(!has && sheetTimer){ clearInterval(sheetTimer); sheetTimer=null; sheetRows=[]; }
+  if(!_visWired){
+    _visWired=true;
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) autoFetchThrottled(); });
+    window.addEventListener('focus',autoFetchThrottled);
+  }
 }
 function startSheetPolling(){ if(sheetTimer){clearInterval(sheetTimer);sheetTimer=null;} ensureSheetPolling(); if(effSheetUrl()) fetchSheet(true); }
 function timeAgo(ms){ if(!ms)return''; const s=Math.floor((Date.now()-ms)/1000); if(s<60)return'방금'; const m=Math.floor(s/60); if(m<60)return m+'분 전'; return Math.floor(m/60)+'시간 전'; }
@@ -1221,13 +1238,30 @@ function setHomePeriod(p){ homePeriod=p; document.querySelectorAll('#homePeriod 
 window.setHomePeriod=setHomePeriod;
 
 /* 날짜 문자열(ISO·M/D)을 타임스탬프로 — 기간/캘린더 공용 */
-function parseDateT(s){
-  if(!s) return null; s=String(s).trim();
-  let m=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s);
-  if(m) return new Date(+m[1],+m[2]-1,+m[3],12,0,0,0).getTime();
-  m=/^(\d{1,2})\s*[\/.\-]\s*(\d{1,2})$/.exec(s);
-  if(m) return new Date((new Date()).getFullYear(),+m[1]-1,+m[2],12,0,0,0).getTime();
+/* 날짜 정규화기 — 시트가 내려주는 어떤 포맷이든 {y,mo,d}로 통일
+   지원: 2026-07-02 / 2026/7/2 / 7/2 / 7/2/2026 / ISO 타임스탬프(2026-07-02T00:00:00.000Z) / GMT 문자열(Wed Jul 02 2026 …)
+   ISO·GMT처럼 시각·시간대가 붙은 값은 '로컬(한국시각) 기준 달력 날짜'로 환산해 자정 UTC 직렬화로 인한 하루 밀림을 방지 */
+function ymdParts(s){
+  if(!s) return null; s=String(s).trim(); if(!s) return null;
+  // 시각/시간대가 포함된 값 → 로컬 달력 날짜로 환산
+  if(/[T\s]\d{1,2}:\d{2}|GMT|Z$|[+-]\d{2}:?\d{2}$/i.test(s) || /[A-Za-z]{3,}/.test(s)){
+    const dt=new Date(s);
+    if(!isNaN(dt.getTime())) return {y:dt.getFullYear(),mo:dt.getMonth()+1,d:dt.getDate()};
+  }
+  // 순수 날짜(YYYY-MM-DD / YYYY/M/D) → 시간대 변환 없이 문자 그대로
+  let m=/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(s);
+  if(m) return {y:+m[1],mo:+m[2],d:+m[3]};
+  // M/D 또는 M/D/YYYY
+  m=/^(\d{1,2})[\/.\-](\d{1,2})(?:[\/.\-](\d{4}))?$/.exec(s);
+  if(m) return {y:m[3]?+m[3]:(new Date()).getFullYear(),mo:+m[1],d:+m[2]};
+  // 최후: Date가 해석 가능하면 로컬 기준
+  const dt=new Date(s);
+  if(!isNaN(dt.getTime())) return {y:dt.getFullYear(),mo:dt.getMonth()+1,d:dt.getDate()};
   return null;
+}
+function parseDateT(s){
+  const p=ymdParts(s); if(!p) return null;
+  return new Date(p.y,p.mo-1,p.d,12,0,0,0).getTime();
 }
 function periodRange(p){
   const d=new Date(),y=d.getFullYear(),mo=d.getMonth(),da=d.getDate();
@@ -1721,13 +1755,9 @@ window.saveDbUrl=saveDbUrl;
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmtD(s){ if(!s)return''; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); return m?(parseInt(m[2])+'/'+parseInt(m[3])):esc(s); }
 function toKDate(s){
-  s=String(s||'').trim(); if(!s) return '';
-  let y,mo,da, m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if(m){ y=+m[1]; mo=+m[2]; da=+m[3]; }
-  else { m=s.match(/(\d{1,2})\D+(\d{1,2})/); if(m){ y=(new Date()).getFullYear(); mo=+m[1]; da=+m[2]; } }
-  if(!mo||!da) return s;
-  const dt=new Date(y,mo-1,da); if(isNaN(dt)) return s;
-  return mo+'월 '+da+'일 ('+['일','월','화','수','목','금','토'][dt.getDay()]+')';
+  const p=ymdParts(s); if(!p) return String(s||'').trim();
+  const dt=new Date(p.y,p.mo-1,p.d); if(isNaN(dt)) return String(s||'').trim();
+  return p.mo+'월 '+p.d+'일 ('+['일','월','화','수','목','금','토'][dt.getDay()]+')';
 }
 function liveMD(s){
   const d=String(s||'').replace(/\D/g,'').slice(0,4);
@@ -1736,14 +1766,9 @@ function liveMD(s){
   return parseInt(d.slice(0,mLen),10)+'/'+parseInt(d.slice(mLen),10);
 }
 function isToday(s){
-  if(!s) return false; s=String(s).trim();
+  const p=ymdParts(s); if(!p) return false;
   const d=new Date();
-  const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  const md=(d.getMonth()+1)+'/'+d.getDate();
-  if(s===iso||s===md) return true;
-  const m=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s);
-  if(m && (parseInt(m[2],10)+'/'+parseInt(m[3],10))===md) return true;
-  return false;
+  return p.y===d.getFullYear() && p.mo===(d.getMonth()+1) && p.d===d.getDate();
 }
 function digitsTel(t){ return String(t||'').replace(/[^0-9]/g,''); }
 function fmtTel(t){
@@ -1755,7 +1780,19 @@ function fmtTel(t){
 }
 function fmtAge(a){ const s=String(a||'').trim(); return /^\d+$/.test(s)? s+'세' : s; }
 function ageLabel(a){ a=String(a||'').trim(); if(!a) return ''; return /^\d+$/.test(a)? a+'세' : a; }   // 이미 대/세면 그대로
-function cleanTime(t){ t=String(t||'').trim(); if(!t) return ''; if(/GMT|1899|[A-Za-z]{3,}/.test(t)){ const m=t.match(/(\d{1,2}:\d{2})/); return ''; } return t; }
+function cleanTime(t){
+  t=String(t||'').trim(); if(!t) return '';
+  // 이미 HH:MM 형태면 그대로
+  if(/^\d{1,2}:\d{2}$/.test(t)) return t;
+  // UTC(Z) ISO 타임스탬프만 로컬(한국시각) 시:분으로 환산 (2026-07-02T14:00:00.000Z → 23:00)
+  if(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}.*Z$/.test(t)){
+    const dt=new Date(t);
+    if(!isNaN(dt.getTime())) return String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+  }
+  // 그 외(명시적 오프셋·GMT문자열·1899 시각셀 등)는 문자열에 표시된 시:분을 그대로 사용 (과거 표준시 보정으로 인한 밀림 방지)
+  const m=t.match(/(\d{1,2}):(\d{2})/);
+  return m? m[1].padStart(2,'0')+':'+m[2] : '';
+}
 function autoCloseKey(){ const d=new Date().getDay(); return (d===5||d===6||d===0)?'주말':'하루'; }   // 금·토·일=주말, 월~목=하루
 function candPayload(action,c){
   const r=recMeta(c.recruiter)||{};
