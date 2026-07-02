@@ -520,7 +520,7 @@
     <div class="hb"><span class="mk"><svg viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="62" letter-spacing="-6" fill="#fff">PM</text></svg></span><span>피스메이커<small>CALLING HUB</small></span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="admin-badge">🛡 관리자 모드</span>
-      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.7.0</button>
+      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.8.0</button>
       <span id="sync-badge">⚪ 연결 중…</span>
     </div>
   </header>
@@ -687,7 +687,7 @@
 /* ════════ 설정 ════════ */
 const NORMAL_PIN='8250', ADMIN_PIN='0001';
 /* ═══════ 앱 버전 (배포 확인용 · 수정할 때마다 올라감) ═══════ */
-const APP_VERSION='2.7.0 · 07/02 18:20';
+const APP_VERSION='2.8.0 · 07/02 18:40';
 let isAdmin=false;
 /* ═══════ 새 버전 자동 감지 → 하단 팝업 ═══════
    깃허브에 새 파일이 올라오면, 열려있던 화면에도 "새 버전" 배너가 떠서 무한 새로고침이 필요 없음 */
@@ -1364,7 +1364,7 @@ function fillSignboard(el,s){
 /* ════════ 종합 ════════ */
 function renderHome(){
   const all=combinedCands();
-  const periodAll = homePeriod==='all' ? all : all.filter(c=>inPeriod(c.bookDate,homePeriod));
+  const periodAll = homePeriod==='all' ? all : all.filter(c=>inPeriod(c.intDate,homePeriod));
   const s=statsFor(periodAll);
   const el=document.getElementById('sb-home'); el.innerHTML=signboardHTML(s,periodLabel()); fillSignboard(el,s);
   renderTodayOps();
@@ -1386,7 +1386,7 @@ function renderHome(){
   renderCalendar();
   renderHomeList();
 }
-function periodLabel(){ return homePeriod==='today'?'오늘 부킹 기준':homePeriod==='week'?'이번주 부킹 기준':homePeriod==='month'?'이번달 부킹 기준':'전체 · 앱+시트'; }
+function periodLabel(){ return homePeriod==='today'?'오늘 면접 기준':homePeriod==='week'?'이번주 면접 기준':homePeriod==='month'?'이번달 면접 기준':'전체 · 앱+시트'; }
 
 /* ════════ 2.0 · 운영 대시보드 로직 ════════ */
 let homePeriod='all';
