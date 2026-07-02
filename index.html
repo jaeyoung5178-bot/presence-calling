@@ -435,6 +435,30 @@
 
   /* 퍼널 전환율 라벨 */
   .sb-cell .cv{font-size:9px;color:#8A909C;margin-top:4px;font-weight:700;font-family:var(--mono)}
+
+  /* ===== 버전 배지 (헤더) ===== */
+  #ver-badge{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.02em;padding:4px 8px;border-radius:99px;background:#EDEBE3;color:#9A9587;white-space:nowrap;cursor:pointer;border:none}
+  #ver-badge:active{transform:scale(.94)}
+
+  /* ===== 새 버전 팝업 (하단) ===== */
+  #updateBar{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:5200;max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:16px;padding:13px 14px;box-shadow:0 10px 30px rgba(0,0,0,.32);transform:translateY(140%);opacity:0;transition:transform .38s cubic-bezier(.22,1,.36,1),opacity .3s}
+  #updateBar.on{transform:none;opacity:1}
+  #updateBar .ub-t{flex:1;min-width:0;font-size:14px;font-weight:800;line-height:1.25}
+  #updateBar .ub-t small{display:block;font-weight:500;font-size:10.5px;color:#B9BEC8;margin-top:2px;white-space:normal}
+  #updateBar .ub-go{flex-shrink:0;background:var(--green);color:#fff;border:none;border-radius:11px;padding:11px 14px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(79,156,48,.4)}
+  #updateBar .ub-go:active{transform:scale(.96)}
+  #updateBar .ub-x{flex-shrink:0;background:transparent;color:#B9BEC8;border:none;font-size:12.5px;font-weight:600;cursor:pointer;padding:6px}
+
+  /* ===== 시트 진단 패널 ===== */
+  .diag{background:#0E1013;border:1px solid #2A2E38;border-radius:12px;padding:14px;margin-top:10px;color:#E8EAEE;font-size:12.5px;line-height:1.6}
+  .diag h5{font-size:13px;font-weight:800;color:#7FD45A;margin-bottom:8px;font-family:var(--mono)}
+  .diag .dr{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #22262F}
+  .diag .dr:last-child{border-bottom:none}
+  .diag .dk{color:#9AA0AC;font-family:var(--mono);flex-shrink:0;min-width:74px}
+  .diag .dv{color:#fff;font-family:var(--mono);word-break:break-all}
+  .diag .ok{color:#7FD45A;font-weight:700}.diag .bad{color:#F0A58E;font-weight:700}
+  .diag .big{font-size:22px;font-weight:800;font-family:var(--mono)}
+  .diag pre{background:#15181D;border-radius:8px;padding:10px;margin-top:8px;overflow:auto;font-size:11px;color:#C6CBD4;white-space:pre-wrap;word-break:break-all}
 </style>
 </head>
 <body>
@@ -456,6 +480,7 @@
     <div class="hb"><span class="mk"><svg viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="62" letter-spacing="-6" fill="#fff">PM</text></svg></span><span>피스메이커<small>CALLING HUB</small></span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="admin-badge">🛡 관리자 모드</span>
+      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.1.0</button>
       <span id="sync-badge">⚪ 연결 중…</span>
     </div>
   </header>
@@ -488,7 +513,7 @@
     <div class="chip-row" id="homeRecChips"></div>
     <div class="clist" id="clist-home"></div>
 
-    <div class="row-between" onclick="toggleSheet()" style="cursor:pointer"><div class="sec-t sm">📄 인터뷰로그 시트 <span id="sheetCount" style="font-family:var(--mono);color:var(--blue)"></span> <span id="sheetCaret" style="color:var(--muted-2);font-size:13px">▸</span></div><button class="mini-copy" style="background:var(--blue-soft);border-color:#cfe0f0;color:var(--blue)" onclick="event.stopPropagation();fetchSheet(true)">↻ 새로고침</button></div>
+    <div class="row-between" onclick="toggleSheet()" style="cursor:pointer"><div class="sec-t sm">📄 인터뷰로그 시트 <span id="sheetCount" style="font-family:var(--mono);color:var(--blue)"></span> <span id="sheetCaret" style="color:var(--muted-2);font-size:13px">▸</span></div><div style="display:flex;gap:6px"><button class="mini-copy" style="background:#F0EEE6;border-color:#e0ddd2;color:var(--muted)" onclick="event.stopPropagation();sheetDiag()">🔍 진단</button><button class="mini-copy" style="background:var(--blue-soft);border-color:#cfe0f0;color:var(--blue)" onclick="event.stopPropagation();fetchSheet(true)">↻ 새로고침</button></div></div>
     <div id="sheetWrap" style="display:none">
       <div style="font-size:11.5px;color:var(--muted);margin:2px 0 10px">임재영 · 유혜창 · 윤채영 · 시트에서 실시간 (읽기 전용)</div>
       <div class="clist" id="sheetLog"></div>
@@ -607,7 +632,37 @@
 <script>
 /* ════════ 설정 ════════ */
 const NORMAL_PIN='8250', ADMIN_PIN='0001';
+/* ═══════ 앱 버전 (배포 확인용 · 수정할 때마다 올라감) ═══════ */
+const APP_VERSION='2.1.0 · 07/02 15:40';
 let isAdmin=false;
+/* ═══════ 새 버전 자동 감지 → 하단 팝업 ═══════
+   깃허브에 새 파일이 올라오면, 열려있던 화면에도 "새 버전" 배너가 떠서 무한 새로고침이 필요 없음 */
+let _updSeen=false, _updBusy=false;
+function selfUrl(){ return location.href.split('#')[0].split('?')[0]; }
+function checkForUpdate(manual){
+  if(_updBusy) return; _updBusy=true;
+  fetch(selfUrl()+'?_v='+Date.now(),{cache:'no-store'})
+    .then(r=>r.text())
+    .then(t=>{
+      _updBusy=false;
+      const m=/APP_VERSION\s*=\s*'([^']+)'/.exec(t);
+      const latest=m?m[1]:null;
+      if(latest && latest!==APP_VERSION){ showUpdateBar(latest); }
+      else if(manual){ toast('최신 버전이에요 (v'+APP_VERSION.split(' · ')[0]+')'); }
+    })
+    .catch(()=>{ _updBusy=false; if(manual) toast('버전 확인 실패 — 네트워크 확인'); });
+}
+window.checkForUpdate=checkForUpdate;
+function showUpdateBar(latest){
+  if(_updSeen) return; _updSeen=true;
+  let bar=document.getElementById('updateBar');
+  if(!bar){ bar=document.createElement('div'); bar.id='updateBar'; document.body.appendChild(bar); }
+  bar.innerHTML='<span class="ub-t">🎉 새 버전이 있어요<small>v'+esc(latest.split(' · ')[0])+' · 지금 받으면 최신 상태로 반영됩니다</small></span>'
+    +'<button class="ub-go" onclick="location.reload(true)">지금 새로고침</button>'
+    +'<button class="ub-x" onclick="document.getElementById(\'updateBar\').classList.remove(\'on\')">나중에</button>';
+  requestAnimationFrame(()=>bar.classList.add('on'));
+}
+function forceReload(){ location.reload(true); } window.forceReload=forceReload;
 const DEFAULT_RECRUITERS=[
   {id:'jaeyoung', name:'임재영', role:'AOP', code:'PR', team:'Presence', c1:'#4F9C30', c2:'#7FD45A', deep:'#3C7A22', soft:'#E9F2E0', top:'flag'},
   {id:'chaeyoung',name:'윤채영', role:'TL',  code:'PR', team:'피스메이커', c1:'#2F6FB0', c2:'#5AA0DA', deep:'#235A8C', soft:'#E4EDF6', top:'star'},
@@ -686,7 +741,20 @@ function listFor(id){ return candList().filter(c=>c.recruiter===id); }
 
 /* 앱 입력분 + 인터뷰로그(시트) 합산 — 이름+전화로 중복 제거 */
 function nameToId(name){ const r=RECRUITERS.find(x=>x.name===String(name||'').trim()); return r?r.id:''; }
-function sheetToCand(c){ return {id:c.id||('sheet:'+(c.name||'')+'|'+(c.tel||'')), recruiter:nameToId(c.rec), name:c.name, age:c.age, gender:c.gender, tel:c.tel, bookDate:c.book, intDate:c.intd, intTime:c.time, status:c.status||'부킹', memo:c.memo, _sheet:true}; }
+/* 시트 JSON의 키 이름이 조금 달라도 잡아내는 방어적 매핑 */
+function pickKey(o,keys){ for(const k of keys){ const v=o[k]; if(v!=null && String(v).trim()!=='') return v; } return ''; }
+function sheetToCand(c){
+  const rec  = pickKey(c,['rec','recruiter','담당','리쿠르터','담당자']);
+  const name = pickKey(c,['name','성명','이름','면접자']);
+  const tel  = pickKey(c,['tel','phone','연락처','전화','면접자 연락처','면접자연락처']);
+  const intd = pickKey(c,['intd','intDate','intdate','int_date','면접일','면접일자','면접 일자','면접날짜','date']);
+  const book = pickKey(c,['book','bookDate','통화일','통화일자','통화 일자','부킹일','부킹일자']);
+  const time = pickKey(c,['time','intTime','인터뷰시간','면접시간','시간']);
+  const stat = pickKey(c,['status','상태']);
+  const showO= pickKey(c,['show','쇼업','O','쇼업여부']);
+  const status = stat || ((String(showO).trim().toUpperCase()==='O')?'쇼업':'부킹');
+  return { id:c.id||('sheet:'+(name||'')+'|'+(tel||'')), recruiter:nameToId(rec), rec, name, age:pickKey(c,['age','나이']), gender:pickKey(c,['gender','성별']), tel, bookDate:book, intDate:intd, intTime:time, status, memo:pickKey(c,['memo','특이사항','비고']), _sheet:true };
+}
 function combinedCands(){
   const seenId={}, seenKey={}, out=[];
   candList().forEach(c=>{ if(delTomb[String(c.id)])return; seenId[c.id]=1; seenKey[(c.name||'')+'|'+digitsTel(c.tel)]=1; out.push(c); });
@@ -749,7 +817,10 @@ window.go=go;
 
 /* ════════ BOOT ════════ */
 let booted=false;
-function boot(){ if(booted)return; booted=true; loadLocal(); buildStatics(); initSync(); renderAll(); }
+function boot(){ if(booted)return; booted=true; loadLocal(); buildStatics(); initSync(); renderAll();
+  const vb=document.getElementById('ver-badge'); if(vb) vb.textContent='v'+APP_VERSION.split(' · ')[0];
+  setTimeout(()=>checkForUpdate(),4000);
+}
 function renderAll(){ renderHome(); RECRUITERS.forEach(r=>renderPerson(r.id)); renderInfo(); renderConfirmInputs(); renderSyncBox(); renderSheetLog(); ensureSheetPolling(); fillMemos(); }
 
 /* ════════ 인터뷰로그 시트(Apps Script) 실시간 연동 ════════ */
@@ -808,11 +879,43 @@ function ensureSheetPolling(){
   else if(!has && sheetTimer){ clearInterval(sheetTimer); sheetTimer=null; sheetRows=[]; }
   if(!_visWired){
     _visWired=true;
-    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) autoFetchThrottled(); });
-    window.addEventListener('focus',autoFetchThrottled);
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ autoFetchThrottled(); checkForUpdate(); } });
+    window.addEventListener('focus',()=>{ autoFetchThrottled(); checkForUpdate(); });
+    setInterval(()=>checkForUpdate(),90000);   // 90초마다 새 버전 확인
   }
 }
 function startSheetPolling(){ if(sheetTimer){clearInterval(sheetTimer);sheetTimer=null;} ensureSheetPolling(); if(effSheetUrl()) fetchSheet(true); }
+/* 🔍 시트 진단 — 시트가 내려주는 실제 키·면접일자 값·오늘 인식 여부를 화면에 표시 (주소 복사 불필요) */
+function sheetDiag(){
+  const box=document.getElementById('sheetLog');
+  const wrap=document.getElementById('sheetWrap');
+  if(wrap && wrap.style.display==='none'){ toggleSheet(); }
+  if(!box) return;
+  const url=effSheetUrl();
+  const tail = url ? ('…/'+(url.split('/macros/s/')[1]||url).slice(0,16)+'…') : '(없음)';
+  const rows=sheetRows||[];
+  let todayN=0; rows.forEach(r=>{ const c=sheetToCand(r); if(isToday(c.intDate)) todayN++; });
+  const stateTxt = sheetState==='ok'?'🟢 연동됨':sheetState==='err'?'⚠️ 불러오기 실패':sheetState==='loading'?'⏳ 불러오는 중':'⚪ 대기';
+  let rowsHtml='';
+  rows.slice(0,8).forEach(r=>{
+    const c=sheetToCand(r);
+    const t=isToday(c.intDate);
+    rowsHtml+=`<div class="dr"><span class="dk">${esc(c.name||'(이름없음)')}</span><span class="dv">면접일 원본: "${esc(String(r.intd!=null?r.intd:(r['면접 일자']!=null?r['면접 일자']:(r.intDate!=null?r.intDate:'—'))))}" → 인식 <b class="${t?'ok':'bad'}">${t?'오늘 ✓':'오늘아님'}</b></span></div>`;
+  });
+  const firstKeys = rows.length ? Object.keys(rows[0]) : [];
+  const firstDump = rows.length ? JSON.stringify(rows[0],null,1) : '(행 없음)';
+  box.innerHTML=`<div class="diag">
+    <h5>🔍 시트 연동 진단</h5>
+    <div class="dr"><span class="dk">앱 버전</span><span class="dv">v${esc(APP_VERSION)}</span></div>
+    <div class="dr"><span class="dk">연동 상태</span><span class="dv">${stateTxt} · 주소 ${esc(tail)}</span></div>
+    <div class="dr"><span class="dk">시트 행수</span><span class="dv"><b class="big">${rows.length}</b>건 &nbsp; 중 오늘 면접 <b class="big ${todayN?'ok':'bad'}">${todayN}</b>건</span></div>
+    ${todayN===0&&rows.length?`<div class="dr"><span class="dv bad">오늘이 0건이면 → 대개 아직 구버전이 열려 있는 경우입니다. 위 v버전을 확인하고, 최신이면 아래 '면접일 원본' 값과 키 목록을 캡처해 알려주세요.</span></div>`:''}
+    <div class="dr"><span class="dk">첫 행 키</span><span class="dv">${firstKeys.length?esc(firstKeys.join(', ')):'—'}</span></div>
+    ${rowsHtml||'<div class="dr"><span class="dv">표시할 행이 없습니다.</span></div>'}
+    <pre>${esc(firstDump)}</pre>
+  </div>`;
+}
+window.sheetDiag=sheetDiag;
 function timeAgo(ms){ if(!ms)return''; const s=Math.floor((Date.now()-ms)/1000); if(s<60)return'방금'; const m=Math.floor(s/60); if(m<60)return m+'분 전'; return Math.floor(m/60)+'시간 전'; }
 function renderSheetLog(){
   const url=effSheetUrl();
