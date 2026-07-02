@@ -520,7 +520,7 @@
     <div class="hb"><span class="mk"><svg viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="62" letter-spacing="-6" fill="#fff">PM</text></svg></span><span>피스메이커<small>CALLING HUB</small></span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="admin-badge">🛡 관리자 모드</span>
-      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.6.0</button>
+      <button id="ver-badge" onclick="checkForUpdate(true)" title="탭하면 새 버전을 확인합니다">v2.7.0</button>
       <span id="sync-badge">⚪ 연결 중…</span>
     </div>
   </header>
@@ -687,7 +687,7 @@
 /* ════════ 설정 ════════ */
 const NORMAL_PIN='8250', ADMIN_PIN='0001';
 /* ═══════ 앱 버전 (배포 확인용 · 수정할 때마다 올라감) ═══════ */
-const APP_VERSION='2.6.0 · 07/02 18:00';
+const APP_VERSION='2.7.0 · 07/02 18:20';
 let isAdmin=false;
 /* ═══════ 새 버전 자동 감지 → 하단 팝업 ═══════
    깃허브에 새 파일이 올라오면, 열려있던 화면에도 "새 버전" 배너가 떠서 무한 새로고침이 필요 없음 */
@@ -1529,18 +1529,21 @@ function renderTodayOps(){
     box.innerHTML='<div class="ops-empty">'+(isTodayView?'오늘':(pd.getMonth()+1)+'월 '+pd.getDate()+'일')+' 예정된 면접이 없습니다.<br>면접일을 지정하면 여기 표시됩니다.</div>';
     return;
   }
-  // ── 요약(결과)은 '그날 전체' 기준 → 종합현황 오늘면접/쇼업과 항상 일치, 맨 위 고정 ──
-  const active=dayList.filter(c=>c.status!=='거절');
-  const dShow=active.filter(c=>c.status==='쇼업'||c.status==='스타트').length;
-  const dNo=active.filter(c=>c.status==='노쇼').length;
-  const dWait=active.length-dShow-dNo;
-  const summary=`<div class="ops-sum ops-sum-top"><div><div class="n">${active.length}</div><div class="l">전체</div></div><div><div class="n" style="color:var(--green-deep)">${dShow}</div><div class="l">참석</div></div><div><div class="n">${dWait}</div><div class="l">대기</div></div><div><div class="n" style="color:var(--red)">${dNo}</div><div class="l">노쇼</div></div></div>`;
-
-  // ── 2차 드릴다운(시간대/리쿠르터)은 아래 명단에만 적용 ──
+  // ── 2차 드릴다운(시간대/리쿠르터)을 먼저 적용 → 요약도 '지금 보는 대상' 기준으로 ──
   let list=dayList;
   if(opsMode==='time' && opsFilter.time) list=dayList.filter(c=>(cleanTime(c.intTime)||'시간미정')===opsFilter.time);
   if(opsMode==='rec' && opsFilter.rec) list=dayList.filter(c=>c.recruiter===opsFilter.rec);
-  const filterNote=(opsFilter.time||opsFilter.rec)
+  const filtered=(opsFilter.time||opsFilter.rec);
+
+  // ── 요약(결과): 필터 없으면 그날 전체(=종합현황과 일치), 필터 있으면 그 대상 기준 ──
+  const active=list.filter(c=>c.status!=='거절');
+  const dShow=active.filter(c=>c.status==='쇼업'||c.status==='스타트').length;
+  const dNo=active.filter(c=>c.status==='노쇼').length;
+  const dWait=active.length-dShow-dNo;
+  const totLabel=filtered?(opsFilter.time?esc(opsFilter.time):esc(recMeta(opsFilter.rec).name)):'전체';
+  const summary=`<div class="ops-sum ops-sum-top"><div><div class="n">${active.length}</div><div class="l">${totLabel}</div></div><div><div class="n" style="color:var(--green-deep)">${dShow}</div><div class="l">참석</div></div><div><div class="n">${dWait}</div><div class="l">대기</div></div><div><div class="n" style="color:var(--red)">${dNo}</div><div class="l">노쇼</div></div></div>`;
+
+  const filterNote=filtered
     ? `<div class="ops-note">🔍 ${opsFilter.time?esc(opsFilter.time):esc(recMeta(opsFilter.rec).name)} 만 보는 중 · ${list.length}명 <button onclick="${opsFilter.time?"setOpsTime('"+opsFilter.time+"')":"setOpsRec('"+opsFilter.rec+"')"}">전체 보기</button></div>` : '';
 
   const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
